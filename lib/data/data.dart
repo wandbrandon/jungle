@@ -1,10 +1,16 @@
 import 'package:flutter_chat_ui/models/models.dart';
 
 final User currentUser = User(
-  id: 0,
-  name: "Brandon Wand",
-  location: "Gainesville"
-);
+    id: 0,
+    name: "Brandon",
+    age: 21,
+    location: "Gainesville, FL",
+    bio: "Mexican, love to cook and travel",
+    work: "Cybersecurity Institute",
+    uni: "University of Florida",
+    hometown: "Weston, FL",
+    imageUrl:
+        "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp");
 
 final List<Food> bars = [
   Food(

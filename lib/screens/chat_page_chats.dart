@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/models/message_model.dart';
 import 'package:flutter_chat_ui/models/user_model.dart';
+import 'package:flutter_chat_ui/data/data.dart';
 
 class ChatPageChats extends StatefulWidget {
   final User user;

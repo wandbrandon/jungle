@@ -13,9 +13,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   PageController _controller = PageController(
-    initialPage: 0,
+    initialPage: 1,
+    keepPage: true,
   );
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   @override
   void dispose() {
@@ -23,68 +24,58 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  List<IconData> _icons = [
-    Icons.search,
-    Icons.how_to_reg_outlined,
-    Icons.chat_bubble_outline,
-    Icons.person_outlined,
-  ];
+  void _bottomTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _controller.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
 
-  Widget _buildIcon(int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-        _controller.jumpToPage(index);
-      },
-      child: Icon(
-        _icons[index],
-        size: 30.0,
-        color: _selectedIndex == index
-            ? Colors.black
-            : Colors.black.withOpacity(0.20),
-      ),
-    );
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.dark
-                .copyWith(statusBarColor: Colors.transparent),
-            child: Stack(
-              children: <Widget>[
-                PageView(
-                  controller: _controller,
-                  children: [
-                    DiscoverPage(),
-                    ChatPage(),
-                    ProfilePage(),
-                  ],
-                  onPageChanged: (page) {
-                    setState(() {
-                      _selectedIndex = page;
-                    });
-                  },
-                ),
-                Container(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 25),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _buildIcon(0),
-                          _buildIcon(1),
-                          _buildIcon(2),
-                          _buildIcon(3)
-                        ],
-                      ),
-                    ))
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore),
+              label: 'Discover',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Chat',
+            ),
+          ],
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: _selectedIndex,
+          selectedItemColor: Theme.of(context).accentColor,
+          unselectedItemColor: Theme.of(context).backgroundColor,
+          onTap: _bottomTapped,
+        ),
+        body: Stack(
+          children: <Widget>[
+            PageView(
+              controller: _controller,
+              children: [
+                ProfilePage(),
+                DiscoverPage(),
+                ChatPage(),
               ],
-            )));
+              onPageChanged: _onItemTapped,
+            ),
+          ],
+        ));
   }
 }
