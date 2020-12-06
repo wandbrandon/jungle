@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/data/data.dart';
+import 'package:jungle/data/data.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'contact_item.dart';
 

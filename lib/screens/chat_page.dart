@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/models/message_model.dart';
-import 'package:flutter_chat_ui/models/user_model.dart';
-import 'package:flutter_chat_ui/widgets/match_queue.dart';
-import 'package:flutter_chat_ui/widgets/message_queue.dart';
-import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:jungle/models/models.dart';
+import 'package:jungle/widgets/match_queue.dart';
+import 'package:jungle/widgets/message_queue.dart';
 
 class ChatPage extends StatefulWidget {
   final User user;

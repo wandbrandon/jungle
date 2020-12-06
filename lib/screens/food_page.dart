@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chat_ui/models/models.dart';
+import 'package:jungle/models/models.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;

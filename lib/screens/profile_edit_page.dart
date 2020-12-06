@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/data/data.dart';
+import 'package:jungle/data/data.dart';
 
 class ProfileEditPage extends StatefulWidget {
   @override

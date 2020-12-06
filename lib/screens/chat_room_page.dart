@@ -1,8 +1,8 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/models/user_model.dart';
-import 'package:flutter_chat_ui/widgets/contact_item.dart';
-import 'package:flutter_chat_ui/widgets/message_text_field.dart';
+import 'package:jungle/models/user_model.dart';
+import 'package:jungle/widgets/contact_item.dart';
+import 'package:jungle/widgets/message_text_field.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ChatRoomPage extends StatefulWidget {
@@ -15,6 +15,8 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
+  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,17 +31,19 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(children: [
                   ContactItem(user: widget.user, radius: 30),
-                  SizedBox(width: 12,),
+                  SizedBox(
+                    width: 12,
+                  ),
                   Text(widget.user.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white
-                      )),
+                      style: TextStyle(fontSize: 20, color: Colors.white)),
                 ]),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Icon(Icons.call_rounded, color: Colors.white,),
+                child: Icon(
+                  Icons.call_rounded,
+                  color: Colors.white,
+                ),
               )
             ],
           ),
@@ -51,54 +55,40 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(17.5),
-                  topLeft: Radius.circular(17.5),
+                  topRight: Radius.circular(25),
+                  topLeft: Radius.circular(25),
                 ),
               ),
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Center(
-                        child: Container(
-                            height: 6,
-                            width: 150,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).backgroundColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(17.5)),
-                            ))),
-                  ),
                   Expanded(
                     child: Container(
-                      child: ListView.separated(
+                      child: ListView.builder(
                         reverse: true,
                         physics: BouncingScrollPhysics(),
                         controller: ModalScrollController.of(context),
-                        separatorBuilder: (BuildContext context, int index) =>
-                            Padding(
-                                padding: EdgeInsets.symmetric(vertical: 7.5)),
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 7.5),
                         itemCount: widget.user.messages.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Bubble(
+                          bool isCurrentUser = widget.user.messages[index].id == 0;
+                           return Bubble(
                               elevation: 0,
                               radius: Radius.circular(20),
                               padding: BubbleEdges.symmetric(
                                   horizontal: 15, vertical: 10),
-                              margin: widget.user.messages[index].id == 0
+                              margin: isCurrentUser
                                   ? BubbleEdges.only(
                                       bottom: 0,
-                                      top: 0,
+                                      top: 8,
                                       left: MediaQuery.of(context).size.width *
                                           .15)
                                   : BubbleEdges.only(
                                       bottom: 0,
-                                      top: 0,
+                                      top: 8,
                                       right: MediaQuery.of(context).size.width *
                                           .15),
-                              alignment: widget.user.messages[index].id == 0
+                              alignment: isCurrentUser
                                   ? Alignment.topRight
                                   : Alignment.topLeft,
                               color: widget.user.messages[index].id == 0
@@ -107,15 +97,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                               child: Text(
                                 widget.user.messages[index].text,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                    fontSize: 16,
+                                    color: isCurrentUser ? Colors.white : Theme.of(context).textTheme.bodyText1.color),
                               ));
                         },
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(0),
                     child: MessageTextField(),
                   )
                 ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/data/data.dart';
-import 'package:flutter_chat_ui/widgets/contact_item.dart';
-import 'package:flutter_chat_ui/widgets/profile_item.dart';
+import 'package:jungle/data/data.dart';
+import 'package:jungle/widgets/contact_item.dart';
+import 'package:jungle/widgets/profile_item.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -136,6 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Flexible(
             child: ListView.separated(
+              physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(top: 2),
               separatorBuilder: (BuildContext context, int index) =>
                   Padding(padding: EdgeInsets.symmetric(vertical: 7.5)),

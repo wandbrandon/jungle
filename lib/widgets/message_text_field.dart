@@ -33,12 +33,13 @@ class _MessageTextFieldState extends State<MessageTextField>
     return Container(
       height: MediaQuery.of(context).size.height * .075,
       decoration: BoxDecoration(
-          color: Theme.of(context).accentColor.withOpacity(.75),
-          borderRadius: BorderRadius.all(Radius.circular(30))),
+          color: Theme.of(context).primaryColor,
+          //borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30),)
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(width: 10),
+          SizedBox(width: 15),
           InkWell(
             splashColor: Colors.black,
             customBorder: CircleBorder(),
@@ -48,13 +49,14 @@ class _MessageTextFieldState extends State<MessageTextField>
                 width: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Theme.of(context).accentColor,
+                  color: Colors.white.withOpacity(.10),
                 ),
                 child: Center(
                   child: AnimatedIcon(
                     icon: AnimatedIcons.menu_close,
                     progress: animController,
                     semanticLabel: 'Show menu',
+                    color: Colors.white70,
                   ),
                 )),
           ),
@@ -67,7 +69,7 @@ class _MessageTextFieldState extends State<MessageTextField>
                     clipBehavior: Clip.hardEdge,
                     height: 38,
                     decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
+                        color:  Colors.white.withOpacity(.10),
                         borderRadius: BorderRadius.all(Radius.circular(30))),
                     child: Align(
                       alignment: Alignment.centerLeft,
@@ -76,9 +78,9 @@ class _MessageTextFieldState extends State<MessageTextField>
                         child: TextField(
                           cursorColor: Colors.white,
                           decoration: InputDecoration.collapsed(
-                              hintText: "Message",
+                              hintText: "Type a message...",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(.25),
+                                color: Colors.white24,
                               ),
                               border: InputBorder.none),
                         ),

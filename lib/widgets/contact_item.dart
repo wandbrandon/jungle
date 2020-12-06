@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/models/user_model.dart';
-import 'package:flutter_chat_ui/widgets/profile_card.dart';
+import 'package:jungle/models/user_model.dart';
+import 'package:jungle/widgets/profile_card.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ContactItem extends StatelessWidget {

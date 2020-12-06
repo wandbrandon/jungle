@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/models/models.dart';
+import 'package:jungle/models/models.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 
@@ -32,7 +33,7 @@ class ProfileCard extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * .63,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: [Colors.black, Colors.transparent]),
+                          colors: [Colors.black.withOpacity(.50), Colors.transparent]),
                       image: DecorationImage(
                           image: NetworkImage(user.imageUrl),
                           fit: BoxFit.cover),
@@ -42,7 +43,7 @@ class ProfileCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: [
-                            Colors.black.withOpacity(.75),
+                            Colors.black.withOpacity(.30),
                             Colors.transparent
                           ],
                           begin: FractionalOffset.bottomCenter,

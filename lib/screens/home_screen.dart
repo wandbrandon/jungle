@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chat_ui/screens/discover_page.dart';
-import 'package:flutter_chat_ui/screens/chat_page.dart';
-import 'package:flutter_chat_ui/screens/current_profile_page.dart';
+import 'package:jungle/screens/discover_page.dart';
+import 'package:jungle/screens/chat_page.dart';
+import 'package:jungle/screens/current_profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

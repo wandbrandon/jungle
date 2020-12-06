@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/screens/home_screen.dart';
-import 'package:flutter_chat_ui/theme.dart';
+import 'package:jungle/screens/home_screen.dart';
+import 'package:jungle/theme.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Jungle',
         debugShowCheckedModeBanner: false,
-        theme: kLightTheme,
+        theme: kDarkTheme,
         home: HomeScreen());
   }
 }

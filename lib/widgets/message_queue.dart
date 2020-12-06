@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/data/data.dart';
+import 'package:jungle/data/data.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'contact_item.dart';
 import 'message_card.dart';
@@ -15,7 +15,7 @@ class MessageQueue extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Messages",
+                  "Conversations",
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
                 Icon(LineAwesomeIcons.ellipsis_h)

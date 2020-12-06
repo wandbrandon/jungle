@@ -1,4 +1,4 @@
-import 'package:flutter_chat_ui/models/user_model.dart';
+import 'package:jungle/models/user_model.dart';
 
 class Message {
   final int id;

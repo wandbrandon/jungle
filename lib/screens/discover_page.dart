@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/data/data.dart';
-import 'package:flutter_chat_ui/screens/food_page.dart';
+import 'package:jungle/data/data.dart';
+import 'package:jungle/screens/food_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DiscoverPage extends StatefulWidget {
