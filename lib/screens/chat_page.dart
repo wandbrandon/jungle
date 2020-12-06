@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/models/message_model.dart';
 import 'package:flutter_chat_ui/models/user_model.dart';
-import 'package:flutter_chat_ui/widgets/category_selector.dart';
-import 'package:flutter_chat_ui/widgets/favorite_contacts.dart';
-import 'package:flutter_chat_ui/widgets/recent_chats.dart';
+import 'package:flutter_chat_ui/widgets/match_queue.dart';
+import 'package:flutter_chat_ui/widgets/message_queue.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 
 class ChatPage extends StatefulWidget {
   final User user;
@@ -15,55 +15,30 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+
+  final List<int> items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          iconSize: 30.0,
-          color: Colors.white,
-          onPressed: () {},
-        ),
-        title: Text(
-          'Chats',
-          style: TextStyle(
-            fontSize: 28.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 0.0,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            iconSize: 30.0,
-            color: Colors.white,
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          CategorySelector(),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).accentColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30.0),
-                  topRight: Radius.circular(30.0),
-                ),
-              ),
-              child: Column(
-                children: <Widget>[
-                  FavoriteContacts(),
-                  RecentChats(),
-                ],
-              ),
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          brightness: Theme.of(context).brightness,
+          elevation: 0,
+          title: Text('Messaging'),
+          centerTitle: true,
+          actions: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Icon(Icons.search),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+        body: Column(
+          children: [
+            MatchQueue(),
+            MessageQueue()
+          ],
+        ));
   }
 }

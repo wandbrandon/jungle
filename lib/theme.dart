@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 const kDarkPrimaryColor = Color(0xFF212121);
 const kDarkSecondaryColor = Color(0xFF373737);
 const kLightPrimaryColor = Color(0xFFFFFFFF);
-const kLightSecondaryColor = Color(0xFFEFEFEF);
-const kAccentColor = Color(0xFF7CB342);
+const kLightSecondaryColor = Color(0xFFDFDFDF);
+const kAccentColor = Color(0xFF43a047);
 
 final kDarkTheme = ThemeData(
   brightness: Brightness.dark,

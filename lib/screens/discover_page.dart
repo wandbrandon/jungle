@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/data/data.dart';
 import 'package:flutter_chat_ui/screens/food_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:animations/animations.dart';
 
 class DiscoverPage extends StatefulWidget {
   @override
@@ -27,6 +26,8 @@ class _DiscoverPageState extends State<DiscoverPage>
     _pageController.dispose();
     super.dispose();
   }
+
+  String currentSelection = "Bars";
 
   _barSelector(int index) {
     return AnimatedBuilder(
@@ -55,7 +56,7 @@ class _DiscoverPageState extends State<DiscoverPage>
               child: Container(
                 margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
                 decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(30.0),
                     // boxShadow: [
                     //   BoxShadow(
@@ -85,18 +86,18 @@ class _DiscoverPageState extends State<DiscoverPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      child: ListView(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        brightness: Brightness.dark,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Discover $currentSelection'
+        ),
+      ),
+      body: ListView(
         physics: NeverScrollableScrollPhysics(),
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 30,
-              vertical: 5,
-            ),
-            child: Text('Discover',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500)),
-          ),
           Container(
               height: 530.0,
               width: double.infinity,
@@ -112,21 +113,21 @@ class _DiscoverPageState extends State<DiscoverPage>
                   return _barSelector(index);
                 },
               )),
-          //   Container(
-          //   child: Center(
-          //     child: SmoothPageIndicator(
-          //       controller: _pageController,
-          //       count:  bars.length,
-          //       effect:  WormEffect(
-          //         dotHeight: 3,
-          //         dotWidth: 3,
-          //         activeDotColor: Colors.black
-          //       ),
-          //     )
-          //   ),
-          // ),
+            Container(
+            child: Center(
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count:  bars.length,
+                effect:  ExpandingDotsEffect(
+                  dotHeight: 5,
+                  dotWidth: 5,
+                  activeDotColor: Theme.of(context).accentColor
+                ),
+              )
+            ),
+          ),
         ],
       ),
-    ));
+    );
   }
 }

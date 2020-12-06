@@ -1,3 +1,5 @@
+import 'message_model.dart';
+
 class User {
   final int id;
   final int age;
@@ -8,8 +10,10 @@ class User {
   final String work;
   final String uni;
   final String hometown;
+  final List<Message> messages;
 
   User({
+    this.messages,
     this.bio,
     this.age,
     this.work,

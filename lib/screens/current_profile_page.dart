@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/data/data.dart';
+import 'package:flutter_chat_ui/widgets/contact_item.dart';
 import 'package:flutter_chat_ui/widgets/profile_item.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,12 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
     ProfileItem(
         icon: Icons.history_outlined,
         text: 'Purchase History',
-        onTap: () {
-          print('test');
-        }),
-    ProfileItem(
-        icon: Icons.person_add_outlined,
-        text: 'Invite a Friend',
         onTap: () {
           print('test');
         }),
@@ -61,11 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Stack(
                         alignment: Alignment.bottomRight,
                         children: [
-                          CircleAvatar(
-                              radius: 60,
-                              backgroundImage: NetworkImage(
-                                currentUser.imageUrl,
-                              )),
+                          ContactItem(user: currentUser, radius: 60),
                           Align(
                             alignment: Alignment.center,
                             child: Container(
@@ -146,7 +137,6 @@ class _ProfilePageState extends State<ProfilePage> {
           Flexible(
             child: ListView.separated(
               padding: EdgeInsets.only(top: 2),
-              physics: ClampingScrollPhysics(),
               separatorBuilder: (BuildContext context, int index) =>
                   Padding(padding: EdgeInsets.symmetric(vertical: 7.5)),
               itemCount: profileItems.length,

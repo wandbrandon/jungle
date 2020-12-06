@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_ui/screens/discover_page.dart';
 import 'package:flutter_chat_ui/screens/chat_page.dart';
-import 'package:flutter_chat_ui/screens/profile_page.dart';
+import 'package:flutter_chat_ui/screens/current_profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -64,18 +64,20 @@ class _HomeScreenState extends State<HomeScreen>
           unselectedItemColor: Theme.of(context).backgroundColor,
           onTap: _bottomTapped,
         ),
-        body: Stack(
-          children: <Widget>[
-            PageView(
-              controller: _controller,
-              children: [
-                ProfilePage(),
-                DiscoverPage(),
-                ChatPage(),
-              ],
-              onPageChanged: _onItemTapped,
-            ),
-          ],
+        body: SafeArea(
+          child: Stack(
+            children: <Widget>[
+              PageView(
+                controller: _controller,
+                children: [
+                  ProfilePage(),
+                  DiscoverPage(),
+                  ChatPage(),
+                ],
+                onPageChanged: _onItemTapped,
+              ),
+            ],
+          ),
         ));
   }
 }
