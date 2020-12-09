@@ -20,12 +20,16 @@ dependencies:
   flutter:
     sdk: flutter
   smooth_page_indicator:
-  animate_do:
   line_awesome_icons:
   modal_bottom_sheet:
   bubble:
+  tap_builder: ^0.2.0-beta
+  geolocator: ^6.1.12
+  firebase_core: "^0.5.3"
+  firebase_auth: "^0.18.4"
+  provider: ^4.3.2+1
 
-
+    
 
 dev_dependencies:
   flutter_test:
@@ -44,8 +48,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_ham.jpeg
+  assets:
+    - ./lib/assets/mapStyle.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

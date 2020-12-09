@@ -5,6 +5,8 @@ import 'package:jungle/screens/discover_page.dart';
 import 'package:jungle/screens/chat_page.dart';
 import 'package:jungle/screens/current_profile_page.dart';
 
+import 'discover_page.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -28,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() {
       _selectedIndex = index;
       _controller.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
+          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
     });
   }
 
@@ -40,6 +42,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarIconBrightness: Theme.of(context).brightness,
+        statusBarBrightness: Theme.of(context).brightness,
+        statusBarColor: Colors.transparent // status bar color
+    ));
+    print(Theme.of(context).brightness);
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           elevation: 0,
@@ -68,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen>
           child: Stack(
             children: <Widget>[
               PageView(
+                
+                physics: NeverScrollableScrollPhysics(),
                 controller: _controller,
                 children: [
                   ProfilePage(),

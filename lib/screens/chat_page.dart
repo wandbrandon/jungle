@@ -23,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
           backgroundColor: Theme.of(context).primaryColor,
           brightness: Theme.of(context).brightness,
           elevation: 0,
-          title: Text('Messaging'),
+          title: Text('Chats'),
           centerTitle: true,
           actions: [
             Padding(

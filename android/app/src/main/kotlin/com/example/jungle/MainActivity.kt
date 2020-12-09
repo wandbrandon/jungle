@@ -1,4 +1,4 @@
-package com.example.jungle_new
+package com.example.jungle
 
 import io.flutter.embedding.android.FlutterActivity
 

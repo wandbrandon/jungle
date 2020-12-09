@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jungle/data/data.dart';
 import 'package:jungle/widgets/contact_item.dart';
 import 'package:jungle/widgets/profile_item.dart';
+import 'package:jungle/widgets/food_profile_card.dart';
+import 'package:tap_builder/tap_builder.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -149,3 +151,5 @@ class _ProfilePageState extends State<ProfilePage> {
     ));
   }
 }
+
+

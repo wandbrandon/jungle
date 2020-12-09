@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jungle/data/data.dart';
 import 'package:jungle/screens/food_page.dart';
+import 'package:jungle/widgets/food_profile_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -10,8 +11,7 @@ class DiscoverPage extends StatefulWidget {
   _DiscoverPageState createState() => _DiscoverPageState();
 }
 
-class _DiscoverPageState extends State<DiscoverPage>
-    with SingleTickerProviderStateMixin {
+class _DiscoverPageState extends State<DiscoverPage> with SingleTickerProviderStateMixin {
   PageController _pageController;
   int _selectedPage = 0;
 
@@ -102,6 +102,7 @@ class _DiscoverPageState extends State<DiscoverPage>
               height: 530.0,
               width: double.infinity,
               child: PageView.builder(
+                physics: BouncingScrollPhysics(),
                 controller: _pageController,
                 onPageChanged: (int index) {
                   setState(() {
@@ -110,7 +111,10 @@ class _DiscoverPageState extends State<DiscoverPage>
                 },
                 itemCount: bars.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return _barSelector(index);
+                  return Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: AnimatedStateButton(food: bars[index]),
+                  );
                 },
               )),
             Container(

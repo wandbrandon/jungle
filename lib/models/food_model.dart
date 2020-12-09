@@ -1,3 +1,4 @@
+
 class Food {
   final int id;
   final String name;
@@ -14,6 +15,6 @@ class Food {
     this.highlights,
     this.description,
     this.amtGoing,
-    this.rating
+    this.rating,
   });
 }

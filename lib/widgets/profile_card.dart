@@ -156,13 +156,13 @@ class _CustomScrollBarState extends State<CustomScrollBar> {
           height: 85,
           width: 4,
           decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.50),
+              color: Colors.white.withOpacity(.33),
               borderRadius: BorderRadius.all(Radius.circular(10))),
         ),
         Positioned(
-          top: position * 60,
+          top: position * 65,
           child: Container(
-            height: 25,
+            height: 20,
             width: 4,
             decoration: BoxDecoration(
                 color: Colors.white,

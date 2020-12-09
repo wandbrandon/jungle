@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/data/data.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
-import 'contact_item.dart';
 import 'message_card.dart';
 
 class MessageQueue extends StatelessWidget {
@@ -16,7 +15,7 @@ class MessageQueue extends StatelessWidget {
               children: [
                 Text(
                   "Conversations",
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Theme.of(context).accentColor),
                 ),
                 Icon(LineAwesomeIcons.ellipsis_h)
               ],

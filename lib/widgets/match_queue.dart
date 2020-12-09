@@ -11,7 +11,7 @@ class MatchQueue extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text("Match Queue", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),), Icon(LineAwesomeIcons.ellipsis_h)],
+            children: [Text("Match Queue", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14,  color: Theme.of(context).accentColor),), Icon(LineAwesomeIcons.ellipsis_h)],
           )),
       Ink(
         height: MediaQuery.of(context).size.height * .175,

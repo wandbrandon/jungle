@@ -50,6 +50,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           SizedBox(height: 10),
           Expanded(
             child: Container(
+              clipBehavior: Clip.antiAlias,
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               decoration: BoxDecoration(
@@ -68,7 +69,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                         physics: BouncingScrollPhysics(),
                         controller: ModalScrollController.of(context),
                         padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 7.5),
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 7.5),
                         itemCount: widget.user.messages.length,
                         itemBuilder: (BuildContext context, int index) {
                           bool isCurrentUser = widget.user.messages[index].id == 0;

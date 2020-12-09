@@ -223,15 +223,19 @@ List<Message> bradMessages = [
 final List<Food> bars = [
   Food(
       id: 0,
+      //location: LatLng(29.650719185666006, -82.32526474368572),
       name: "Downtown Fats",
       imageUrls: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/s1080x1080/121574849_384181839419847_8553776110686228923_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=103&_nc_ohc=fF5SLO6JOrIAX8m5NjK&tp=15&oh=33c28c42c8232c1989186b8d7455afa2&oe=5FDC8790"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
+      
+      
   Food(
       id: 1,
       name: "JJ's Tavern",
+      //location: LatLng(29.652641653369997, -82.34509681484927),
       imageUrls: [
         "https://myareanetwork-photos.s3.amazonaws.com/editorphotos/f/38493_1574714550.jpg"
       ],
@@ -240,6 +244,7 @@ final List<Food> bars = [
   Food(
       id: 2,
       name: "Fat Daddy's",
+      //location: LatLng(29.65263232957408, -82.34513973019457),
       imageUrls: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/s1080x1080/121411915_944097126001512_4463546720263959708_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=100&_nc_ohc=pRHU5sPk0FkAX82_vvJ&tp=15&oh=06445da11563b6838dd150da72ffba28&oe=5FD986E2"
       ],
@@ -248,6 +253,7 @@ final List<Food> bars = [
   Food(
       id: 3,
       name: "White Buffalo",
+      //location: LatLng(29.650761157551646, -82.32477522834031),
       imageUrls: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/p1080x1080/102404482_957109758064830_6368971491856859158_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=106&_nc_ohc=iKFa090GocUAX-cDbLc&tp=19&oh=dae46dc95f8270cc4e2481999e21d530&oe=5FD8FA4A"
       ],

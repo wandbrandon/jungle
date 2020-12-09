@@ -50,17 +50,6 @@ class _FoodPageState extends State<FoodPage> {
                   )
                 ]
               ),
-              Align(
-                alignment: Alignment.center,
-                heightFactor: 0.5,
-                child: Container(
-                  height: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(30)
-                  )
-                ),
-              )
             ],
           ),
       )
