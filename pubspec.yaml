@@ -25,8 +25,8 @@ dependencies:
   bubble:
   tap_builder: ^0.2.0-beta
   geolocator: ^6.1.12
-  firebase_core: "^0.5.3"
-  firebase_auth: "^0.18.4"
+  #firebase_core: "^0.5.3"
+  #firebase_auth: "^0.18.4"
   provider: ^4.3.2+1
 
     

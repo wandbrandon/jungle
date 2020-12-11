@@ -16,7 +16,7 @@ class AnimatedStateButton extends StatelessWidget {
             : Alignment.center;
         return AnimatedContainer(
           height: 200,
-          transformAlignment: Alignment.center,
+          alignment: Alignment.center,
           transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
             ..rotateY(cursorAlignment.x * 0.2)
             ..scale(
@@ -42,7 +42,7 @@ class AnimatedStateButton extends StatelessWidget {
                 ),
                 AnimatedContainer(
                   height: 200,
-                  transformAlignment: Alignment.center,
+                  alignment: Alignment.center,
                   transform: Matrix4.translationValues(
                     cursorAlignment.x * 3,
                     cursorAlignment.y * 3,

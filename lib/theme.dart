@@ -8,7 +8,7 @@ const kLightAccentColor = Color(0xFF64d8cb);
 const kDarkAccentColor = Color(0xFF64d8cb);
 
 final kDarkTheme = ThemeData(
-  brightness: Brightness.light,
+  brightness: Brightness.dark,
   primaryColor: kDarkPrimaryColor,
   canvasColor: kDarkPrimaryColor,
   backgroundColor: kDarkSecondaryColor,
@@ -23,7 +23,7 @@ final kDarkTheme = ThemeData(
 );
 
 final kLightTheme = ThemeData(
-  brightness: Brightness.dark,
+  brightness: Brightness.light,
   primaryColor: kLightPrimaryColor,
   canvasColor: kLightPrimaryColor,
   backgroundColor: kLightSecondaryColor,

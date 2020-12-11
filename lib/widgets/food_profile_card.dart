@@ -7,7 +7,8 @@ class AnimatedStateButton extends StatelessWidget {
   final Food food;
 
   const AnimatedStateButton({
-    Key key, this.food,
+    Key key,
+    this.food,
   }) : super(key: key);
 
   @override
@@ -16,16 +17,16 @@ class AnimatedStateButton extends StatelessWidget {
       tag: food.imageUrls[0],
       child: AnimatedTapBuilder(
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (_) => FoodPage(food: food)));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => FoodPage(food: food)));
         },
         builder: (context, state, cursorLocation, cursorAlignment) {
           cursorAlignment = state == TapState.pressed
               ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
               : Alignment.center;
           return AnimatedContainer(
-            height: 200,
-            transformAlignment: Alignment.center,
+            //height: MediaQuery.of(context).size.height * .75,
+            alignment: Alignment.center,
             transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
               ..rotateY(cursorAlignment.x * 0.2)
               ..scale(
@@ -50,8 +51,7 @@ class AnimatedStateButton extends StatelessWidget {
                     ),
                   ),
                   AnimatedContainer(
-                    height: 200,
-                    transformAlignment: Alignment.center,
+                    alignment: Alignment.center,
                     transform: Matrix4.translationValues(
                       cursorAlignment.x * 7,
                       cursorAlignment.y * 7,
@@ -76,17 +76,15 @@ class AnimatedStateButton extends StatelessWidget {
                     ),
                   ),
                   AnimatedContainer(
-                    height: 200,
-                    transformAlignment: Alignment.center,
-                    transform: Matrix4.translationValues(
-                      cursorAlignment.x * 4,
-                      cursorAlignment.y * 4,
-                      0,
-                    ),
-                    duration: const Duration(milliseconds: 200),
-                    child:Stack(
-                      children: [
-                         Positioned(
+                      alignment: Alignment.center,
+                      transform: Matrix4.translationValues(
+                        cursorAlignment.x * 4,
+                        cursorAlignment.y * 4,
+                        0,
+                      ),
+                      duration: const Duration(milliseconds: 200),
+                      child: Stack(children: [
+                        Positioned(
                           bottom: 20,
                           left: 20,
                           child: Text(
@@ -97,21 +95,17 @@ class AnimatedStateButton extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ]
-                    )
-                  ),
+                      ])),
                   AnimatedContainer(
-                    height: 200,
-                    transformAlignment: Alignment.center,
-                    transform: Matrix4.translationValues(
-                      cursorAlignment.x * 12,
-                      cursorAlignment.y * 12,
-                      0,
-                    ),
-                    duration: const Duration(milliseconds: 200),
-                    child:Stack(
-                      children: [
-                         Positioned(
+                      alignment: Alignment.center,
+                      transform: Matrix4.translationValues(
+                        cursorAlignment.x * 12,
+                        cursorAlignment.y * 12,
+                        0,
+                      ),
+                      duration: const Duration(milliseconds: 200),
+                      child: Stack(children: [
+                        Positioned(
                           top: 20,
                           right: 20,
                           child: Text(
@@ -122,9 +116,7 @@ class AnimatedStateButton extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ]
-                    )
-                  ),
+                      ])),
                   Positioned.fill(
                     child: AnimatedAlign(
                       duration: const Duration(milliseconds: 200),
