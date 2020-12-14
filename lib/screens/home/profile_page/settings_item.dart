@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ProfileItem extends StatelessWidget {
+class SettingsItem extends StatelessWidget {
   final IconData icon;
   final String text;
   final GestureTapCallback onTap;
 
-  const ProfileItem({
+  const SettingsItem({
     Key key,
     this.icon,
     this.text,

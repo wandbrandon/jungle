@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jungle/screens/discover_page.dart';
-import 'package:jungle/screens/chat_page.dart';
-import 'package:jungle/screens/current_profile_page.dart';
-
-import 'discover_page.dart';
+import 'package:jungle/screens/home/profile_page/current_profile_page.dart';
+import 'package:jungle/screens/home/chats_page/chat_page.dart';
+import 'package:jungle/screens/home/discover_page/discover_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -47,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen>
         statusBarBrightness: Theme.of(context).brightness,
         statusBarColor: Colors.transparent // status bar color
     ));
-    print(Theme.of(context).brightness);
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           elevation: 0,

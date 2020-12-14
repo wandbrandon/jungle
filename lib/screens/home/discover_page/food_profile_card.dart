@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
-import 'package:jungle/screens/food_page.dart';
+import 'package:jungle/screens/home/discover_page/food_page.dart';
 import 'package:tap_builder/tap_builder.dart';
 
 class AnimatedStateButton extends StatelessWidget {
@@ -25,22 +25,21 @@ class AnimatedStateButton extends StatelessWidget {
               ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
               : Alignment.center;
           return AnimatedContainer(
-            //height: MediaQuery.of(context).size.height * .75,
-            alignment: Alignment.center,
+            transformAlignment: Alignment.center,
             transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
               ..rotateY(cursorAlignment.x * 0.2)
               ..scale(
-                state == TapState.pressed ? 0.94 : 1.0,
+                state == TapState.pressed ? 0.96 : 1.0,
               ),
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              color: Colors.black,
+              color: Theme.of(context).primaryColor,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: Stack(
-                fit: StackFit.passthrough,
+                fit: StackFit.expand,
                 children: [
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 200),
@@ -50,6 +49,17 @@ class AnimatedStateButton extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
+                  Container(
+                      decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        tileMode: TileMode.mirror,
+                        colors: [
+                          Colors.black.withOpacity(.25),
+                          Colors.transparent
+                        ],
+                        begin: FractionalOffset.bottomCenter,
+                        end: FractionalOffset.center),
+                  )),
                   AnimatedContainer(
                     alignment: Alignment.center,
                     transform: Matrix4.translationValues(
@@ -130,10 +140,10 @@ class AnimatedStateButton extends StatelessWidget {
                           color: Colors.white.withOpacity(0.01),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).accentColor.withOpacity(
+                              color: Colors.white.withOpacity(
                                   state == TapState.pressed ? 0.5 : 0.0),
                               blurRadius: 200,
-                              spreadRadius: 130,
+                              spreadRadius: 75,
                             ),
                           ],
                         ),

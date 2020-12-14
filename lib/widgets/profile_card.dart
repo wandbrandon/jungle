@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
-import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 
@@ -35,7 +34,7 @@ class ProfileCard extends StatelessWidget {
                       gradient: LinearGradient(
                           colors: [Colors.black.withOpacity(.50), Colors.transparent]),
                       image: DecorationImage(
-                          image: NetworkImage(user.imageUrl),
+                          image: NetworkImage(user.urlAvatar),
                           fit: BoxFit.cover),
                     )),
                 Container(

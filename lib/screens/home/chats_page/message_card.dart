@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
-import 'package:jungle/screens/chat_room_page.dart';
+import 'package:jungle/screens/chats_page/chat_room_page.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'contact_item.dart';
+import '../../../widgets/contact_item.dart';
 
 class MessageCard extends StatefulWidget {
   final User user;
@@ -42,10 +42,9 @@ class _MessageCardState extends State<MessageCard> {
                       )),
                   SizedBox(height: 5),
                   Text(
-                    '${widget.user.messages.first.text}',
+                    'test', //'${widget.user.messages.first.text}',
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,

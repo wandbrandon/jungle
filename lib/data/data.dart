@@ -1,224 +1,225 @@
 import 'package:jungle/models/models.dart';
+String myId = 'YB0XmxZ7KiZTHGtGRpue';
+String myUsername = 'Barack Obama';
+String myUrlAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/480px-President_Barack_Obama.jpg';
 
-final User currentUser = User(
-  id: 0,
-  name: "Obama",
-  age: 21,
-  location: "Gainesville, FL",
-  bio: "POTUS baby, black btw. 6 foot",
-  work: "Ex President of the US",
-  uni: "University of Harvard",
-  hometown: "Hawaii",
-  imageUrl:
-      "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
-  messages: joeMessages,
-);
-final User jeff = User(
-  id: 1,
-  name: 'Jeff',
-  age: 21,
-  location: "Gainesville, FL",
-  bio: "I literally rape children",
-  work: "Nasty Pedophile",
-  uni: "University of Pedophilia",
-  hometown: "Fountain of Youth, NY",
-  messages: jeffMessages,
-  imageUrl:
-      'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
-);
-final User brad = User(
-  id: 2,
-  name: 'Brad',
-  imageUrl:
-      'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
-  age: 21,
-  location: "Gainesville, FL",
-  bio: "I'm an THE Brad Pitt",
-  work: "Famous Actor",
-  uni: "University of God ",
-  hometown: "Austin, TX",
-  messages: bradMessages,
-);
-final User donald = User(
-  id: 3,
-  name: 'Donald',
-  imageUrl:
-      'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
-  age: 21,
-  location: "Gainesville, FL",
-  bio:
-      "pls vote for me I need it, I love to make fun of the news, I love to lie to the press, and I also enjoy having my wife's boyfriend take me out on trips.",
-  work: "Ex President of the US",
-  uni: "University of Chicago",
-  hometown: "New York City, NY",
-  messages: donaldMessages,
-);
-final User bill = User(
-  id: 4,
-  name: 'Bill',
-  imageUrl:
-      'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
-  age: 21,
-  location: "Gainesville, FL",
-  bio: "I did not have relations with that woman",
-  work: "Absolute Womanizer",
-  uni: "University of Harvard",
-  hometown: "Arkansas, AR",
-  messages: billMessages,
-);
-final User joe = User(
-  id: 5,
-  name: 'Joe',
-  imageUrl:
-      'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg',
-  age: 21,
-  location: "Gainesville, FL",
-  bio: "where am I? what app is this? hey did we win the election?",
-  work: "President of the US",
-  uni: "University of Harvard",
-  hometown: "Rhode Island, RI",
-  messages: joeMessages,
-);
+class Users {
+  static get initUsers => <User>[
+    User(
+      name: "Obama",
+      age: 21,
+      location: "Gainesville, FL",
+      bio: "POTUS baby, black btw. 6 foot",
+      work: "Ex President of the US",
+      uni: "University of Harvard",
+      lastMessageTime: DateTime.now(),
+      hometown: "Hawaii",
+      urlAvatar:
+          "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
+    ),
+    User(
+      name: 'Jeff',
+      age: 21,
+      location: "Gainesville, FL",
+      bio: "I literally rape children",
+      work: "Nasty Pedophile",
+      uni: "University of Pedophilia",
+      hometown: "Fountain of Youth, NY",
+      lastMessageTime: DateTime.now(),
+      urlAvatar:
+          'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
+    ),
+    User(
+      name: 'Brad',
+      urlAvatar:
+          'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
+      age: 21,
+      location: "Gainesville, FL",
+      bio: "I'm an THE Brad Pitt",
+      work: "Famous Actor",
+      uni: "University of God ",
+      lastMessageTime: DateTime.now(),
+      hometown: "Austin, TX",
+    ),
+    User(
+      name: 'Donald',
+      urlAvatar:
+          'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
+      age: 21,
+      location: "Gainesville, FL",
+      bio:
+          "pls vote for me I need it, I love to make fun of the news, I love to lie to the press, and I also enjoy having my wife's boyfriend take me out on trips.",
+      work: "Ex President of the US",
+      uni: "University of Chicago",
+      hometown: "New York City, NY",
+      lastMessageTime: DateTime.now(),
+    ),
+    User(
+      name: 'Bill',
+      urlAvatar:
+          'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
+      age: 21,
+      location: "Gainesville, FL",
+      bio: "I did not have relations with that woman",
+      work: "Absolute Womanizer",
+      uni: "University of Harvard",
+      hometown: "Arkansas, AR",
+      lastMessageTime: DateTime.now(),
+    ),
+    User(
+      name: 'Joe',
+      urlAvatar:
+          'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg',
+      age: 21,
+      location: "Gainesville, FL",
+      bio: "where am I? what app is this? hey did we win the election?",
+      work: "President of the US",
+      uni: "University of Harvard",
+      hometown: "Rhode Island, RI",
+      lastMessageTime: DateTime.now(),
+    ),
+  ];
+}
 
-// FAVORITE CONTACTS
-List<User> favorites = [joe, donald, bill, brad, jeff];
+// // FAVORITE CONTACTS
+// List<User> favorites = [joe, donald, bill, brad, jeff];
 
-List<Message> joeMessages = [
-  Message(
-    id: 5,
-    time: '5:30 PM',
-    text:
-        "What the fuck did you just fucking say about me, you little bitch? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little 'clever' comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn't, you didn't, and now you're paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You're fucking dead, kiddo.",
-    isLiked: true,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '4:30 PM',
-    text: 'like this is kinda serious',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '3:45 PM',
-    text:
-        'Dude, do you have fucking dementia? ur the president of the united states',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 5,
-    time: '3:15 PM',
-    text: "I'm so tired...",
-    isLiked: true,
-    unread: true,
-  ),
-  Message(
-    id: 5,
-    time: '2:30 PM',
-    text: "Who's this??",
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '2:00 PM',
-    text: 'Hey you did it Joe! You are the new POTUS!!',
-    isLiked: false,
-    unread: true,
-  ),
-];
+// List<Message> joeMessages = [
+//   Message(
+//     id: 5,
+//     time: '5:30 PM',
+//     text:
+//         "What the fuck did you just fucking say about me, you little bitch? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little 'clever' comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn't, you didn't, and now you're paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You're fucking dead, kiddo.",
+//     isLiked: true,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '4:30 PM',
+//     text: 'like this is kinda serious',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '3:45 PM',
+//     text:
+//         'Dude, do you have fucking dementia? ur the president of the united states',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 5,
+//     time: '3:15 PM',
+//     text: "I'm so tired...",
+//     isLiked: true,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 5,
+//     time: '2:30 PM',
+//     text: "Who's this??",
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '2:00 PM',
+//     text: 'Hey you did it Joe! You are the new POTUS!!',
+//     isLiked: false,
+//     unread: true,
+//   ),
+// ];
 
-List<Message> donaldMessages = [
-  Message(
-    id: 3,
-    time: '5:30 PM',
-    text: 'like fuck',
-    isLiked: true,
-    unread: true,
-  ),
-  Message(
-    id: 3,
-    time: '5:30 PM',
-    text: 'dude you are fucking black',
-    isLiked: true,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '4:30 PM',
-    text: 'dude you are always on my case, honestly kinda annoying',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 3,
-    time: '3:45 PM',
-    text: 'whatever bro, get off my case',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '3:15 PM',
-    text: 'Sounds like someone is insecure they lost',
-    isLiked: true,
-    unread: true,
-  ),
-  Message(
-    id: 0,
-    time: '2:30 PM',
-    text: 'Yikes man',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 3,
-    time: '2:00 PM',
-    text:
-        'Hey just wanted to call u out. I was a better prez than you will ever be.',
-    isLiked: false,
-    unread: true,
-  ),
-];
+// List<Message> donaldMessages = [
+//   Message(
+//     id: 3,
+//     time: '5:30 PM',
+//     text: 'like fuck',
+//     isLiked: true,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 3,
+//     time: '5:30 PM',
+//     text: 'dude you are fucking black',
+//     isLiked: true,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '4:30 PM',
+//     text: 'dude you are always on my case, honestly kinda annoying',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 3,
+//     time: '3:45 PM',
+//     text: 'whatever bro, get off my case',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '3:15 PM',
+//     text: 'Sounds like someone is insecure they lost',
+//     isLiked: true,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 0,
+//     time: '2:30 PM',
+//     text: 'Yikes man',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 3,
+//     time: '2:00 PM',
+//     text:
+//         'Hey just wanted to call u out. I was a better prez than you will ever be.',
+//     isLiked: false,
+//     unread: true,
+//   ),
+// ];
 
-List<Message> billMessages = [
-  Message(
-    id: 3,
-    time: '5:30 PM',
-    text: 'hey u coming to jeffs party?',
-    isLiked: false,
-    unread: true,
-  ),
-];
+// List<Message> billMessages = [
+//   Message(
+//     id: 3,
+//     time: '5:30 PM',
+//     text: 'hey u coming to jeffs party?',
+//     isLiked: false,
+//     unread: true,
+//   ),
+// ];
 
-List<Message> jeffMessages = [
-  Message(
-    id: 3,
-    time: '5:30 PM',
-    text: 'Dude im in so much trouble bro',
-    isLiked: false,
-    unread: true,
-  ),
-  Message(
-    id: 3,
-    time: '5:30 PM',
-    text: 'i think im gonna have to kms',
-    isLiked: false,
-    unread: true,
-  ),
-];
+// List<Message> jeffMessages = [
+//   Message(
+//     id: 3,
+//     time: '5:30 PM',
+//     text: 'Dude im in so much trouble bro',
+//     isLiked: false,
+//     unread: true,
+//   ),
+//   Message(
+//     id: 3,
+//     time: '5:30 PM',
+//     text: 'i think im gonna have to kms',
+//     isLiked: false,
+//     unread: true,
+//   ),
+// ];
 
-List<Message> bradMessages = [
-  Message(
-    id: 0,
-    time: '5:30 PM',
-    text: 'Hey there handsome',
-    isLiked: false,
-    unread: true,
-  ),
-];
+// List<Message> bradMessages = [
+//   Message(
+//     id: 0,
+//     time: '5:30 PM',
+//     text: 'Hey there handsome',
+//     isLiked: false,
+//     unread: true,
+//   ),
+// ];
 
 final List<Food> bars = [
   Food(
@@ -230,8 +231,6 @@ final List<Food> bars = [
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
-      
-      
   Food(
       id: 1,
       name: "JJ's Tavern",
@@ -266,15 +265,15 @@ final List<Food> rests = [
       id: 0,
       name: "Dragon Fly",
       imageUrls: [
-        "https://scontent-atl3-1.xx.fbcdn.net/v/t1.0-9/67915655_110057167008743_1303072358684164096_n.jpg?_nc_cat=104&ccb=2&_nc_sid=8bfeb9&_nc_ohc=FiKFEZAdETIAX9HlVXM&_nc_ht=scontent-atl3-1.xx&oh=ae2397882171f1c36ccc54a6f5cb66a0&oe=5FD411CB"
+        "https://cdna.artstation.com/p/assets/images/images/017/715/718/original/liliana-pita-pixel-city-water-try-again.gif?1557080526"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
   Food(
       id: 0,
-      name: "Piesanos",
+      name: "Top Ramen",
       imageUrls: [
-        "https://scontent-atl3-1.xx.fbcdn.net/v/t1.0-9/67915655_110057167008743_1303072358684164096_n.jpg?_nc_cat=104&ccb=2&_nc_sid=8bfeb9&_nc_ohc=FiKFEZAdETIAX9HlVXM&_nc_ht=scontent-atl3-1.xx&oh=ae2397882171f1c36ccc54a6f5cb66a0&oe=5FD411CB"
+        "https://images.squarespace-cdn.com/content/v1/5e29fdb6a671454c6d456f61/1581028262182-1N2D4IRJBD2M3QE3HSIR/ke17ZwdGBToddI8pDm48kOSmCgFW3fviOOJsRBidWZ4UqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8N_N4V1vUb5AoIIIbLZhVYxCRW4BPu10St3TBAUQYVKcI1yTXeFqGF93KQF5Bi56MCrOfSQCtPWQj_XK4nEb6uzrrGCPYt1MoEE8SyoSeUO8/MVuong_Project-1_Final.gif?format=1500w"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
@@ -282,7 +281,7 @@ final List<Food> rests = [
       id: 0,
       name: "The Top",
       imageUrls: [
-        "https://scontent-atl3-1.xx.fbcdn.net/v/t1.0-9/67915655_110057167008743_1303072358684164096_n.jpg?_nc_cat=104&ccb=2&_nc_sid=8bfeb9&_nc_ohc=FiKFEZAdETIAX9HlVXM&_nc_ht=scontent-atl3-1.xx&oh=ae2397882171f1c36ccc54a6f5cb66a0&oe=5FD411CB"
+        "https://i.pinimg.com/originals/12/a1/a1/12a1a1fa165b268419d22321dd519795.gif"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever.")

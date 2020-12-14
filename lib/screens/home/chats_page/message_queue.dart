@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:jungle/data/data.dart';
+import 'package:jungle/models/user_model.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'message_card.dart';
 
 class MessageQueue extends StatelessWidget {
+  final List<User> users;
+
+  const MessageQueue({Key key, this.users}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -15,7 +19,10 @@ class MessageQueue extends StatelessWidget {
               children: [
                 Text(
                   "Conversations",
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Theme.of(context).accentColor),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Theme.of(context).accentColor),
                 ),
                 Icon(LineAwesomeIcons.ellipsis_h)
               ],
@@ -25,11 +32,11 @@ class MessageQueue extends StatelessWidget {
             child: ListView.separated(
               physics: BouncingScrollPhysics(),
               separatorBuilder: (BuildContext context, int index) =>
-                  Padding(padding: EdgeInsets.symmetric(vertical: 7.5)),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 8)),
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
-              itemCount: favorites.length,
+              itemCount: users.length,
               itemBuilder: (BuildContext context, int index) {
-                return MessageCard(user: favorites[index]);
+                return MessageCard(user: users[index]);
               },
             ),
           ),

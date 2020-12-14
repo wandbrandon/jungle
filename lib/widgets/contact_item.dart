@@ -15,7 +15,7 @@ class ContactItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
         radius: radius,
-        backgroundImage: NetworkImage(user.imageUrl),
+        backgroundImage: NetworkImage(user.urlAvatar),
         child: Material(
             shape: CircleBorder(),
             clipBehavior: Clip.hardEdge,

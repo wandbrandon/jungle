@@ -1,18 +1,34 @@
-import 'package:jungle/models/user_model.dart';
+import 'package:flutter/material.dart';
+import '../utils.dart';
+
+class MessageField {
+  static final String createdAt = 'createdAt';
+}
 
 class Message {
-  final int id;
-  final String
-      time; // Would usually be type DateTime or Firebase Timestamp in production apps
-  final String text;
-  final bool isLiked;
-  final bool unread;
+  final String idUser;
+  final String username;
+  final String message;
+  final DateTime createdAt;
 
-  Message({
-    this.id,
-    this.time,
-    this.text,
-    this.isLiked,
-    this.unread,
+  const Message({
+    @required this.idUser,
+    @required this.username,
+    @required this.message,
+    @required this.createdAt,
   });
+
+  static Message fromJson(Map<String, dynamic> json) => Message(
+        idUser: json['idUser'],
+        username: json['username'],
+        message: json['message'],
+        createdAt: Utils.toDateTime(json['createdAt']),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'idUser': idUser,
+        'username': username,
+        'message': message,
+        'createdAt': Utils.fromDateTimeToJson(createdAt),
+      };
 }
