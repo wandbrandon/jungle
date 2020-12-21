@@ -1,5 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jungle/data/data.dart';
+import 'package:jungle/models/models.dart' as model;
 import 'package:jungle/services/authentication_service.dart';
 import 'package:jungle/widgets/contact_item.dart';
 import 'package:jungle/screens/home/profile_page/settings_item.dart';
@@ -17,68 +18,69 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Icon(Icons.settings),
-                Padding(
-                  padding: const EdgeInsets.only(top: 35),
-                  child: Column(
-                    children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
+    final currentUser = new model.User(name: "Brandon", urlAvatar: "https://i1.sndcdn.com/artworks-000503901027-3roccs-t500x500.jpg", lastMessageTime: null, bio: "test", age: 21, location: "Gvile baby");
+        return Scaffold(
+            body: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.settings),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 35),
+                      child: Column(
                         children: [
-                          // ContactItem(user: currentUser, radius: 60),
-                          // Align(
-                          //   alignment: Alignment.center,
-                          //   child: Container(
-                          //     height: 35,
-                          //     width: 35,
-                          //     decoration: BoxDecoration(
-                          //       color: Theme.of(context).accentColor,
-                          //       shape: BoxShape.circle,
-                          //       boxShadow: [
-                          //         BoxShadow(
-                          //           color: Colors.black.withOpacity(0.4),
-                          //           spreadRadius: 0,
-                          //           blurRadius: 2,
-                          //           offset: Offset(1, 2),
-                          //         )
-                          //       ],
-                          //     ),
-                          //     child: Icon(Icons.edit, size: 20),
-                          //   ),
-                          // )
+                          Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              ContactItem(user: currentUser, radius: 60),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).accentColor,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.4),
+                                    spreadRadius: 0,
+                                    blurRadius: 2,
+                                    offset: Offset(1, 2),
+                                  )
+                                ],
+                              ),
+                              child: Icon(Icons.edit, size: 20),
+                            ),
+                          )
                         ],
                       ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(top: 15.0),
-                      //   child: Text(currentUser.name,
-                      //       style: TextStyle(
-                      //           fontSize: 20, fontWeight: FontWeight.bold),
-                      //       overflow: TextOverflow.ellipsis),
-                      // ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(bottom: 15.0),
-                      //   child: Row(
-                      //     children: [
-                      //       Icon(Icons.place_outlined,
-                      //           size: 16, color: Colors.blue),
-                      //       SizedBox(width: 5),
-                      //       Text(currentUser.location,
-                      //           style:
-                      //               TextStyle(fontSize: 15, color: Colors.blue),
-                      //           overflow: TextOverflow.ellipsis),
-                      //     ],
-                      //   ),
-                      // ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 15.0),
+                        child: Text(currentUser.name,
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 15.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.place_outlined,
+                                size: 16, color: Colors.blue),
+                            SizedBox(width: 5),
+                            Text(currentUser.location,
+                                style:
+                                    TextStyle(fontSize: 15, color: Colors.blue),
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
                       InkWell(
                         borderRadius: BorderRadius.circular(30),
                         splashColor: Colors.black,

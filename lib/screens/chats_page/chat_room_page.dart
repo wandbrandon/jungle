@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jungle/api/firebase_api.dart';
+import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/chats_page/chat_bubble.dart';
 import 'package:jungle/widgets/contact_item.dart';
@@ -30,7 +30,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           StreamBuilder<List<Message>>(
-              stream: FirebaseApi.getMessages(widget.user.idUser),
+              stream: null,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
@@ -54,7 +54,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     bool isCurrentUser =
-                                        messages[index].idUser == myId;
+                                        messages[index].idUser == null;
                                     bool isFirst = true;
                                     bool isLast = false;
                                     try {
@@ -76,7 +76,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     }
                 }
               }),
-          MessageTextField(idUser: widget.user.idUser)
+          MessageTextField(idUser: widget.user.uid)
         ],
       ),
     ));

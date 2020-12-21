@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:jungle/api/firebase_api.dart';
+import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/chats_page/match_queue.dart';
 import 'package:jungle/screens/home/chats_page/message_queue.dart';
@@ -33,7 +33,7 @@ class _ChatPageState extends State<ChatPage> {
           ],
         ),
         body: StreamBuilder<List<User>>(
-            stream: FirebaseApi.getUsers(),
+            stream: null,
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:

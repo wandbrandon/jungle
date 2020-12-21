@@ -1,7 +1,4 @@
 import 'package:jungle/models/models.dart';
-String myId = 'YB0XmxZ7KiZTHGtGRpue';
-String myUsername = 'Barack Obama';
-String myUrlAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/480px-President_Barack_Obama.jpg';
 
 class Users {
   static get initUsers => <User>[
@@ -12,7 +9,6 @@ class Users {
       bio: "POTUS baby, black btw. 6 foot",
       work: "Ex President of the US",
       uni: "University of Harvard",
-      lastMessageTime: DateTime.now(),
       hometown: "Hawaii",
       urlAvatar:
           "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
@@ -25,7 +21,6 @@ class Users {
       work: "Nasty Pedophile",
       uni: "University of Pedophilia",
       hometown: "Fountain of Youth, NY",
-      lastMessageTime: DateTime.now(),
       urlAvatar:
           'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
     ),
@@ -38,7 +33,6 @@ class Users {
       bio: "I'm an THE Brad Pitt",
       work: "Famous Actor",
       uni: "University of God ",
-      lastMessageTime: DateTime.now(),
       hometown: "Austin, TX",
     ),
     User(
@@ -52,7 +46,6 @@ class Users {
       work: "Ex President of the US",
       uni: "University of Chicago",
       hometown: "New York City, NY",
-      lastMessageTime: DateTime.now(),
     ),
     User(
       name: 'Bill',
@@ -64,7 +57,6 @@ class Users {
       work: "Absolute Womanizer",
       uni: "University of Harvard",
       hometown: "Arkansas, AR",
-      lastMessageTime: DateTime.now(),
     ),
     User(
       name: 'Joe',
@@ -76,7 +68,6 @@ class Users {
       work: "President of the US",
       uni: "University of Harvard",
       hometown: "Rhode Island, RI",
-      lastMessageTime: DateTime.now(),
     ),
   ];
 }

@@ -23,18 +23,23 @@ dependencies:
   line_awesome_icons:
   modal_bottom_sheet:
   tap_builder: ^0.2.0-beta
-  geolocator: ^6.1.12
   firebase_core: "^0.5.3"
   firebase_auth: "^0.18.4"
   cloud_firestore: ^0.14.1+3
+  #firebase_storage: "^5.2.0"
   provider: ^4.3.2+1
 
-    
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: "^0.8.0"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/assets/launcher_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

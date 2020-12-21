@@ -5,8 +5,6 @@ class Food {
   final List<String> imageUrls;
   final List<String> highlights;
   final String description;
-  final int amtGoing;
-  final double rating;
 
   Food ({
     this.id,
@@ -14,7 +12,5 @@ class Food {
     this.imageUrls,
     this.highlights,
     this.description,
-    this.amtGoing,
-    this.rating,
   });
 }

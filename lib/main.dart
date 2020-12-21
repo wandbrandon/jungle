@@ -1,20 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jungle/data/data.dart';
 import 'package:jungle/screens/home/home_screen.dart';
-import 'package:jungle/screens/authenticate/sign_in_page.dart';
+import 'package:jungle/screens/splash/splash_page.dart';
+import 'package:jungle/screens/splash/user_name.dart';
 import 'package:jungle/services/authentication_service.dart';
+import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/theme.dart';
+import 'package:jungle/models/models.dart' as models;
 import 'package:provider/provider.dart';
-import 'api/firebase_api.dart';
 import 'screens/home/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseApi.addRandomUsers(Users.initUsers);
   runApp(MyApp());
 }
 
@@ -26,11 +27,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(
-          create: (_) => AuthenticationService(FirebaseAuth.instance)
-        ),
+            create: (_) => AuthenticationService(FirebaseAuth.instance)),
         StreamProvider(
-          create: (context) => context.read<AuthenticationService>().authStateChanges
-        )
+            create: (context) =>
+                context.read<AuthenticationService>().authStateChanges),
+        Provider<FirestoreService>(
+            create: (_) => FirestoreService(FirebaseFirestore.instance)),
+        StreamProvider<models.User>(create: (context) => context.read<FirestoreService>().getUserByAuth(context.read<User>()))
       ],
       child: MaterialApp(
         title: 'Jungle',
@@ -50,7 +53,16 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-    return firebaseUser != null ? HomeScreen() : SignInPage();
+    final authUser = context.watch<User>();
+    final storeUser = context.watch<models.User>();
+    if (authUser == null) {
+      return SplashPage();
+    } else {
+      if (storeUser == null) {
+        return UserName();
+      } else {
+        return HomeScreen();
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:jungle/api/firebase_api.dart';
+import 'package:jungle/services/firestore_service.dart';
 
 class MessageTextField extends StatefulWidget {
   final String idUser;
@@ -33,7 +33,7 @@ class _MessageTextFieldState extends State<MessageTextField>
 
   void sendMessage() async {
     FocusScope.of(context).unfocus();
-    await FirebaseApi.uploadMessage(widget.idUser, message);
+    await null;
     tController.clear();
   }
 
