@@ -2,6 +2,14 @@ import 'package:meta/meta.dart';
 
 import '../utils.dart';
 
+enum Gender {
+  male,
+  female,
+  other,
+  all,
+  malefemale,
+}
+
 class UserField {
   static final String lastMessageTime = 'lastMessageTime';
 }
@@ -12,12 +20,12 @@ class User {
   String urlAvatar;
   String bio;
   int age;
-  String gender;
+  dynamic gender;
+  dynamic lookingFor;
   String hometown;
   String work;
   String uni;
   String location;
-  DateTime lastMessageTime;
 
   User({
     this.hometown,
@@ -26,23 +34,32 @@ class User {
     this.uni,
     this.location,
     this.gender,
+    this.lookingFor,
     this.name,
     this.urlAvatar,
-    this.lastMessageTime,
     this.bio,
     this.age,
   });
 
-  factory User.fromMap(Map data) {
-    return User(
-        uid: data['uid'] ?? '',
-        name: data['name'] ?? '',
-        urlAvatar: data['urlAvatar'] ?? '',
-        lastMessageTime: data['lastmessageTime'] ?? '',
-        age: data['age'] ?? '',
-        bio: data['age'] ?? '',
-        work: data['work'] ?? '',
-        gender: data['gender'] ?? '',
-        hometown: data['hometown'] ?? '');
-  }
+  User.fromJson(Map<String, dynamic> data)
+    : uid = data['uid'],
+      name = data['name'] ?? '',
+      urlAvatar = data['urlAvatar'] ?? '',
+      age = data['age'] ?? 0,
+      bio = data['bio'] ?? '',
+      work = data['work'] ?? '',
+      gender = data['gender'] ?? '',
+      lookingFor = data['lookingFor'] ?? '',
+      hometown = data['hometown'] ?? '';
+
+  Map<dynamic, dynamic> toJson() => {
+        'uid': uid,
+        'name': name,
+        'urlAvatar': urlAvatar,
+        'age': age,
+        'bio': bio,
+        'work': work,
+        'gender': gender,
+        'hometown': hometown,
+      };
 }

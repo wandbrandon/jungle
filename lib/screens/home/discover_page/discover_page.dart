@@ -16,8 +16,14 @@ class _DiscoverPageState extends State<DiscoverPage>
 
   @override
   void initState() {
-    super.initState();
     _pageController = PageController(initialPage: 0, viewportFraction: .90);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   String currentSelection = "Bars";
@@ -47,7 +53,8 @@ class _DiscoverPageState extends State<DiscoverPage>
                 itemCount: rests.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 30.0),
                     child: AnimatedStateButton(food: rests[index]),
                   );
                 },
@@ -66,7 +73,9 @@ class _DiscoverPageState extends State<DiscoverPage>
                     onDotClicked: (index) {
                       setState(() {
                         _selectedPage = index;
-                        _pageController.animateToPage(index, curve: Curves.easeInOutCirc, duration: const Duration(milliseconds: 500));
+                        _pageController.animateToPage(index,
+                            curve: Curves.easeInOutCirc,
+                            duration: const Duration(milliseconds: 500));
                       });
                     })),
           ),

@@ -8,7 +8,16 @@ class FirestoreService {
   final FirebaseFirestore db;
   FirestoreService(this.db);
 
-  Future<void> createUser(String uid) {
+  Future<void> createUser(String uid, models.User user) {
+    CollectionReference users = db.collection('users');
+    return users
+        .doc(uid)
+        .set(user.toJson())
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
+  Future<void> deleteUser(String uid) {
     CollectionReference users = db.collection('users');
     return users
         .doc(uid)
@@ -17,26 +26,39 @@ class FirestoreService {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
-  Stream<models.User> getUserByAuth(User authUser) {
+  Stream<models.User> getUserStreamByAuth(User authUser) {
     if (authUser == null) return null;
     return db
         .collection('users')
         .doc(authUser.uid)
         .snapshots()
-        .map((snapshot) => models.User.fromMap(snapshot.data()));
+        .map((snapshot) => models.User.fromJson(snapshot.data()));
   }
 
-  Stream<DocumentSnapshot> getUserSnapshotByAuth(User authUser) {
+  Future<DocumentSnapshot> getUserSnapshotByAuth(User authUser) {
+    if (authUser == null) return null;
+    return db.collection('users').doc(authUser.uid).get();
+  }
+
+  Stream<DocumentSnapshot> getUserSnapshotStreamByAuth(User authUser) {
     if (authUser == null) return null;
     return db.collection('users').doc(authUser.uid).snapshots();
   }
 
   Future<void> updateUserByUid(String uid, models.User user) {
-  CollectionReference users = db.collection('users');
-  return users
-    .doc(uid)
-    .update(user.fromMap)
-    .then((value) => print("User Updated"))
-    .catchError((error) => print("Failed to update user: $error"));
-}
+    CollectionReference users = db.collection('users');
+    return users
+        .doc(uid)
+        .update(user.toJson())
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<bool> userExistsByAuth(User authUser) async {
+    final snapShot = await db.collection('users').doc(authUser.uid).get();
+    if (snapShot == null || !snapShot.exists) {
+      return false;
+    }
+    return true;
+  }
 }

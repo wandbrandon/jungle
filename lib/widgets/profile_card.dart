@@ -23,7 +23,7 @@ class ProfileCard extends StatelessWidget {
         children: [
           ListView(
             shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
+            physics: BouncingScrollPhysics(),
             controller: ModalScrollController.of(context),
             padding: EdgeInsets.zero,
             children: [

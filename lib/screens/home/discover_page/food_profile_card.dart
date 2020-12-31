@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/food_page.dart';
@@ -18,7 +19,7 @@ class AnimatedStateButton extends StatelessWidget {
       child: AnimatedTapBuilder(
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => FoodPage(food: food)));
+              context, CupertinoPageRoute(builder: (_) => FoodPage(food: food)));
         },
         builder: (context, state, cursorLocation, cursorAlignment) {
           cursorAlignment = state == TapState.pressed

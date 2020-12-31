@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jungle/screens/home/home_screen.dart';
+import 'package:jungle/screens/splash/custom_loading.dart';
 import 'package:jungle/screens/splash/splash_page.dart';
 import 'package:jungle/screens/splash/user_name.dart';
 import 'package:jungle/services/authentication_service.dart';
@@ -24,24 +25,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+          statusBarIconBrightness: Theme.of(context).brightness,
+          statusBarBrightness: Theme.of(context).brightness,
+          statusBarColor: Colors.transparent),
+    );
     return MultiProvider(
       providers: [
-        Provider<AuthenticationService>(
+        ChangeNotifierProvider<AuthenticationService>(
             create: (_) => AuthenticationService(FirebaseAuth.instance)),
         StreamProvider(
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
         Provider<FirestoreService>(
             create: (_) => FirestoreService(FirebaseFirestore.instance)),
-        StreamProvider<models.User>(create: (context) => context.read<FirestoreService>().getUserByAuth(context.read<User>()))
       ],
       child: MaterialApp(
-        title: 'Jungle',
-        debugShowCheckedModeBanner: false,
-        theme: kLightTheme,
-        darkTheme: kDarkTheme,
-        home: AuthenticationWrapper(),
-      ),
+          title: 'Jungle',
+          debugShowCheckedModeBanner: false,
+          theme: kLightTheme,
+          darkTheme: kDarkTheme,
+          home: AuthenticationWrapper(),
+          routes: {
+            '/splash': (context) => SplashPage(),
+          }),
     );
   }
 }
@@ -54,15 +62,21 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authUser = context.watch<User>();
-    final storeUser = context.watch<models.User>();
-    if (authUser == null) {
-      return SplashPage();
-    } else {
-      if (storeUser == null) {
-        return UserName();
-      } else {
+    final isUserCreated =
+        context.watch<FirestoreService>().userExistsByAuth(authUser);
+    return FutureBuilder(
+      future: isUserCreated,
+      builder: (context, snapshot) {
+        if (authUser == null) {
+          return SplashPage();
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return CustomLoading();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (!snapshot.data) return UserName();
+        }
         return HomeScreen();
-      }
-    }
+      },
+    );
   }
 }

@@ -1,18 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jungle/screens/splash/user_age.dart';
+import 'package:jungle/screens/splash/sign_in_num_verify.dart';
+import 'package:jungle/services/auth_exception_handler.dart';
 import 'package:jungle/services/authentication_service.dart';
 import 'package:provider/provider.dart';
-import 'package:jungle/models/models.dart' as models;
 
-class UserName extends StatefulWidget {
+class SignInNum extends StatefulWidget {
   @override
-  _UserNameState createState() => _UserNameState();
+  _SignInNumState createState() => _SignInNumState();
 }
 
-class _UserNameState extends State<UserName> {
+class _SignInNumState extends State<SignInNum> {
   TextEditingController textController = TextEditingController();
+  AuthResultStatus authStatus;
+  bool isLoading = false;
   bool validate = false;
   bool isTapped = false;
 
@@ -22,35 +23,13 @@ class _UserNameState extends State<UserName> {
     super.dispose();
   }
 
-  Future<bool> _onWillPop() async {
-    return showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text(
-                'Exiting the app will delete your current authentication, and return you to the main screen.'),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
-              ),
-              FlatButton(
-                onPressed: () {
-                  context.read<AuthenticationService>().deleteCurrentUser();
-                  Navigator.of(context).popAndPushNamed("/splash");
-                },
-                child: Text('Yes'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    authStatus = context.select((AuthenticationService auth) => auth.status);
+    if (authStatus != null) {
+      isLoading = false;
+    }
+    return Center(
       child: Scaffold(
         appBar: AppBar(elevation: 0),
         body: Container(
@@ -62,9 +41,14 @@ class _UserNameState extends State<UserName> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "What's your First Name?",
+                      "What's your number?",
                       style:
                           TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Don't worry, this isn't being shared with anyone, and it won't be on your profile.",
+                      style: TextStyle(fontSize: 12),
                     ),
                     SizedBox(height: 12.5),
                     TextField(
@@ -72,10 +56,15 @@ class _UserNameState extends State<UserName> {
                       autofocus: true,
                       controller: textController,
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
+                        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
                       ],
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
+                        errorText: authStatus != null
+                            ? AuthExceptionHandler.generateExceptionMessage(
+                                authStatus)
+                            : null,
+                        prefix: Text('+1 '),
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (value) {
@@ -86,6 +75,11 @@ class _UserNameState extends State<UserName> {
                         });
                       },
                     ),
+                    SizedBox(height: 25),
+                    Text(
+                      "When submitting your number, a verification code will be sent as a text. Message and data rates may apply.",
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
                 GestureDetector(
@@ -93,12 +87,12 @@ class _UserNameState extends State<UserName> {
                         ? () {
                             setState(() {
                               isTapped = false;
+                              isLoading = true;
                             });
-                            models.User tempUser = models.User(uid: context.read<User>().uid, name: textController.text.trim());
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UserAge(tempUser: tempUser)));
+                            context.read<AuthenticationService>().clearStatus();
+                            context.read<AuthenticationService>().verifyNumber(
+                                number: textController.text.trim(),
+                                context: context);     
                           }
                         : null,
                     onTapCancel: validate
@@ -129,9 +123,20 @@ class _UserNameState extends State<UserName> {
                             borderRadius: BorderRadius.all(Radius.circular(6)),
                           ),
                           child: Center(
-                              child: Text('CONTINUE',
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor)))),
+                              child: !isLoading
+                                  ? Text('CONTINUE',
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor))
+                                  : SizedBox(
+                                      height: 12,
+                                      width: 12,
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                        Theme.of(context).primaryColor,
+                                      )),
+                                    ))),
                     ))
               ],
             )),
