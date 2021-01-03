@@ -109,7 +109,7 @@ class ProfileCard extends StatelessWidget {
                             fontSize: 18, fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 10),
-                      Text('From: ${user.hometown}', style: TextStyle(color: Theme.of(context).accentColor),),
+                      Text('From: ${user.from}', style: TextStyle(color: Theme.of(context).accentColor),),
                     ],
                   ),
                 ),

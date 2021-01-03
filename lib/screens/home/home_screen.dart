@@ -44,46 +44,48 @@ class _HomeScreenState extends State<HomeScreen> {
         statusBarBrightness: Theme.of(context).brightness,
         statusBarColor: Colors.transparent // status bar color
     ));
-    return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          elevation: 0,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.explore),
-              label: 'Discover',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Chat',
-            ),
-          ],
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: _selectedIndex,
-          selectedItemColor: Theme.of(context).accentColor,
-          unselectedItemColor: Theme.of(context).backgroundColor,
-          onTap: _bottomTapped,
-        ),
-        body: SafeArea(
-          child: Stack(
-            children: <Widget>[
-              PageView(
-                
-                physics: NeverScrollableScrollPhysics(),
-                controller: _controller,
-                children: [
-                  ProfilePage(),
-                  DiscoverPage(),
-                  ChatPage(),
-                ],
-                onPageChanged: _onItemTapped,
+    return Center(
+      child: Scaffold(
+          bottomNavigationBar: BottomNavigationBar(
+            elevation: 0,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.explore),
+                label: 'Discover',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Chat',
               ),
             ],
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            currentIndex: _selectedIndex,
+            selectedItemColor: Theme.of(context).accentColor,
+            unselectedItemColor: Theme.of(context).backgroundColor,
+            onTap: _bottomTapped,
           ),
-        ));
+          body: SafeArea(
+            child: Stack(
+              children: <Widget>[
+                PageView(
+                  
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: _controller,
+                  children: [
+                    ProfilePage(),
+                    DiscoverPage(),
+                    ChatPage(),
+                  ],
+                  onPageChanged: _onItemTapped,
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }

@@ -16,31 +16,19 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final List<SettingsItem> profileItems = [];
 
   @override
   Widget build(BuildContext context) {
-    final authUser = context.watch<User>();
-    final dbUser =
-        context.watch<FirestoreService>().getUserSnapshotByAuth(authUser);
-    return FutureBuilder(
-        future: dbUser,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            print(snapshot.data.data().toString());
-            final currentUser = models.User.fromJson(snapshot.data.data());
-            return Scaffold(
+    final currentUserSnapshot = context.watch<DocumentSnapshot>();
+    final currentUser = models.User.fromJson(currentUserSnapshot.data());
+    return Scaffold(
                 body: SafeArea(
               child: Column(
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(Icons.settings),
+                    child: 
                         Padding(
                           padding: const EdgeInsets.only(top: 35),
                           child: Column(
@@ -68,12 +56,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ],
                                       ),
                                       child: IconButton(
-                                          onPressed: () =>
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(fullscreenDialog: true,
-                                                      builder: (context) =>
-                                                         ProfileEditPage())),
+                                          onPressed: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  fullscreenDialog: true,
+                                                  builder: (context) =>
+                                                      ProfileEditPage(currentUser: currentUserSnapshot ))),
                                           icon: Icon(Icons.edit),
                                           iconSize: 20),
                                     ),
@@ -134,9 +122,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                         ),
-                        Icon(Icons.info)
-                      ],
-                    ),
                   ),
                   Flexible(
                     child: ListView(
@@ -176,8 +161,5 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ));
-          }
-          return CustomLoading();
-        });
   }
 }

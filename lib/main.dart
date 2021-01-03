@@ -10,7 +10,6 @@ import 'package:jungle/screens/splash/user_name.dart';
 import 'package:jungle/services/authentication_service.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/theme.dart';
-import 'package:jungle/models/models.dart' as models;
 import 'package:provider/provider.dart';
 import 'screens/home/home_screen.dart';
 
@@ -62,21 +61,40 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authUser = context.watch<User>();
-    final isUserCreated =
-        context.watch<FirestoreService>().userExistsByAuth(authUser);
-    return FutureBuilder(
-      future: isUserCreated,
-      builder: (context, snapshot) {
-        if (authUser == null) {
-          return SplashPage();
-        }
-        if (snapshot.connectionState != ConnectionState.done) {
-          return CustomLoading();
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          if (!snapshot.data) return UserName();
-        }
+    if (authUser == null) {
+      return SplashPage();
+    }
+    return MultiProvider(
+      providers: [
+        StreamProvider<DocumentSnapshot>(
+            create: (_) => context
+                .read<FirestoreService>()
+                .getUserSnapshotStreamByAuth(context.read<User>()))
+      ],
+      builder: (context, child) {
+        if (context.watch<DocumentSnapshot>() == null) return UserName();
         return HomeScreen();
       },
     );
   }
 }
+
+// Widget build(BuildContext context) {
+//     final authUser = context.watch<User>();
+//     final isUserCreated =
+//         context.watch<FirestoreService>().userExistsByAuth(authUser);
+//     return FutureBuilder(
+//       future: isUserCreated,
+//       builder: (context, snapshot) {
+//         if (authUser == null) {
+//           return SplashPage();
+//         }
+//         if (snapshot.connectionState != ConnectionState.done) {
+//           return CustomLoading();
+//         } else if (snapshot.connectionState == ConnectionState.done) {
+//           if (!snapshot.data) return UserName();
+//         }
+//         return HomeScreen();
+//       },
+//     );
+//   }

@@ -45,10 +45,10 @@ class FirestoreService {
     return db.collection('users').doc(authUser.uid).snapshots();
   }
 
-  Future<void> updateUserByUid(String uid, models.User user) {
+  Future<void> updateUserByAuth(User authUser, models.User user) {
     CollectionReference users = db.collection('users');
     return users
-        .doc(uid)
+        .doc(authUser.uid)
         .update(user.toJson())
         .then((value) => print("User Updated"))
         .catchError((error) => print("Failed to update user: $error"));

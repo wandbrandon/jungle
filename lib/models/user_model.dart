@@ -22,17 +22,17 @@ class User {
   int age;
   dynamic gender;
   dynamic lookingFor;
-  String hometown;
+  String from;
   String work;
-  String uni;
-  String location;
+  String edu;
+  String live;
 
   User({
-    this.hometown,
+    this.from,
     this.work,
     this.uid,
-    this.uni,
-    this.location,
+    this.edu,
+    this.live,
     this.gender,
     this.lookingFor,
     this.name,
@@ -50,9 +50,11 @@ class User {
       work = data['work'] ?? '',
       gender = data['gender'] ?? '',
       lookingFor = data['lookingFor'] ?? '',
-      hometown = data['hometown'] ?? '';
+      from = data['from'] ?? '',
+      edu = data['edu'] ?? '',
+      live = data['live'] ?? '';
 
-  Map<dynamic, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         'uid': uid,
         'name': name,
         'urlAvatar': urlAvatar,
@@ -60,6 +62,8 @@ class User {
         'bio': bio,
         'work': work,
         'gender': gender,
-        'hometown': hometown,
+        'live': live,
+        'from': from,
+        'edu': edu,
       };
 }

@@ -26,26 +26,24 @@ class _ImageSettingState extends State<ImageSetting> {
         decoration: BoxDecoration(          
             color: Theme.of(context).backgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(15))),
-        child: Flexible(
-          child: GridView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.all(8),
-            gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  childAspectRatio: 3/4,
-                ),
-            itemCount: 3,
-            itemBuilder: (context, int index) {
-              return Container(
-                  child: listChecker(index) ? Icon(Icons.check_circle, color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125)) : Icon(Icons.add_circle, color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125)),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125),
-                    borderRadius: BorderRadius.all(Radius.circular(15))
-                  ));
-            },
-          ),
+        child: GridView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(8),
+          gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 3/4,
+              ),
+          itemCount: 3,
+          itemBuilder: (context, int index) {
+            return Container(
+                child: listChecker(index) ? Icon(Icons.check_circle, color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125)) : Icon(Icons.add_circle, color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125)),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1.color.withOpacity(.125),
+                  borderRadius: BorderRadius.all(Radius.circular(15))
+                ));
+          },
         ));
   }
 }
