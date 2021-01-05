@@ -37,8 +37,9 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
             smsCode: textController.text.trim(), verificationId: widget.vid);
     print(tempStatus.toString());
     if (tempStatus == AuthResultStatus.successful) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => AuthenticationWrapper()));
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => AuthenticationWrapper()));
     } else {
       setState(() {
         authStatus = tempStatus;
@@ -52,7 +53,7 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
       child: Scaffold(
         appBar: AppBar(elevation: 0),
         body: Container(
-            padding: EdgeInsets.all(35),
+            padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

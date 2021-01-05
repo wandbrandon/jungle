@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jungle/screens/home/home_screen.dart';
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
         Provider<FirestoreService>(
-            create: (_) => FirestoreService(FirebaseFirestore.instance)),
+            create: (_) => FirestoreService(
+                FirebaseFirestore.instance, FirebaseStorage.instance)),
       ],
       child: MaterialApp(
           title: 'Jungle',
@@ -72,7 +74,9 @@ class AuthenticationWrapper extends StatelessWidget {
                 .getUserSnapshotStreamByAuth(context.read<User>()))
       ],
       builder: (context, child) {
-        if (context.watch<DocumentSnapshot>() == null) return UserName();
+        if (context.watch<DocumentSnapshot>() == null)
+          return UserName();
+        else if (!context.watch<DocumentSnapshot>().exists) return UserName();
         return HomeScreen();
       },
     );

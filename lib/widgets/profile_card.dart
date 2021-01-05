@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-
 class ProfileCard extends StatelessWidget {
   final User user;
 
@@ -13,17 +12,16 @@ class ProfileCard extends StatelessWidget {
     final double textPadding = 25;
     return Container(
       clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+      //margin: const EdgeInsets.only(left: 15, right: 15, bottom: 40),
       height: MediaQuery.of(context).size.height * .63,
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.all(Radius.circular(17.5)),
+        color: Theme.of(context).primaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Stack(
         children: [
           ListView(
             shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
             controller: ModalScrollController.of(context),
             padding: EdgeInsets.zero,
             children: [
@@ -31,8 +29,10 @@ class ProfileCard extends StatelessWidget {
                 Container(
                     height: MediaQuery.of(context).size.height * .63,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [Colors.black.withOpacity(.50), Colors.transparent]),
+                      gradient: LinearGradient(colors: [
+                        Colors.black.withOpacity(.50),
+                        Colors.transparent
+                      ]),
                       image: DecorationImage(
                           image: NetworkImage(user.urlAvatar),
                           fit: BoxFit.cover),
@@ -78,6 +78,11 @@ class ProfileCard extends StatelessWidget {
                                 fontSize: 16,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500)),
+                        Text('${user.edu}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500)),
                       ],
                     )),
                 Positioned(
@@ -109,7 +114,21 @@ class ProfileCard extends StatelessWidget {
                             fontSize: 18, fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 10),
-                      Text('From: ${user.from}', style: TextStyle(color: Theme.of(context).accentColor),),
+                      user.from != ''
+                          ? Text(
+                              'From ${user.from}',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            )
+                          : SizedBox(),
+                      SizedBox(height: 10),
+                      user.live != ''
+                          ? Text(
+                              'Live ${user.live}',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),

@@ -3,11 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jungle/models/models.dart' as models;
-import 'package:jungle/screens/home/profile_page/image_settings.dart';
-
 import 'package:jungle/services/firestore_service.dart';
+import 'package:jungle/widgets/image_picker_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:tap_builder/tap_builder.dart';
 
 class ProfileEditPage extends StatefulWidget {
   final DocumentSnapshot currentUser;
@@ -62,7 +60,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               padding: EdgeInsets.all(8),
               children: [
                 ImageSetting(
-                  images: ['dog', null],
+                  images: ['dog', null, null],
                 ),
                 SizedBox(height: 15),
                 EditorItem(
@@ -164,7 +162,6 @@ class _EditorItemState extends State<EditorItem> {
             maxLines: widget.maxlines,
             minLines: (widget.maxlines / 2).round(),
             onChanged: (value) {
-              print(value);
               context
                   .read<_ProfileEditPageState>()
                   .changeValue(widget.identifier, value);
@@ -190,73 +187,149 @@ class _GenderPickerState extends State<GenderPicker> {
     super.initState();
   }
 
-  Alignment handleAlignment() {
-    print(gender);
-    if (gender == 'male') return Alignment.centerLeft;
-    if (gender == 'female') return Alignment.center;
-    return Alignment.centerRight;
+  Color handleState(String state) {
+    if (state == gender) {
+      return Theme.of(context).accentColor;
+    }
+    return Theme.of(context).backgroundColor;
+  }
+
+  Future<void> _askedToLead() async {
+    switch (await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select your gender'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'male');
+                },
+                child: const Text('Male'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'female');
+                },
+                child: const Text('Female'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, 'other');
+                },
+                child: const Text('Other'),
+              ),
+            ],
+          );
+        })) {
+      case 'male':
+        setState(() {
+          gender = 'male';
+        });
+        context.read<_ProfileEditPageState>().changeValue('gender', gender);
+
+        break;
+      case 'female':
+        setState(() {
+          gender = 'female';
+        });
+        context.read<_ProfileEditPageState>().changeValue('gender', gender);
+        break;
+      case 'other':
+        setState(() {
+          gender = 'other';
+        });
+        context.read<_ProfileEditPageState>().changeValue('gender', gender);
+        break;
+      default:
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            color: Theme.of(context).backgroundColor,
-            borderRadius: BorderRadius.all(Radius.circular(25))),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            AnimatedAlign(
-              duration: Duration(milliseconds: 200),
-              curve: Curves.easeInExpo,
-              alignment: handleAlignment(),
-              child: Container(
-                height: 30,
-                width: 100,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).accentColor,
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
-              ),
+    return GestureDetector(
+      onTap: _askedToLead,
+      child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+              color: Theme.of(context).backgroundColor,
+              borderRadius: BorderRadius.all(Radius.circular(25))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  gender[0].toUpperCase() + gender.substring(1),
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                Icon(Icons.keyboard_arrow_right_rounded)
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          gender = 'male';
-                        });
-                        context
-                            .read<_ProfileEditPageState>()
-                            .changeValue('gender', 'male');
-                      },
-                      child: Text('Male')),
-                  GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          gender = 'female';
-                        });
-                        context
-                            .read<_ProfileEditPageState>()
-                            .changeValue('gender', 'female');
-                      },
-                      child: Text('Female')),
-                  GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          gender = 'other';
-                        });
-                        context
-                            .read<_ProfileEditPageState>()
-                            .changeValue('gender', 'other');
-                      },
-                      child: Text('Other')),
-                ],
-              ),
-            ),
-          ],
-        ));
+          )),
+    );
   }
 }
+
+// class ImageSetting extends StatefulWidget {
+//   final List<dynamic> images;
+
+//   const ImageSetting({Key key, this.images}) : super(key: key);
+
+//   @override
+//   _ImageSettingState createState() => _ImageSettingState();
+// }
+
+// class _ImageSettingState extends State<ImageSetting> {
+//   bool listChecker(int index) {
+//     if (widget.images.length - 1 < index) {
+//       return false;
+//     } else if (widget.images[index] == null) {
+//       return false;
+//     }
+//     return true;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//         decoration: BoxDecoration(
+//             color: Theme.of(context).backgroundColor,
+//             borderRadius: BorderRadius.all(Radius.circular(15))),
+//         child: GridView.builder(
+//           shrinkWrap: true,
+//           padding: EdgeInsets.all(8),
+//           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//             crossAxisCount: 3,
+//             crossAxisSpacing: 8.0,
+//             mainAxisSpacing: 8.0,
+//             childAspectRatio: 3 / 4,
+//           ),
+//           itemCount: 3,
+//           itemBuilder: (context, int index) {
+//             return Container(
+//                 child: listChecker(index)
+//                     ? Icon(Icons.check_circle,
+//                         color: Theme.of(context)
+//                             .textTheme
+//                             .bodyText1
+//                             .color
+//                             .withOpacity(.125))
+//                     : Icon(Icons.add_circle,
+//                         color: Theme.of(context)
+//                             .textTheme
+//                             .bodyText1
+//                             .color
+//                             .withOpacity(.125)),
+//                 decoration: BoxDecoration(
+//                     color: Theme.of(context)
+//                         .textTheme
+//                         .bodyText1
+//                         .color
+//                         .withOpacity(.125),
+//                     borderRadius: BorderRadius.all(Radius.circular(15))));
+//           },
+//         ));
+//   }
+// }

@@ -67,6 +67,11 @@ class _UserNameState extends State<UserName> {
                           TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 12.5),
+                    Text(
+                      "This cannot be changed later.",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    SizedBox(height: 25),
                     TextField(
                       style: TextStyle(fontSize: 24),
                       autofocus: true,
@@ -94,11 +99,14 @@ class _UserNameState extends State<UserName> {
                             setState(() {
                               isTapped = false;
                             });
-                            models.User tempUser = models.User(uid: context.read<User>().uid, name: textController.text.trim());
+                            models.User tempUser = models.User(
+                                uid: context.read<User>().uid,
+                                name: textController.text.trim());
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => UserAge(tempUser: tempUser)));
+                                    builder: (context) =>
+                                        UserAge(tempUser: tempUser)));
                           }
                         : null,
                     onTapCancel: validate

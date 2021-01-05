@@ -3,7 +3,6 @@ import 'package:jungle/screens/splash/user_looking_for.dart';
 import 'package:jungle/models/models.dart' as models;
 import 'package:jungle/services/firestore_service.dart';
 
-
 class UserGender extends StatefulWidget {
   final models.User tempUser;
   const UserGender({Key key, this.tempUser}) : super(key: key);
@@ -30,13 +29,18 @@ class _UserGenderState extends State<UserGender> {
                 "What do you identify as?",
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
               ),
+              SizedBox(height: 12.5),
+              Text(
+                "Tap one of the options to select it. Don't worry, this can be changed later.",
+                style: TextStyle(fontSize: 12),
+              ),
               SizedBox(height: 25),
               GestureDetector(
                   onTap: () {
                     setState(() {
                       isTapped1 = false;
                     });
-                    widget.tempUser.gender = models.Gender.male;
+                    widget.tempUser.gender = "male";
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -75,7 +79,7 @@ class _UserGenderState extends State<UserGender> {
                     setState(() {
                       isTapped2 = false;
                     });
-                    widget.tempUser.gender = models.Gender.female;
+                    widget.tempUser.gender = 'female';
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -114,7 +118,7 @@ class _UserGenderState extends State<UserGender> {
                     setState(() {
                       isTapped3 = false;
                     });
-                    widget.tempUser.gender = models.Gender.other;
+                    widget.tempUser.gender = 'other';
 
                     Navigator.push(
                         context,

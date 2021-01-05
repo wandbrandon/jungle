@@ -33,7 +33,7 @@ class _SignInNumState extends State<SignInNum> {
       child: Scaffold(
         appBar: AppBar(elevation: 0),
         body: Container(
-            padding: EdgeInsets.all(35),
+            padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -92,7 +92,7 @@ class _SignInNumState extends State<SignInNum> {
                             context.read<AuthenticationService>().clearStatus();
                             context.read<AuthenticationService>().verifyNumber(
                                 number: textController.text.trim(),
-                                context: context);     
+                                context: context);
                           }
                         : null,
                     onTapCancel: validate

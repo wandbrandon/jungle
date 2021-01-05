@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class SettingsItem extends StatelessWidget {
   final IconData icon;
   final String text;
+  final bool arrow;
   final GestureTapCallback onTap;
 
   const SettingsItem({
     Key key,
     this.icon,
+    this.arrow: true,
     this.text,
     this.onTap,
   }) : super(key: key);
@@ -42,7 +44,7 @@ class SettingsItem extends StatelessWidget {
                               fontWeight: FontWeight.w500, fontSize: 16))
                     ],
                   ),
-                  Icon(Icons.navigate_next)
+                  arrow ? Icon(Icons.navigate_next) : SizedBox()
                 ],
               ),
             )),

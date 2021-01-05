@@ -1,40 +1,41 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:jungle/main.dart';
-import 'package:jungle/screens/splash/user_gender.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jungle/models/models.dart' as models;
-import 'package:jungle/services/authentication_service.dart';
+import 'package:jungle/screens/splash/congrats_page.dart';
 import 'package:jungle/services/firestore_service.dart';
+import 'package:jungle/widgets/image_picker_widget.dart';
 import 'package:provider/provider.dart';
 
-class UserAge extends StatefulWidget {
+class UserPictures extends StatefulWidget {
   final models.User tempUser;
-
-  const UserAge({Key key, this.tempUser}) : super(key: key);
+  UserPictures({Key key, this.tempUser}) : super(key: key);
 
   @override
-  _UserAgeState createState() => _UserAgeState();
+  _UserPicturesState createState() => _UserPicturesState();
 }
 
-class _UserAgeState extends State<UserAge> {
-  TextEditingController textController = TextEditingController();
+class _UserPicturesState extends State<UserPictures> {
+  List<dynamic> images;
   bool validate = false;
   bool isTapped = false;
-  String errorText;
 
   @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
+  void initState() {
+    images = [null, null, null];
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(elevation: 0),
-      body: Container(
-          padding: EdgeInsets.all(35),
+      appBar: AppBar(
+        elevation: 0,
+      ),
+      body: Padding(
+          padding: const EdgeInsets.all(35.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -42,42 +43,16 @@ class _UserAgeState extends State<UserAge> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "How old are you?",
+                    "Lastly, who's that behind the screen?",
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 12.5),
                   Text(
-                    "Can't change this later either!",
+                    "Here at Jungle we believe three pictures is just enough information so you can spend more time meeting and less time swiping. Make those pictures count!",
                     style: TextStyle(fontSize: 12),
                   ),
                   SizedBox(height: 25),
-                  TextField(
-                    style: TextStyle(fontSize: 24),
-                    autofocus: true,
-                    controller: textController,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(2),
-                      FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                    ],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      errorText: errorText,
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        if (textController.text.length == 2) {
-                          if (int.parse(textController.text) < 18) {
-                            errorText = 'You must be 18 or older.';
-                            validate = false;
-                          } else {
-                            errorText = null;
-                            validate = true;
-                          }
-                        }
-                      });
-                    },
-                  ),
+                  ImageSetting(images: images)
                 ],
               ),
               GestureDetector(
@@ -86,15 +61,15 @@ class _UserAgeState extends State<UserAge> {
                           setState(() {
                             isTapped = false;
                           });
-                          widget.tempUser.age =
-                              int.parse(textController.text.trim());
-                          // context.read<FirestoreService>().createUser(
-                          //     context.read<User>().uid, widget.tempUser);
-                          Navigator.push(
+                          widget.tempUser.images = images;
+                          context.read<FirestoreService>().createUser(
+                              context.read<User>().uid, widget.tempUser);
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      UserGender(tempUser: widget.tempUser)));
+                                  builder: (context) => CongratsPage()));
                         }
                       : null,
                   onTapCancel: validate

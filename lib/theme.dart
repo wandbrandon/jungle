@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const kLightSecondaryColor = Color(0xFFFFFFFF);
-const kLightPrimaryColor = Color(0xFFF6F6F6);
+const kLightPrimaryColor = Color(0xFFFFFFFF);
+const kLightSecondaryColor = Color(0xFFF3F3F3);
 const kLightAccentColor = Color(0xFF7cb342);
 const kLightHighlightColor = Color(0xFFb3b242);
 
@@ -23,7 +23,7 @@ final kDarkTheme = ThemeData(
   textTheme: ThemeData.dark().textTheme.apply(
         bodyColor: kLightPrimaryColor,
         displayColor: kLightPrimaryColor,
-  ),
+      ),
 );
 
 final kLightTheme = ThemeData(

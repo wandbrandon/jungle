@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:jungle/models/models.dart' as models;
 
 import '../utils.dart';
 
 class FirestoreService {
   final FirebaseFirestore db;
-  FirestoreService(this.db);
+  final FirebaseStorage storage;
+
+  FirestoreService(this.db, this.storage);
 
   Future<void> createUser(String uid, models.User user) {
     CollectionReference users = db.collection('users');
