@@ -21,12 +21,17 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       blendMode: Theme.of(context).brightness == Brightness.dark
           ? BlendMode.multiply
           : BlendMode.screen,
-      shaderCallback: (bounds) => LinearGradient(colors: [
-        Theme.of(context).accentColor,
-        Theme.of(context).highlightColor
-      ]).createShader(bounds),
+      shaderCallback: (bounds) => LinearGradient(
+          stops: [.08, .7],
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
+          colors: [
+            Color(0xFFc3bf4a),
+            Theme.of(context).accentColor,
+          ]).createShader(bounds),
       child: SafeArea(
         top: false,
+        bottom: false,
         child: Scaffold(
           backgroundColor: Theme.of(context).textTheme.bodyText1.color,
           body: Stack(
@@ -59,6 +64,36 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   child: Container(
                     height: MediaQuery.of(context).size.height * .43,
                     color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: CombinedWave(
+                  reverse: false,
+                  models: const [
+                    SinusoidalModel(
+                      amplitude: 10,
+                      waves: 3,
+                      translate: 2.5,
+                      frequency: 0.5,
+                    ),
+                    SinusoidalModel(
+                      amplitude: 5,
+                      waves: 3,
+                      translate: 7.5,
+                      frequency: 1,
+                    ),
+                    SinusoidalModel(
+                      amplitude: 20,
+                      waves: 1,
+                      translate: .6,
+                      frequency: .5,
+                    ),
+                  ],
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * .46,
+                    color: Theme.of(context).primaryColor.withOpacity(.3),
                   ),
                 ),
               ),
@@ -104,49 +139,51 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       SizedBox(height: 20),
                       TapBuilder(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => SignInNum()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInNum()));
                           },
                           builder: (context, state) => Transform.scale(
                                 alignment: Alignment.center,
                                 scale: state == TapState.pressed ? .95 : 1,
                                 child: AnimatedContainer(
-                                    width: MediaQuery.of(context).size.width *
-                                        .85,
-                                    height:
-                                        MediaQuery.of(context).size.height *
-                                            .06,
-                                    duration:
-                                        const Duration(milliseconds: 600),
+                                    width:
+                                        MediaQuery.of(context).size.width * .85,
+                                    height: MediaQuery.of(context).size.height *
+                                        .06,
+                                    duration: const Duration(milliseconds: 600),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)
                                           .textTheme
                                           .bodyText1
                                           .color,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(30)),
                                     ),
                                     child: Center(
                                         child: Text('CREATE ACCOUNT',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .backgroundColor)))),
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .backgroundColor)))),
                               )),
                       SizedBox(height: 15),
                       TapBuilder(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => SignInNum()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInNum()));
                           },
                           builder: (context, state) => Transform.scale(
                                 alignment: Alignment.center,
                                 scale: state == TapState.pressed ? .95 : 1,
                                 child: AnimatedContainer(
-                                    width: MediaQuery.of(context).size.width *
-                                        .85,
-                                    height:
-                                        MediaQuery.of(context).size.height *
-                                            .06,
-                                    duration:
-                                        const Duration(milliseconds: 600),
+                                    width:
+                                        MediaQuery.of(context).size.width * .85,
+                                    height: MediaQuery.of(context).size.height *
+                                        .06,
+                                    duration: const Duration(milliseconds: 600),
                                     decoration: BoxDecoration(
                                       color: Colors.transparent,
                                       border: Border.all(
@@ -155,19 +192,17 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                                               .bodyText1
                                               .color,
                                           width: 2),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(30)),
                                     ),
                                     child: Center(
                                         child: Text('SIGN IN',
-                                                key: UniqueKey(),
-                                                style: TextStyle(
-                                                    color:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1
-                                                            .color))
-                                    )),
+                                            key: UniqueKey(),
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1
+                                                    .color)))),
                               )),
                       SizedBox(height: 20),
                       RichText(
@@ -179,9 +214,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                                       .bodyText1
                                       .color),
                               children: [
-                            TextSpan(text: 'Need Help? '),
+                            TextSpan(text: 'Caught a bug? '),
                             TextSpan(
-                                text: 'Recover Account',
+                                text: 'Click Here',
                                 style: TextStyle(
                                     decoration: TextDecoration.underline)),
                           ]))
@@ -190,11 +225,11 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
               Positioned(
-                  bottom: MediaQuery.of(context).size.height * .66,
+                  bottom: MediaQuery.of(context).size.height * .62,
                   child: Text('Jungle',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 60,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 65,
                           color: Theme.of(context).primaryColor))),
             ],
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/data/data.dart';
 import 'package:jungle/models/models.dart';
-import 'package:line_awesome_icons/line_awesome_icons.dart';
 import '../../../widgets/contact_item.dart';
 
 class MatchQueue extends StatelessWidget {
@@ -24,7 +23,7 @@ class MatchQueue extends StatelessWidget {
                     fontSize: 14,
                     color: Theme.of(context).accentColor),
               ),
-              Icon(LineAwesomeIcons.ellipsis_h)
+              Icon(Icons.more_horiz_rounded)
             ],
           )),
       Ink(

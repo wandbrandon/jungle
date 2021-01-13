@@ -1,9 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:jungle/screens/home/profile_page/current_profile_page.dart';
-import 'package:jungle/screens/home/chats_page/chat_page.dart';
-import 'package:jungle/screens/home/discover_page/discover_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,81 +8,160 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  PageController _controller = PageController(
-    initialPage: 1,
-    keepPage: true,
-  );
-  int _selectedIndex = 1;
+  ScrollController _controller = ScrollController();
+  bool scrolled = false;
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    _controller.addListener(_scrollListener);
+    super.initState();
   }
 
-  void _bottomTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _controller.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-    });
+  void _scrollListener() {
+    if (_controller.position.pixels <= 15)
+      setState(() {
+        scrolled = false;
+      });
+    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+      setState(() {
+        scrolled = true;
+      });
+    }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Widget buildPlacesList() {
+    return Column(children: [
+      AnimatedOpacity(
+        curve: Curves.ease,
+        duration: Duration(milliseconds: 300),
+        opacity: scrolled ? 0 : 1,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Places',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                SizedBox(width: 16),
+                CircleAvatar(),
+                SizedBox(width: 8),
+                CircleAvatar(),
+                SizedBox(width: 8),
+                CircleAvatar(),
+                SizedBox(width: 8),
+                CircleAvatar(),
+              ],
+            ),
+            ClipOval(
+              child: Material(
+                color: Theme.of(context).accentColor, // button color
+                child: InkWell(
+                  splashColor:
+                      Theme.of(context).highlightColor, // inkwell color
+                  child: SizedBox(
+                      width: 56, height: 56, child: Icon(Icons.check_rounded)),
+                  onTap: () {},
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      AnimatedOpacity(
+        curve: Curves.ease,
+        duration: Duration(milliseconds: 300),
+        opacity: scrolled ? 1 : 0,
+        child: Container(
+          height: MediaQuery.of(context).size.height * .5,
+          child: ListView(
+            children: [
+              Container(color: Colors.red, height: 100),
+              Container(color: Colors.blue, height: 100),
+            ],
+          ),
+        ),
+      )
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarIconBrightness: Theme.of(context).brightness,
-        statusBarBrightness: Theme.of(context).brightness,
-        statusBarColor: Colors.transparent // status bar color
-    ));
-    return Center(
-      child: Scaffold(
-          bottomNavigationBar: BottomNavigationBar(
-            elevation: 0,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Discover',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
-                label: 'Chat',
-              ),
-            ],
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: _selectedIndex,
-            selectedItemColor: Theme.of(context).accentColor,
-            unselectedItemColor: Theme.of(context).backgroundColor,
-            onTap: _bottomTapped,
-          ),
-          body: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                PageView(
-                  
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: _controller,
-                  children: [
-                    ProfilePage(),
-                    DiscoverPage(),
-                    ChatPage(),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: ListView(
+        shrinkWrap: true,
+        controller: _controller,
+        physics: PageScrollPhysics(parent: ClampingScrollPhysics()),
+        padding: EdgeInsets.zero,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * .84,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                borderRadius: BorderRadius.all(Radius.elliptical(50, 40))),
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Row(
+                      children: [
+                        Text(
+                          'Discover',
+                        ),
+                        Text(' Bars')
+                      ],
+                    ),
+                    centerTitle: false,
+                    titlePadding:
+                        EdgeInsetsDirectional.only(start: 16, bottom: 16),
+                  ),
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  expandedHeight: 150,
+                  elevation: 3,
+                  pinned: true,
+                  actions: [
+                    IconButton(
+                        icon: Icon(Icons.person_outline_rounded),
+                        onPressed: () {}),
+                    IconButton(
+                        icon: Icon(Icons.chat_bubble_outline_rounded),
+                        onPressed: () {})
                   ],
-                  onPageChanged: _onItemTapped,
                 ),
+                SliverPadding(
+                  padding: EdgeInsets.all(16),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).highlightColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))));
+                      },
+                      childCount: 25,
+                    ),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 200.0,
+                      mainAxisSpacing: 16.0,
+                      crossAxisSpacing: 16.0,
+                      childAspectRatio: 3 / 4.0,
+                    ),
+                  ),
+                )
               ],
             ),
-          )),
+          ),
+          Container(
+              height: MediaQuery.of(context).size.height * .84,
+              padding: EdgeInsets.all(16),
+              color: Colors.black,
+              child: buildPlacesList()),
+        ],
+      ),
     );
   }
 }

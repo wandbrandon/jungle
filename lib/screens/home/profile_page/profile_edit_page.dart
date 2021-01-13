@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jungle/models/models.dart' as models;
 import 'package:jungle/services/firestore_service.dart';
-import 'package:jungle/widgets/image_picker_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderables/reorderables.dart';
 
 class ProfileEditPage extends StatefulWidget {
   final DocumentSnapshot currentUser;
@@ -25,7 +30,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     super.initState();
   }
 
-  void changeValue(String identifier, String value) {
+  void changeValue(String identifier, dynamic value) {
     setState(() {
       tempUser[identifier] = value;
     });
@@ -59,9 +64,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               shrinkWrap: true,
               padding: EdgeInsets.all(8),
               children: [
-                ImageSetting(
-                  images: ['dog', null, null],
-                ),
+                ImageSetting(),
                 SizedBox(height: 15),
                 EditorItem(
                   identifier: 'bio',
@@ -272,64 +275,125 @@ class _GenderPickerState extends State<GenderPicker> {
   }
 }
 
-// class ImageSetting extends StatefulWidget {
-//   final List<dynamic> images;
+class ImageSetting extends StatefulWidget {
+  const ImageSetting({Key key}) : super(key: key);
 
-//   const ImageSetting({Key key, this.images}) : super(key: key);
+  @override
+  _ImageSettingState createState() => _ImageSettingState();
+}
 
-//   @override
-//   _ImageSettingState createState() => _ImageSettingState();
-// }
+class _ImageSettingState extends State<ImageSetting> {
+  final picker = ImagePicker();
+  bool isLoading = false;
+  List<dynamic> urls;
 
-// class _ImageSettingState extends State<ImageSetting> {
-//   bool listChecker(int index) {
-//     if (widget.images.length - 1 < index) {
-//       return false;
-//     } else if (widget.images[index] == null) {
-//       return false;
-//     }
-//     return true;
-//   }
+  @override
+  void initState() {
+    urls = context.read<DocumentSnapshot>().data()['images'];
+    super.initState();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//         decoration: BoxDecoration(
-//             color: Theme.of(context).backgroundColor,
-//             borderRadius: BorderRadius.all(Radius.circular(15))),
-//         child: GridView.builder(
-//           shrinkWrap: true,
-//           padding: EdgeInsets.all(8),
-//           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//             crossAxisCount: 3,
-//             crossAxisSpacing: 8.0,
-//             mainAxisSpacing: 8.0,
-//             childAspectRatio: 3 / 4,
-//           ),
-//           itemCount: 3,
-//           itemBuilder: (context, int index) {
-//             return Container(
-//                 child: listChecker(index)
-//                     ? Icon(Icons.check_circle,
-//                         color: Theme.of(context)
-//                             .textTheme
-//                             .bodyText1
-//                             .color
-//                             .withOpacity(.125))
-//                     : Icon(Icons.add_circle,
-//                         color: Theme.of(context)
-//                             .textTheme
-//                             .bodyText1
-//                             .color
-//                             .withOpacity(.125)),
-//                 decoration: BoxDecoration(
-//                     color: Theme.of(context)
-//                         .textTheme
-//                         .bodyText1
-//                         .color
-//                         .withOpacity(.125),
-//                     borderRadius: BorderRadius.all(Radius.circular(15))));
-//           },
-//         ));
-//   }
-// }
+  Future replaceImage(int index) async {
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 15);
+    if (pickedFile != null) {
+      setState(() {
+        isLoading = true;
+      });
+      await context
+          .read<FirestoreService>()
+          .storage
+          .refFromURL(urls[index])
+          .delete();
+      urls[index] = await context
+          .read<FirestoreService>()
+          .uploadFile(File(pickedFile.path), '${context.read<User>().uid}');
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      print('No image selected.');
+      context.read<_ProfileEditPageState>().changeValue('images', urls);
+    }
+  }
+
+  void reorderData(int oldindex, int newindex) {
+    if (urls[oldindex] != null || urls[newindex] != null) {
+      setState(() {
+        var item = urls.removeAt(oldindex);
+        urls.insert(newindex, item);
+      });
+      context.read<_ProfileEditPageState>().changeValue('images', urls);
+    }
+    return;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).backgroundColor,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          child: ReorderableWrap(
+            onReorder: reorderData,
+            maxMainAxisCount: 3,
+            spacing: 10,
+            padding: EdgeInsets.all(10),
+            footer: Padding(
+              padding: const EdgeInsets.only(top: 9),
+              child: Center(
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .color
+                            .withOpacity(.1),
+                        borderRadius: BorderRadius.all(Radius.circular(15))),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: Text(
+                      'Hold to drag and reorder.',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .color
+                              .withOpacity(.3),
+                          fontSize: 10),
+                    )),
+              ),
+            ),
+            children: List<Widget>.generate(
+                urls.length,
+                (int index) => GestureDetector(
+                      onTap: () {
+                        replaceImage(index);
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: urls[index],
+                        imageBuilder: (context, imageProvider) => Container(
+                            width: 3 * 37.0,
+                            height: 4 * 37.0,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover, image: imageProvider),
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    .color
+                                    .withOpacity(.1),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4))),
+                            child: isLoading
+                                ? CircularProgressIndicator.adaptive()
+                                : null),
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    )),
+          )),
+    );
+  }
+}

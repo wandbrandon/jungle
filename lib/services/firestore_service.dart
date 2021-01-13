@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -24,8 +26,8 @@ class FirestoreService {
     CollectionReference users = db.collection('users');
     return users
         .doc(uid)
-        .set({})
-        .then((value) => print("User Added"))
+        .delete()
+        .then((value) => print("User deleted"))
         .catchError((error) => print("Failed to add user: $error"));
   }
 
@@ -63,5 +65,80 @@ class FirestoreService {
       return false;
     }
     return true;
+  }
+
+  Future<String> uploadFile(File file, String ref) async {
+    UploadTask uploadTask =
+        storage.ref('$ref/${basename(file.path)}').putFile(file);
+    await uploadTask;
+    print('File Uploaded');
+    String returnURL;
+    await storage
+        .ref('$ref/${basename(file.path)}')
+        .getDownloadURL()
+        .then((fileURL) {
+      returnURL = fileURL;
+      print(returnURL);
+    });
+    return returnURL;
+  }
+
+  Future<void> saveImages(List<File> files, User authUser) async {
+    await Future.forEach(files, (file) async {
+      String imageURL = await uploadFile(file, authUser.uid);
+      db
+          .collection('users')
+          .doc(authUser.uid)
+          .update({
+            "images": FieldValue.arrayUnion([imageURL])
+          })
+          .then((value) => print('Added Images'))
+          .catchError((onError) => print("There was a problem $onError"));
+    });
+  }
+
+  Future<void> removeFiles(String ref) async {
+    ListResult files = await storage.ref(ref).listAll();
+    await Future.forEach(files.items, (element) async {
+      await element.delete();
+      print("${element.name} deleted successfully");
+    });
+  }
+
+  Future<List<QueryDocumentSnapshot>> getUsers(models.User user) async {
+    List<dynamic> liked = user.likes;
+    List<dynamic> disliked = user.dislikes;
+    if (liked == null || disliked == null) {
+      Query query = db
+          .collection('users')
+          .where('uid', isNotEqualTo: user.uid)
+          .where('gender', whereIn: user.lookingFor)
+          .limit(50);
+      QuerySnapshot qs =
+          await query.get().catchError((onError) => print(onError));
+      print('no users have been liked or disliked (null list)');
+      return qs.docs;
+    } else if (liked.isEmpty || disliked.isEmpty) {
+      Query query = db
+          .collection('users')
+          .where('uid', isNotEqualTo: user.uid)
+          .where('gender', whereIn: user.lookingFor)
+          .limit(50);
+      QuerySnapshot qs =
+          await query.get().catchError((onError) => print(onError));
+      print('no users have been liked or disliked (empty list)');
+      return qs.docs;
+    } else {
+      List<dynamic> likedOrDisliked = liked + disliked;
+      Query query = db
+          .collection('users')
+          .where('uid', whereNotIn: likedOrDisliked, isNotEqualTo: user.uid)
+          .where('gender', whereIn: user.lookingFor)
+          .limit(50);
+      QuerySnapshot qs =
+          await query.get().catchError((onError) => print(onError));
+      print('Queried by liked and disliked');
+      return qs.docs;
+    }
   }
 }

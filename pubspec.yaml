@@ -20,7 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   smooth_page_indicator:
-  line_awesome_icons:
+  cached_network_image:
+  swipeable_card: ^1.0.2
   modal_bottom_sheet:
   confetti:
   reorderables:

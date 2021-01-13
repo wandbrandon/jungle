@@ -37,9 +37,10 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
             smsCode: textController.text.trim(), verificationId: widget.vid);
     print(tempStatus.toString());
     if (tempStatus == AuthResultStatus.successful) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => AuthenticationWrapper()));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AuthenticationWrapper()),
+          (r) => false);
     } else {
       setState(() {
         authStatus = tempStatus;

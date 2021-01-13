@@ -1,25 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
-import 'package:jungle/screens/home/discover_page/food_page.dart';
+import 'package:jungle/screens/home/discover_page/activity_page.dart';
 import 'package:tap_builder/tap_builder.dart';
 
 class AnimatedStateButton extends StatelessWidget {
-  final Food food;
+  final Activity activity;
 
   const AnimatedStateButton({
     Key key,
-    this.food,
+    this.activity,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: food.imageUrls[0],
+      tag: activity.images[0],
       child: AnimatedTapBuilder(
         onTap: () {
-          Navigator.push(
-              context, CupertinoPageRoute(builder: (_) => FoodPage(food: food)));
+          Navigator.push(context,
+              CupertinoPageRoute(builder: (_) => ActivityPage(food: activity)));
         },
         builder: (context, state, cursorLocation, cursorAlignment) {
           cursorAlignment = state == TapState.pressed
@@ -46,7 +46,7 @@ class AnimatedStateButton extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     opacity: state == TapState.pressed ? 0.6 : 1,
                     child: Image.network(
-                      '${food.imageUrls[0]}',
+                      '${activity.images[0]}',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -75,7 +75,7 @@ class AnimatedStateButton extends StatelessWidget {
                           bottom: 45,
                           left: 20,
                           child: Text(
-                            '${food.name}',
+                            '${activity.name}',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class AnimatedStateButton extends StatelessWidget {
                           bottom: 20,
                           left: 20,
                           child: Text(
-                            'location info',
+                            '${activity.location}',
                             style: TextStyle(
                               color: Colors.white.withOpacity(.80),
                               fontSize: 18,
@@ -120,7 +120,7 @@ class AnimatedStateButton extends StatelessWidget {
                           top: 20,
                           right: 20,
                           child: Text(
-                            '\$\$\$',
+                            '${activity.count}',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,

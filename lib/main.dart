@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,6 +7,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jungle/screens/home/home_screen.dart';
+import 'package:jungle/widgets/deprecated.dart';
+import 'package:jungle/screens/splash/congrats_page.dart';
 import 'package:jungle/screens/splash/custom_loading.dart';
 import 'package:jungle/screens/splash/splash_page.dart';
 import 'package:jungle/screens/splash/user_name.dart';
@@ -65,40 +69,22 @@ class AuthenticationWrapper extends StatelessWidget {
     final authUser = context.watch<User>();
     if (authUser == null) {
       return SplashPage();
+    } else {
+      return MultiProvider(
+        providers: [
+          StreamProvider<DocumentSnapshot>(
+              create: (_) => context
+                  .read<FirestoreService>()
+                  .getUserSnapshotStreamByAuth(context.read<User>()))
+        ],
+        builder: (context, child) {
+          if (context.watch<DocumentSnapshot>() == null) {
+            return CustomLoading();
+          } else if (!context.watch<DocumentSnapshot>().exists)
+            return UserName();
+          return HomeScreen();
+        },
+      );
     }
-    return MultiProvider(
-      providers: [
-        StreamProvider<DocumentSnapshot>(
-            create: (_) => context
-                .read<FirestoreService>()
-                .getUserSnapshotStreamByAuth(context.read<User>()))
-      ],
-      builder: (context, child) {
-        if (context.watch<DocumentSnapshot>() == null)
-          return UserName();
-        else if (!context.watch<DocumentSnapshot>().exists) return UserName();
-        return HomeScreen();
-      },
-    );
   }
 }
-
-// Widget build(BuildContext context) {
-//     final authUser = context.watch<User>();
-//     final isUserCreated =
-//         context.watch<FirestoreService>().userExistsByAuth(authUser);
-//     return FutureBuilder(
-//       future: isUserCreated,
-//       builder: (context, snapshot) {
-//         if (authUser == null) {
-//           return SplashPage();
-//         }
-//         if (snapshot.connectionState != ConnectionState.done) {
-//           return CustomLoading();
-//         } else if (snapshot.connectionState == ConnectionState.done) {
-//           if (!snapshot.data) return UserName();
-//         }
-//         return HomeScreen();
-//       },
-//     );
-//   }

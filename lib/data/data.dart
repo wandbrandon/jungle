@@ -2,74 +2,90 @@ import 'package:jungle/models/models.dart';
 
 class Users {
   static get initUsers => <User>[
-    User(
-      name: "Obama",
-      age: 21,
-      live: "Gainesville, FL",
-      bio: "POTUS baby, black btw. 6 foot",
-      work: "Ex President of the US",
-      edu: "eduversity of Harvard",
-      from: "Hawaii",
-      urlAvatar:
-          "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
-    ),
-    User(
-      name: 'Jeff',
-      age: 21,
-      live: "Gainesville, FL",
-      bio: "I literally rape children",
-      work: "Nasty Pedophile",
-      edu: "eduversity of Pedophilia",
-      from: "Fountain of Youth, NY",
-      urlAvatar:
-          'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
-    ),
-    User(
-      name: 'Brad',
-      urlAvatar:
-          'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
-      age: 21,
-      live: "Gainesville, FL",
-      bio: "I'm an THE Brad Pitt",
-      work: "Famous Actor",
-      edu: "eduversity of God ",
-      from: "Austin, TX",
-    ),
-    User(
-      name: 'Donald',
-      urlAvatar:
-          'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
-      age: 21,
-      live: "Gainesville, FL",
-      bio:
-          "pls vote for me I need it, I love to make fun of the news, I love to lie to the press, and I also enjoy having my wife's boyfriend take me out on trips.",
-      work: "Ex President of the US",
-      edu: "eduversity of Chicago",
-      from: "New York City, NY",
-    ),
-    User(
-      name: 'Bill',
-      urlAvatar:
-          'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
-      age: 21,
-      live: "Gainesville, FL",
-      bio: "I did not have relations with that woman",
-      work: "Absolute Womanizer",
-      edu: "eduversity of Harvard",
-      from: "Arkansas, AR",
-    ),
-    User(
-      name: 'Joe',
-      urlAvatar:
-          'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg',
-      age: 21,
-      live: "Gainesville, FL",
-      bio: "where am I? what app is this? hey did we win the election?",
-      work: "President of the US",
-      edu: "eduversity of Harvard",
-      from: "Rhode Island, RI",
-    ),
-  ];
+        User(
+            name: "Obama",
+            age: 21,
+            live: "Gainesville, FL",
+            bio: "POTUS baby, black btw. 6 foot",
+            work: "Ex President of the US",
+            edu: "eduversity of Harvard",
+            from: "Hawaii",
+            images: [
+              "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
+              "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
+              "https://i.insider.com/5fbeabe8037cbd00186125c7?width=1000&format=jpeg&auto=webp",
+            ]),
+        User(
+            name: 'Jeff',
+            age: 21,
+            live: "Gainesville, FL",
+            bio: "I literally rape children",
+            work: "Nasty Pedophile",
+            edu: "eduversity of Pedophilia",
+            from: "Fountain of Youth, NY",
+            images: [
+              'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
+              'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
+              'https://i.guim.co.uk/img/media/25aec7f2db66a5f8cf2ee3da96c361b3a105bf8c/0_0_2347_2346/master/2347.jpg?width=700&quality=85&auto=format&fit=max&s=eca2838686532ecbc1a0ec55b080b672',
+            ]),
+        User(
+          name: 'Brad',
+          images: [
+            'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
+            'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
+            'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/gettyimages-74218931-1576171955.jpg',
+          ],
+          age: 21,
+          live: "Gainesville, FL",
+          bio: "I'm an THE Brad Pitt",
+          work: "Famous Actor",
+          edu: "eduversity of God ",
+          from: "Austin, TX",
+        ),
+        User(
+          name: 'Donald',
+          images: [
+            'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
+            'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
+            'https://i.insider.com/57b5bea1db5ce9b20f8b7737?width=987&format=jpeg',
+          ],
+          age: 21,
+          live: "Gainesville, FL",
+          bio:
+              "pls vote for me I need it, I love to make fun of the news, I love to lie to the press, and I also enjoy having my wife's boyfriend take me out on trips.",
+          work: "Ex President of the US",
+          edu: "eduversity of Chicago",
+          from: "New York City, NY",
+        ),
+        User(
+          name: 'Bill',
+          images: [
+            'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
+            'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
+            'https://static.politico.com/8f/0c/5f5df7c945ec812c412ecc390bf3/clinton-3.jpg',
+          ],
+          age: 21,
+          live: "Gainesville, FL",
+          bio: "I did not have relations with that woman",
+          work: "Absolute Womanizer",
+          edu: "eduversity of Harvard",
+          from: "Arkansas, AR",
+        ),
+        User(
+          name: 'Joe',
+          images: [
+            'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg',
+            'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg',
+            'https://static01.nyt.com/images/2020/09/18/us/politics/00young-biden/00young-biden-videoSixteenByNineJumbo1600.jpg'
+          ],
+          age: 21,
+          live: "Gainesville, FL",
+          bio: "where am I? what app is this? hey did we win the election?",
+          work: "President of the US",
+          edu: "eduversity of Harvard",
+          from: "Rhode Island, RI",
+        ),
+      ];
 }
 
 // // FAVORITE CONTACTS
@@ -212,66 +228,65 @@ class Users {
 //   ),
 // ];
 
-final List<Food> bars = [
-  Food(
-      id: 0,
+final List<Activity> bars = [
+  Activity(
       //home: LatLng(29.650719185666006, -82.32526474368572),
       name: "Downtown Fats",
-      imageUrls: [
+      images: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/s1080x1080/121574849_384181839419847_8553776110686228923_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=103&_nc_ohc=fF5SLO6JOrIAX8m5NjK&tp=15&oh=33c28c42c8232c1989186b8d7455afa2&oe=5FDC8790"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
-  Food(
-      id: 1,
+  Activity(
       name: "JJ's Tavern",
       //home: LatLng(29.652641653369997, -82.34509681484927),
-      imageUrls: [
+      images: [
         "https://myareanetwork-photos.s3.amazonaws.com/editorphotos/f/38493_1574714550.jpg"
       ],
       description:
           "I could not hate a bar more than jjs tavern, there is pure noise pollution and hell in here. All the women are hideous and honestly you are too."),
-  Food(
-      id: 2,
+  Activity(
       name: "Fat Daddy's",
       //home: LatLng(29.65263232957408, -82.34513973019457),
-      imageUrls: [
+      images: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/s1080x1080/121411915_944097126001512_4463546720263959708_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=100&_nc_ohc=pRHU5sPk0FkAX82_vvJ&tp=15&oh=06445da11563b6838dd150da72ffba28&oe=5FD986E2"
       ],
       description:
           "Enjoy having nothing but beer soaked pants and lonely masturbation at this bar. You will literally waste your time. Nuff said."),
-  Food(
-      id: 3,
+  Activity(
       name: "White Buffalo",
       //home: LatLng(29.650761157551646, -82.32477522834031),
-      imageUrls: [
+      images: [
         "https://scontent-atl3-1.cdninstagram.com/v/t51.2885-15/e35/p1080x1080/102404482_957109758064830_6368971491856859158_n.jpg?_nc_ht=scontent-atl3-1.cdninstagram.com&_nc_cat=106&_nc_ohc=iKFa090GocUAX-cDbLc&tp=19&oh=dae46dc95f8270cc4e2481999e21d530&oe=5FD8FA4A"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
 ];
 
-final List<Food> rests = [
-  Food(
-      id: 0,
+final List<Activity> rests = [
+  Activity(
+      count: 462,
       name: "Dragon Fly",
-      imageUrls: [
+      location: 'Gainesville',
+      images: [
         "https://cdna.artstation.com/p/assets/images/images/017/715/718/original/liliana-pita-pixel-city-water-try-again.gif?1557080526"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
-  Food(
-      id: 0,
+  Activity(
+      count: 347,
       name: "Top Ramen",
-      imageUrls: [
+      location: 'Gainesville',
+      images: [
         "https://images.squarespace-cdn.com/content/v1/5e29fdb6a671454c6d456f61/1581028262182-1N2D4IRJBD2M3QE3HSIR/ke17ZwdGBToddI8pDm48kOSmCgFW3fviOOJsRBidWZ4UqsxRUqqbr1mOJYKfIPR7LoDQ9mXPOjoJoqy81S2I8N_N4V1vUb5AoIIIbLZhVYxCRW4BPu10St3TBAUQYVKcI1yTXeFqGF93KQF5Bi56MCrOfSQCtPWQj_XK4nEb6uzrrGCPYt1MoEE8SyoSeUO8/MVuong_Project-1_Final.gif?format=1500w"
       ],
       description:
           "This bar absolutely sucks, there are bitches and puke everywhere with no attention to anything at all. Worst experience ever."),
-  Food(
-      id: 0,
+  Activity(
+      count: 90,
       name: "The Top",
-      imageUrls: [
+      location: 'Gainesville',
+      images: [
         "https://i.pinimg.com/originals/12/a1/a1/12a1a1fa165b268419d22321dd519795.gif"
       ],
       description:

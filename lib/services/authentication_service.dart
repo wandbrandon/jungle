@@ -7,6 +7,7 @@ class AuthenticationService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth;
   AuthenticationService(this._firebaseAuth);
   AuthResultStatus _status;
+  PhoneAuthCredential credential;
 
   /// Changed to idTokenChanges as it updates depending on more cases.
   Stream<User> get authStateChanges => _firebaseAuth.idTokenChanges();
@@ -46,15 +47,20 @@ class AuthenticationService extends ChangeNotifier {
     try {
       PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: smsCode);
+      credential = phoneAuthCredential;
+      notifyListeners();
       await _firebaseAuth.signInWithCredential(phoneAuthCredential);
     } on FirebaseAuthException catch (e) {
       return AuthExceptionHandler.handleException(e);
     }
-    return AuthResultStatus.successful ;
+    return AuthResultStatus.successful;
   }
 
   Future<void> deleteCurrentUser() async {
     try {
+      if (credential != null)
+        await _firebaseAuth.currentUser
+            .reauthenticateWithCredential(credential);
       await _firebaseAuth.currentUser.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {

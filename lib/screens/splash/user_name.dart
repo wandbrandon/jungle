@@ -52,7 +52,15 @@ class _UserNameState extends State<UserName> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(elevation: 0),
+        appBar: AppBar(
+            elevation: 0,
+            leading: IconButton(
+              onPressed: _onWillPop,
+              icon: Icon(
+                Icons.close_rounded,
+                size: 35,
+              ),
+            )),
         body: Container(
             padding: EdgeInsets.all(35),
             child: Column(

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 const kLightPrimaryColor = Color(0xFFFFFFFF);
 const kLightSecondaryColor = Color(0xFFF3F3F3);
-const kLightAccentColor = Color(0xFF7cb342);
-const kLightHighlightColor = Color(0xFFb3b242);
+const kLightAccentColor = Color(0xFF77ad39);
+//const kLightHighlightColor = Color(0xFFada939);
+const kLightHighlightColor = Color(0xFF3977ad);
 
 const kDarkPrimaryColor = Color(0xFF000000);
 const kDarkSecondaryColor = Color(0xFF252525);
 const kDarkAccentColor = Color(0xFF8bc34a);
-const kDarkHighlightColor = Color(0xFFc3bf4a);
+//const kDarkHighlightColor = Color(0xFFc3bf4a);
+const kDarkHighlightColor = Color(0xFF4a8bc3);
 
 final kDarkTheme = ThemeData(
   brightness: Brightness.dark,

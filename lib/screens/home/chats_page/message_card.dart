@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
-import 'package:jungle/screens/chats_page/chat_room_page.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../widgets/contact_item.dart';
 
@@ -17,13 +16,7 @@ class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => {
-              showMaterialModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  barrierColor: Colors.black.withOpacity(.95),
-                  context: context,
-                  builder: (context) => ChatRoomPage(user: widget.user)),
-            },
+        onTap: () => {},
         child: Container(
           color: Colors.transparent,
           child: Row(children: [
