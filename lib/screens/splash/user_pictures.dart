@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
 
 class UserPictures extends StatefulWidget {
-  final models.User tempUser;
+  final models.UserModel tempUser;
   UserPictures({Key key, this.tempUser}) : super(key: key);
 
   @override

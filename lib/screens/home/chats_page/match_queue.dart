@@ -4,7 +4,7 @@ import 'package:jungle/models/models.dart';
 import '../../../widgets/contact_item.dart';
 
 class MatchQueue extends StatelessWidget {
-  final List<User> users;
+  final List<UserModel> users;
 
   const MatchQueue({Key key, this.users}) : super(key: key);
 

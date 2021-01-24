@@ -21,11 +21,14 @@ dependencies:
     sdk: flutter
   smooth_page_indicator:
   cached_network_image:
-  swipeable_card: ^1.0.2
+  ko_swipe_card: ^1.0.0
   modal_bottom_sheet:
   confetti:
   reorderables:
   image_picker:
+  rxdart: ^0.25.0
+  uuid: ^2.2.2
+  bubble_tab_indicator: "^0.1.4"
   tap_builder: ^0.2.0-beta
   firebase_core: "^0.5.3"
   firebase_auth: "^0.18.4"
@@ -39,7 +42,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_launcher_icons: "^0.8.0"
 
 flutter_icons:
@@ -59,7 +61,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets: 
+    - lib/assets/artboard.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

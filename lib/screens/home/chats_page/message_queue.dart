@@ -3,7 +3,7 @@ import 'package:jungle/models/user_model.dart';
 import 'message_card.dart';
 
 class MessageQueue extends StatelessWidget {
-  final List<User> users;
+  final List<UserModel> users;
 
   const MessageQueue({Key key, this.users}) : super(key: key);
 

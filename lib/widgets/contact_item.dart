@@ -4,7 +4,7 @@ import 'package:jungle/widgets/profile_card.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ContactItem extends StatelessWidget {
-  final User user;
+  final UserModel user;
   final double radius;
   const ContactItem({
     Key key,

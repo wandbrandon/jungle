@@ -4,7 +4,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../widgets/contact_item.dart';
 
 class MessageCard extends StatefulWidget {
-  final User user;
+  final UserModel user;
 
   const MessageCard({Key key, this.user}) : super(key: key);
 

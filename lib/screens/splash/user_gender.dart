@@ -4,7 +4,7 @@ import 'package:jungle/models/models.dart' as models;
 import 'package:jungle/services/firestore_service.dart';
 
 class UserGender extends StatefulWidget {
-  final models.User tempUser;
+  final models.UserModel tempUser;
   const UserGender({Key key, this.tempUser}) : super(key: key);
 
   @override

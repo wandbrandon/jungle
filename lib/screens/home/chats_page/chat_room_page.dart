@@ -8,7 +8,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:jungle/data/data.dart';
 
 class ChatRoomPage extends StatefulWidget {
-  final User user;
+  final UserModel user;
 
   const ChatRoomPage({Key key, this.user}) : super(key: key);
 

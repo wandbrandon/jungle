@@ -1,162 +1,197 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_page.dart';
-import 'package:tap_builder/tap_builder.dart';
+import 'package:jungle/screens/home/discover_page/activity_state.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
-class AnimatedStateButton extends StatelessWidget {
+class ActivityProfileCard extends StatefulWidget {
   final Activity activity;
 
-  const AnimatedStateButton({
+  const ActivityProfileCard({
     Key key,
     this.activity,
   }) : super(key: key);
 
   @override
+  _ActivityProfileCardState createState() => _ActivityProfileCardState();
+}
+
+class _ActivityProfileCardState extends State<ActivityProfileCard> {
+  bool selected = false;
+  bool isTapped = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: activity.images[0],
-      child: AnimatedTapBuilder(
+    final cart = context.watch<ActivityState>();
+    selected = cart.getCart.contains(widget.activity);
+    return GestureDetector(
+        onTapCancel: () {
+          setState(() {
+            isTapped = false;
+          });
+        },
+        onTapDown: (details) {
+          setState(() {
+            isTapped = true;
+          });
+        },
         onTap: () {
-          Navigator.push(context,
-              CupertinoPageRoute(builder: (_) => ActivityPage(food: activity)));
+          setState(() {
+            isTapped = false;
+          });
+          // showBarModalBottomSheet(
+          //     context: context,
+          //     builder: (context) => ActivityPage(activity: widget.activity));
         },
-        builder: (context, state, cursorLocation, cursorAlignment) {
-          cursorAlignment = state == TapState.pressed
-              ? Alignment(-cursorAlignment.x, -cursorAlignment.y)
-              : Alignment.center;
-          return AnimatedContainer(
-            transformAlignment: Alignment.center,
-            transform: Matrix4.rotationX(-cursorAlignment.y * 0.2)
-              ..rotateY(cursorAlignment.x * 0.2)
-              ..scale(
-                state == TapState.pressed ? 0.96 : 1.0,
-              ),
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Theme.of(context).primaryColor,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  AnimatedOpacity(
-                    duration: const Duration(milliseconds: 200),
-                    opacity: state == TapState.pressed ? 0.6 : 1,
-                    child: Image.network(
-                      '${activity.images[0]}',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Container(
+        child: AnimatedContainer(
+          transformAlignment: Alignment.center,
+          transform: !isTapped
+              ? Matrix4.diagonal3Values(1, 1, 1)
+              : Matrix4.diagonal3Values(.96, .96, .96),
+          duration: Duration(milliseconds: 300),
+          curve: Curves.ease,
+          child: Stack(
+            children: [
+              CachedNetworkImage(
+                cacheKey: widget.activity.aid,
+                imageUrl: widget.activity.images[0],
+                fit: BoxFit.cover,
+                imageBuilder: (context, imageProvider) => Stack(
+                  children: [
+                    Container(
                       decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        tileMode: TileMode.mirror,
-                        colors: [
-                          Colors.black.withOpacity(.25),
-                          Colors.transparent
-                        ],
-                        begin: FractionalOffset.bottomCenter,
-                        end: FractionalOffset.center),
-                  )),
-                  AnimatedContainer(
-                    alignment: Alignment.center,
-                    transform: Matrix4.translationValues(
-                      cursorAlignment.x * 7,
-                      cursorAlignment.y * 7,
-                      0,
+                        borderRadius: BorderRadius.circular(15),
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
+                      ),
                     ),
-                    duration: const Duration(milliseconds: 200),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: 45,
-                          left: 20,
-                          child: Text(
-                            '${activity.name}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ],
+                    AnimatedContainer(
+                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 300),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: LinearGradient(
+                            colors: [
+                              !selected
+                                  ? Colors.black.withOpacity(.6)
+                                  : Theme.of(context)
+                                      .accentColor
+                                      .withOpacity(.5),
+                              !selected
+                                  ? Colors.transparent
+                                  : Theme.of(context)
+                                      .accentColor
+                                      .withOpacity(.5),
+                              !selected
+                                  ? Colors.black.withOpacity(.6)
+                                  : Theme.of(context)
+                                      .accentColor
+                                      .withOpacity(.5),
+                            ],
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft),
+                      ),
+                    )
+                  ],
+                ),
+                placeholder: (context, url) =>
+                    Center(child: CircularProgressIndicator.adaptive()),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+              Positioned(
+                top: 15,
+                right: 15,
+                child: Text(
+                  '${widget.activity.price}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 15,
+                left: 15,
+                child: Text(
+                  '${widget.activity.tag}',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.90),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 40,
+                left: 15,
+                child: Text(
+                  '${widget.activity.name}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 15,
+                right: 15,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                  opacity: !(cart.atLimit && !selected) ? 1 : 0,
+                  child: AbsorbPointer(
+                    absorbing: (cart.atLimit && !selected),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selected = !selected;
+
+                          if (selected) {
+                            if (!cart.addToCart(widget.activity)) {
+                              selected = false;
+                              print("Cant go over the limit!");
+                            } else {}
+                          } else if (!selected) {
+                            cart.removeFromCart(widget.activity);
+                          }
+                          print(cart.getCart);
+                        });
+                      },
+                      child: AnimatedContainer(
+                          curve: Curves.easeInOutBack,
+                          transformAlignment: Alignment.center,
+                          transform: selected
+                              ? Matrix4.rotationZ(-pi / 4)
+                              : Matrix4.rotationZ(0),
+                          duration: Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 8,
+                                  color: Colors.black.withOpacity(.3),
+                                  spreadRadius: 2,
+                                )
+                              ],
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white),
+                          child: Padding(
+                              padding: EdgeInsets.all(7),
+                              child: Icon(
+                                Icons.add_rounded,
+                                size: 23,
+                                color: !selected ? Colors.black : Colors.red,
+                              ))),
                     ),
                   ),
-                  AnimatedContainer(
-                      alignment: Alignment.center,
-                      transform: Matrix4.translationValues(
-                        cursorAlignment.x * 4,
-                        cursorAlignment.y * 4,
-                        0,
-                      ),
-                      duration: const Duration(milliseconds: 200),
-                      child: Stack(children: [
-                        Positioned(
-                          bottom: 20,
-                          left: 20,
-                          child: Text(
-                            '${activity.location}',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(.80),
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ])),
-                  AnimatedContainer(
-                      alignment: Alignment.center,
-                      transform: Matrix4.translationValues(
-                        cursorAlignment.x * 12,
-                        cursorAlignment.y * 12,
-                        0,
-                      ),
-                      duration: const Duration(milliseconds: 200),
-                      child: Stack(children: [
-                        Positioned(
-                          top: 20,
-                          right: 20,
-                          child: Text(
-                            '${activity.count}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                            ),
-                          ),
-                        ),
-                      ])),
-                  Positioned.fill(
-                    child: AnimatedAlign(
-                      duration: const Duration(milliseconds: 200),
-                      alignment:
-                          Alignment(-cursorAlignment.x, -cursorAlignment.y),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.01),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withOpacity(
-                                  state == TapState.pressed ? 0.5 : 0.0),
-                              blurRadius: 200,
-                              spreadRadius: 75,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            ],
+          ),
+        ));
   }
 }

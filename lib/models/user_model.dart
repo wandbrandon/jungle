@@ -1,12 +1,10 @@
-import 'package:meta/meta.dart';
-
-import '../utils.dart';
+import 'models.dart';
 
 class UserField {
   static final String lastMessageTime = 'lastMessageTime';
 }
 
-class User {
+class UserModel {
   final String uid;
   //User profile information
   //unchangeable
@@ -25,9 +23,9 @@ class User {
   List<dynamic> likes;
   List<dynamic> dislikes;
   List<dynamic> matches;
-  List<dynamic> foods;
+  List<dynamic> activities;
 
-  User(
+  UserModel(
       {this.from,
       this.work,
       this.uid,
@@ -42,9 +40,9 @@ class User {
       this.likes,
       this.dislikes,
       this.matches,
-      this.foods});
+      this.activities});
 
-  User.fromJson(Map<String, dynamic> data)
+  UserModel.fromJson(Map<String, dynamic> data)
       : uid = data['uid'],
         name = data['name'] ?? '',
         age = data['age'] ?? 0,
@@ -59,7 +57,7 @@ class User {
         likes = data['likes'] ?? [],
         dislikes = data['dislikes'] ?? [],
         matches = data['matches'] ?? [],
-        foods = data['foods'] ?? [];
+        activities = data['activities'] ?? [];
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
@@ -76,6 +74,6 @@ class User {
         'likes': likes,
         'dislikes': dislikes,
         'matches': matches,
-        'foods': foods,
+        'activities': activities,
       };
 }

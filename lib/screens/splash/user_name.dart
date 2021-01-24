@@ -107,7 +107,7 @@ class _UserNameState extends State<UserName> {
                             setState(() {
                               isTapped = false;
                             });
-                            models.User tempUser = models.User(
+                            models.UserModel tempUser = models.UserModel(
                                 uid: context.read<User>().uid,
                                 name: textController.text.trim());
                             Navigator.push(

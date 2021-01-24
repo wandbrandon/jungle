@@ -6,7 +6,7 @@ import 'package:jungle/screens/home/chats_page/match_queue.dart';
 import 'package:jungle/screens/home/chats_page/message_queue.dart';
 
 class ChatPage extends StatefulWidget {
-  final User user;
+  final UserModel user;
 
   ChatPage({this.user});
 
@@ -32,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ],
         ),
-        body: StreamBuilder<List<User>>(
+        body: StreamBuilder<List<UserModel>>(
             stream: null,
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
@@ -41,13 +41,14 @@ class _ChatPageState extends State<ChatPage> {
                 default:
                   if (snapshot.hasError) {
                     print(snapshot.error);
-                    return Center(child: Text('Yikes, Jungle is acting up, try again later.'));
+                    return Center(
+                        child: Text(
+                            'Yikes, Jungle is acting up, try again later.'));
                   } else {
                     final users = snapshot.data;
                     if (users.isEmpty) {
                       return Center(
-                        child: Text(
-                            'No chats just yet'),
+                        child: Text('No chats just yet'),
                       );
                     }
                     return Column(

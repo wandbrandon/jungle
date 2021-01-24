@@ -8,7 +8,7 @@ import 'package:jungle/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class UserLookingFor extends StatefulWidget {
-  final models.User tempUser;
+  final models.UserModel tempUser;
   const UserLookingFor({Key key, this.tempUser}) : super(key: key);
 
   @override

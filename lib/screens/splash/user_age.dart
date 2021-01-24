@@ -9,7 +9,7 @@ import 'package:jungle/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
 class UserAge extends StatefulWidget {
-  final models.User tempUser;
+  final models.UserModel tempUser;
 
   const UserAge({Key key, this.tempUser}) : super(key: key);
 

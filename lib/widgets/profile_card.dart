@@ -2,52 +2,54 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
 class ProfileCard extends StatefulWidget {
-  final User user;
+  final UserModel user;
+  final double height;
 
-  const ProfileCard({Key key, this.user}) : super(key: key);
+  const ProfileCard({Key key, this.user, this.height}) : super(key: key);
 
   @override
   _ProfileCardState createState() => _ProfileCardState();
 }
 
 class _ProfileCardState extends State<ProfileCard> {
-  ScrollController scrollController;
+  ScrollController _controller;
+
+  @override
+  void initState() {
+    _controller =
+        ScrollController(initialScrollOffset: 0, keepScrollOffset: true);
+    super.initState();
+  }
 
   @override
   void dispose() {
-    scrollController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (ModalScrollController.of(context) == null) {
-      scrollController = ScrollController();
-    } else {
-      scrollController = ModalScrollController.of(context);
-    }
     final double textPadding = 25;
     return Container(
-      clipBehavior: Clip.antiAlias,
-      height: MediaQuery.of(context).size.height * .63,
+      height: widget.height,
       decoration: BoxDecoration(
-        color: Theme.of(context).backgroundColor,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        color: Theme.of(context).accentColor.withOpacity(.3),
       ),
       child: Stack(
         children: [
           ListView(
             shrinkWrap: true,
-            controller: scrollController,
+            controller: _controller,
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [
                 CachedNetworkImage(
                   imageUrl: widget.user.images[0],
                   imageBuilder: (context, imageProvider) => Container(
-                    height: MediaQuery.of(context).size.height * .63,
+                    height: widget.height,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: imageProvider,
@@ -55,11 +57,12 @@ class _ProfileCardState extends State<ProfileCard> {
                       ),
                     ),
                   ),
-                  placeholder: (context, url) => CircularProgressIndicator(),
+                  placeholder: (context, url) =>
+                      CircularProgressIndicator.adaptive(),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
                 Container(
-                    height: MediaQuery.of(context).size.height * .63,
+                    height: widget.height,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             colors: [
@@ -126,43 +129,18 @@ class _ProfileCardState extends State<ProfileCard> {
                       )),
               CachedNetworkImage(
                 progressIndicatorBuilder: (context, url, progress) =>
-                    CircularProgressIndicator(value: progress.progress),
+                    CircularProgressIndicator.adaptive(
+                        value: progress.progress),
                 imageUrl: widget.user.images[1],
               ),
               CachedNetworkImage(
                 progressIndicatorBuilder: (context, url, progress) =>
-                    CircularProgressIndicator(value: progress.progress),
+                    CircularProgressIndicator.adaptive(
+                        value: progress.progress),
                 imageUrl: widget.user.images[2],
-              ),
-              Container(
-                padding: EdgeInsets.all(25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    widget.user.from != ''
-                        ? Text(
-                            'From ${widget.user.from}',
-                            style:
-                                TextStyle(color: Theme.of(context).accentColor),
-                          )
-                        : SizedBox(),
-                    SizedBox(height: 10),
-                    widget.user.live != ''
-                        ? Text(
-                            'Lives in ${widget.user.live}',
-                            style:
-                                TextStyle(color: Theme.of(context).accentColor),
-                          )
-                        : SizedBox(),
-                  ],
-                ),
               ),
             ],
           ),
-          Positioned(
-              top: textPadding,
-              right: textPadding,
-              child: CustomScrollBar(controller: scrollController)),
         ],
       ),
     );
@@ -170,38 +148,21 @@ class _ProfileCardState extends State<ProfileCard> {
 }
 
 class CustomScrollBar extends StatefulWidget {
-  final ScrollController controller;
-
-  CustomScrollBar({Key key, this.controller}) : super(key: key);
+  CustomScrollBar({Key key}) : super(key: key);
 
   @override
   _CustomScrollBarState createState() => _CustomScrollBarState();
 }
 
 class _CustomScrollBarState extends State<CustomScrollBar> {
-  double position = 0;
-  double maxScroll = 1;
-
-  @override
-  void initState() {
-    widget.controller.addListener(_scrollListener);
-    super.initState();
-  }
-
-  void _scrollListener() {
-    setState(() {
-      position = widget.controller.offset;
-      maxScroll = widget.controller.position.maxScrollExtent;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    double newpos = position / maxScroll;
+    final controller = context.watch<ScrollController>();
+    print(controller.offset);
     return Stack(
       children: [
         Positioned(
-          top: newpos * 65,
+          top: controller.offset / controller.position.maxScrollExtent * 65,
           child: Container(
             height: 20,
             width: 4,

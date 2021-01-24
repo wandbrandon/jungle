@@ -13,9 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:reorderables/reorderables.dart';
 
 class ProfileEditPage extends StatefulWidget {
-  final DocumentSnapshot currentUser;
-
-  const ProfileEditPage({Key key, this.currentUser}) : super(key: key);
+  const ProfileEditPage({Key key}) : super(key: key);
 
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
@@ -26,7 +24,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   initState() {
-    tempUser = widget.currentUser.data();
+    tempUser = context.read<DocumentSnapshot>().data();
     super.initState();
   }
 
@@ -39,19 +37,21 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     return Provider<DocumentSnapshot>.value(
-        value: widget.currentUser,
+        value: context.watch<DocumentSnapshot>(),
         child: Provider.value(
           value: this,
           builder: (context, child) => Scaffold(
             appBar: AppBar(
               title: Text('Edit Profile'),
+              backgroundColor: Theme.of(context).backgroundColor,
               actions: [
                 FlatButton(
                     textColor: Theme.of(context).accentColor,
                     textTheme: ButtonTextTheme.normal,
-                    onPressed: () {
-                      context.read<FirestoreService>().updateUserByAuth(
-                          context.read<User>(), models.User.fromJson(tempUser));
+                    onPressed: () async {
+                      await context.read<FirestoreService>().updateUserByAuth(
+                          context.read<User>(),
+                          models.UserModel.fromJson(tempUser));
                       Navigator.of(context).pop();
                     },
                     child: Center(
@@ -85,20 +85,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   maxlines: 1,
                   about: null,
                   hint: "Add education",
-                ),
-                SizedBox(height: 8),
-                EditorItem(
-                  identifier: 'live',
-                  maxlines: 1,
-                  about: 'Basic Info',
-                  hint: "Add where I live",
-                ),
-                SizedBox(height: 8),
-                EditorItem(
-                  identifier: 'from',
-                  maxlines: 1,
-                  about: null,
-                  hint: "Add where I'm from",
                 ),
                 SizedBox(height: 8),
                 GenderPicker()
@@ -293,6 +279,19 @@ class _ImageSettingState extends State<ImageSetting> {
     super.initState();
   }
 
+  showLoaderDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: CircularProgressIndicator.adaptive(),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   Future replaceImage(int index) async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 15);
@@ -331,69 +330,56 @@ class _ImageSettingState extends State<ImageSetting> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-          decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
-              borderRadius: BorderRadius.all(Radius.circular(15))),
-          child: ReorderableWrap(
-            onReorder: reorderData,
-            maxMainAxisCount: 3,
-            spacing: 10,
-            padding: EdgeInsets.all(10),
-            footer: Padding(
-              padding: const EdgeInsets.only(top: 9),
-              child: Center(
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1
-                            .color
-                            .withOpacity(.1),
-                        borderRadius: BorderRadius.all(Radius.circular(15))),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    child: Text(
-                      'Hold to drag and reorder.',
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              .color
-                              .withOpacity(.3),
-                          fontSize: 10),
-                    )),
-              ),
-            ),
-            children: List<Widget>.generate(
-                urls.length,
-                (int index) => GestureDetector(
-                      onTap: () {
-                        replaceImage(index);
-                      },
-                      child: CachedNetworkImage(
-                        imageUrl: urls[index],
-                        imageBuilder: (context, imageProvider) => Container(
-                            width: 3 * 37.0,
-                            height: 4 * 37.0,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    fit: BoxFit.cover, image: imageProvider),
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .color
-                                    .withOpacity(.1),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4))),
-                            child: isLoading
-                                ? CircularProgressIndicator.adaptive()
-                                : null),
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
-                    )),
-          )),
+      child: Column(
+        children: [
+          Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).backgroundColor,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: ReorderableWrap(
+                onReorder: reorderData,
+                maxMainAxisCount: 3,
+                spacing: 10,
+                padding: EdgeInsets.all(10),
+                children: List<Widget>.generate(
+                    urls.length,
+                    (int index) => GestureDetector(
+                          onTap: () {
+                            replaceImage(index);
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: urls[index],
+                            imageBuilder: (context, imageProvider) => Container(
+                                width: 3 * 37.0,
+                                height: 4 * 37.0,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: imageProvider),
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color
+                                        .withOpacity(.1),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(4)))),
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator.adaptive(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                        )),
+              )),
+          SizedBox(height: 10),
+          Text(
+            'Hold to drag and reorder.',
+            style: TextStyle(
+                color:
+                    Theme.of(context).textTheme.bodyText1.color.withOpacity(.7),
+                fontSize: 10),
+          )
+        ],
+      ),
     );
   }
 }

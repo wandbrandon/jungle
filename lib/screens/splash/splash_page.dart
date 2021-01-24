@@ -225,12 +225,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
               Positioned(
-                  bottom: MediaQuery.of(context).size.height * .62,
-                  child: Text('Jungle',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 65,
-                          color: Theme.of(context).primaryColor))),
+                  bottom: MediaQuery.of(context).size.height * .51,
+                  child: Image.asset(
+                    'lib/assets/artboard.png',
+                    color: Theme.of(context).primaryColor,
+                    height: 300,
+                  )),
             ],
           ),
         ),
