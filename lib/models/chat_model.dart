@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import '../utils.dart';
 
 class Message {
-  final String idUser;
-  final String username;
+  final String fromUID;
   final String message;
-  final DateTime createdAt;
+  final DateTime timestamp;
 
   const Message({
-    @required this.idUser,
-    @required this.username,
+    @required this.fromUID,
     @required this.message,
-    @required this.createdAt,
+    @required this.timestamp,
   });
+
+  Map<String, dynamic> toJson() =>
+      {'fromUID': fromUID, 'message': message, 'timestamp': timestamp};
 }

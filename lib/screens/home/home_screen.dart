@@ -423,10 +423,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (activityMap == null) {
       return Center(child: CircularProgressIndicator.adaptive());
     }
-
-    if (cartModel == null) {
-      return Center(child: CircularProgressIndicator.adaptive());
-    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(

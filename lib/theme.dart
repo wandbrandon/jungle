@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 const kLightPrimaryColor = Color(0xFFFFFFFF);
-const kLightSecondaryColor = Color(0xFFF3F3F3);
+const kLightSecondaryColor = Color(0xFFe5e5ea);
 const kLightAccentColor = Color(0xFF77ad39);
-//const kLightHighlightColor = Color(0xFFada939);
-const kLightHighlightColor = Color(0xFF3977ad);
+const kLightHighlightColor = Color(0xFFada939);
+//const kLightHighlightColor = Color(0xFF3977ad);
+const kLightErrorColor = Color(0xFFad3977);
 
 const kDarkPrimaryColor = Color(0xFF000000);
 const kDarkSecondaryColor = Color(0xFF252525);
 const kDarkAccentColor = Color(0xFF8bc34a);
-//const kDarkHighlightColor = Color(0xFFc3bf4a);
-const kDarkHighlightColor = Color(0xFF4a8bc3);
+const kDarkHighlightColor = Color(0xFFc3bf4a);
+const kDarkErrorColor = Color(0xFFc34a8b);
+//const kDarkHighlightColor = Color(0xFF4a8bc3);
 
 final kDarkTheme = ThemeData(
   brightness: Brightness.dark,
@@ -19,6 +21,7 @@ final kDarkTheme = ThemeData(
   backgroundColor: kDarkSecondaryColor,
   accentColor: kDarkAccentColor,
   highlightColor: kDarkHighlightColor,
+  errorColor: kDarkErrorColor,
   iconTheme: ThemeData.dark().iconTheme.copyWith(
         color: kLightPrimaryColor,
       ),
@@ -35,6 +38,7 @@ final kLightTheme = ThemeData(
   backgroundColor: kLightSecondaryColor,
   accentColor: kLightAccentColor,
   highlightColor: kLightHighlightColor,
+  errorColor: kLightErrorColor,
   iconTheme: ThemeData.light().iconTheme.copyWith(
         color: kDarkPrimaryColor,
       ),

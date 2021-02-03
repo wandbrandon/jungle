@@ -1,64 +1,64 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jungle/screens/home/chats_page/message_queue.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/models/models.dart';
-import 'package:jungle/screens/home/chats_page/match_queue.dart';
-import 'package:jungle/screens/home/chats_page/message_queue.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
-  final UserModel user;
-
-  ChatPage({this.user});
-
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final List<int> items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  String error;
 
   @override
   Widget build(BuildContext context) {
+    UserModel currentUser =
+        UserModel.fromJson(context.watch<DocumentSnapshot>().data());
+    final firestore = context.watch<FirestoreService>();
+
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          elevation: 0,
-          title: Text('Chats'),
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.search),
-            ),
-          ],
-        ),
-        body: StreamBuilder<List<UserModel>>(
-            stream: null,
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                  return Center(child: CircularProgressIndicator());
-                default:
-                  if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return Center(
-                        child: Text(
-                            'Yikes, Jungle is acting up, try again later.'));
-                  } else {
-                    final users = snapshot.data;
-                    if (users.isEmpty) {
-                      return Center(
-                        child: Text('No chats just yet'),
-                      );
-                    }
-                    return Column(
-                      children: [
-                        //MatchQueue(),
-                        MessageQueue(users: users)
-                      ],
-                    );
-                  }
-              }
-            }));
+      appBar: AppBar(
+        elevation: 0,
+        title: Text('Messages'),
+      ),
+      body: FutureProvider<QuerySnapshot>(
+          create: (context) => firestore.getChatRoomsByUID(currentUser.uid),
+          catchError: (context, object) {
+            print(object.toString());
+            setState(() {
+              error = object.toString();
+            });
+            return null;
+          },
+          builder: (context, child) {
+            final querySnaps = context.watch<QuerySnapshot>();
+            if (querySnaps == null && error == null) {
+              return Center(child: CircularProgressIndicator.adaptive());
+            } else if (error != null) {
+              return Center(
+                  child:
+                      Text('Something went wrong, try again later. \n$error'));
+            } else if (querySnaps.size == 0) {
+              return Center(
+                child: Text(
+                  "You haven't matched with anyone yet. \nKeep swiping!",
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+            List<UserModel> users = [];
+            querySnaps.docs.forEach((element) {
+              users.add(UserModel.fromJson(element['users']
+                  .firstWhere((e) => e['uid'] != currentUser.uid)));
+            });
+            return MessageQueue(
+              users: users,
+            );
+          }),
+    );
   }
 }

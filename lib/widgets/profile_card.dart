@@ -7,8 +7,10 @@ import 'package:provider/provider.dart';
 class ProfileCard extends StatefulWidget {
   final UserModel user;
   final double height;
+  final List<Activity> matches;
 
-  const ProfileCard({Key key, this.user, this.height}) : super(key: key);
+  const ProfileCard({Key key, this.user, this.height, this.matches})
+      : super(key: key);
 
   @override
   _ProfileCardState createState() => _ProfileCardState();
@@ -30,13 +32,27 @@ class _ProfileCardState extends State<ProfileCard> {
     super.dispose();
   }
 
+  List<Widget> getList() {
+    return List<Widget>.generate(
+        widget.matches.length,
+        (index) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              border:
+                  Border.all(color: Theme.of(context).accentColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              color: Theme.of(context).accentColor.withOpacity(.15),
+            ),
+            child: Text(widget.matches[index].name)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final double textPadding = 25;
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        color: Theme.of(context).accentColor.withOpacity(.3),
+        color: Theme.of(context).backgroundColor,
       ),
       child: Stack(
         children: [
@@ -47,6 +63,7 @@ class _ProfileCardState extends State<ProfileCard> {
             children: [
               Stack(children: [
                 CachedNetworkImage(
+                  cacheKey: widget.user.images[0],
                   imageUrl: widget.user.images[0],
                   imageBuilder: (context, imageProvider) => Container(
                     height: widget.height,
@@ -58,7 +75,7 @@ class _ProfileCardState extends State<ProfileCard> {
                     ),
                   ),
                   placeholder: (context, url) =>
-                      CircularProgressIndicator.adaptive(),
+                      Center(child: CircularProgressIndicator.adaptive()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
                 Container(
@@ -102,25 +119,25 @@ class _ProfileCardState extends State<ProfileCard> {
                                     fontWeight: FontWeight.w500)),
                       ],
                     )),
-                Positioned(
-                    top: textPadding,
-                    left: textPadding,
-                    child: Wrap(
-                      spacing: 7.5,
-                      children: [
-                        Icon(Icons.offline_bolt_rounded,
-                            color: Colors.white, size: 20),
-                        Icon(Icons.outbond_rounded,
-                            color: Colors.white, size: 20),
-                        Icon(Icons.error_rounded,
-                            color: Colors.white, size: 20),
-                      ],
-                    ))
+                // Positioned(
+                //     top: textPadding,
+                //     left: textPadding,
+                //     child: Wrap(
+                //       spacing: 7.5,
+                //       children: [
+                //         Icon(Icons.offline_bolt_rounded,
+                //             color: Colors.white, size: 20),
+                //         Icon(Icons.outbond_rounded,
+                //             color: Colors.white, size: 20),
+                //         Icon(Icons.error_rounded,
+                //             color: Colors.white, size: 20),
+                //       ],
+                //     ))
               ]),
               widget.user.bio == ''
                   ? SizedBox()
                   : Padding(
-                      padding: EdgeInsets.all(25),
+                      padding: EdgeInsets.all(textPadding),
                       child: Text(
                         widget.user.bio,
                         textAlign: TextAlign.left,
@@ -139,6 +156,15 @@ class _ProfileCardState extends State<ProfileCard> {
                         value: progress.progress),
                 imageUrl: widget.user.images[2],
               ),
+              Padding(
+                padding: EdgeInsets.all(textPadding),
+                child: Wrap(
+                  spacing: 8.0, // gap between adjacent chips
+                  runSpacing: 12.0, // gap between lines
+
+                  children: getList(),
+                ),
+              )
             ],
           ),
         ],

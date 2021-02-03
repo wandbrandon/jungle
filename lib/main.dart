@@ -38,7 +38,7 @@ List<Activity> activitiesFromDoc(
     activityMap.forEach((key, value) {
       value.forEach((element) {
         if (element.aid == userAID) {
-          print('found one!');
+          print('found activity match, adding it to cart');
           activities.add(element);
         }
       });
@@ -68,20 +68,28 @@ class MyApp extends StatelessWidget {
         StreamProvider(
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
-        StreamProvider<DocumentSnapshot>(
-          create: (context) =>
-              context.read<AuthenticationService>().authStateChanges.transform(
-                    FlatMapStreamTransformer<User, DocumentSnapshot>(
-                      (firebaseUser) => firestoreService
-                          .getUserSnapshotStreamByAuth(firebaseUser),
-                    ),
-                  ),
-        ),
+        StreamProvider<DocumentSnapshot>(catchError: (context, object) {
+          print(object.toString());
+          return null;
+        }, create: (context) {
+          final authchanged = context.read<AuthenticationService>();
+          if (authchanged == null) {
+            return null;
+          }
+          return authchanged.authStateChanges.transform(
+            FlatMapStreamTransformer<User, DocumentSnapshot>(
+              (firebaseUser) =>
+                  firestoreService.getUserSnapshotStreamByAuth(firebaseUser),
+            ),
+          );
+        }),
         FutureProvider<Map<String, List<Activity>>>(
+            lazy: false,
             create: (context) => firestoreService.getAllActivities()),
         ChangeNotifierProxyProvider2<DocumentSnapshot,
                 Map<String, List<Activity>>, ActivityState>(
-            create: (_) => ActivityState(10),
+            lazy: false,
+            create: (_) => ActivityState(5),
             update: (_, myDoc, myMap, myActivityState) {
               myActivityState.set(activitiesFromDoc(myDoc, myMap));
               return myActivityState;
@@ -100,22 +108,94 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthenticationWrapper extends StatelessWidget {
+class AuthenticationWrapper extends StatefulWidget {
   const AuthenticationWrapper({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final authUser = context.watch<User>();
-    final dbUser = context.watch<DocumentSnapshot>();
+  _AuthenticationWrapperState createState() => _AuthenticationWrapperState();
+}
+
+class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
+  User authUser;
+  DocumentSnapshot dbUser;
+  bool opacity = false;
+
+  @override
+  void initState() {
+    super.initState();
+    wait();
+  }
+
+  Future<void> wait() async {
     if (authUser == null) {
-      return SplashPage();
-    } else if (dbUser == null) {
-      return CustomLoading();
-    } else if (!dbUser.exists) {
-      return UserName();
+      print('waiting...');
+      await Future.delayed(Duration(milliseconds: 100));
+      setState(() {
+        opacity = !opacity;
+      });
+      await Future.delayed(Duration(milliseconds: 2400));
+      print('done');
+      Navigator.pushAndRemoveUntil(
+          context, _createRoute(SplashPage()), (route) => false);
     }
-    return HomeScreen();
+    if (authUser == null) {
+      Navigator.pushAndRemoveUntil(
+          context, _createRoute(SplashPage()), (route) => false);
+    } else if (!dbUser.exists && authUser != null) {
+      Navigator.pushAndRemoveUntil(
+          context, _createRoute(UserName()), (route) => false);
+    } else if (dbUser != null && authUser != null)
+      Navigator.pushAndRemoveUntil(
+          context, _createRoute(HomeScreen()), (route) => false);
+  }
+
+  Route _createRoute(Widget widget) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => widget,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var begin = 0.0;
+        var end = 1.0;
+        var curve = Curves.ease;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(
+          curve: curve,
+        ));
+
+        return FadeTransition(
+          opacity: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Widget buildSplash() {
+    return Material(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 2300),
+        curve: Curves.ease,
+        alignment: Alignment.center,
+        color: opacity
+            ? Theme.of(context).accentColor
+            : Theme.of(context).highlightColor,
+        child: AnimatedOpacity(
+            opacity: opacity ? 1 : 0,
+            duration: Duration(milliseconds: 2300),
+            curve: Curves.ease,
+            child: Image.asset(
+              'lib/assets/artboard.png',
+              height: 200,
+            )),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    authUser = context.watch<User>();
+    dbUser = context.watch<DocumentSnapshot>();
+    return buildSplash();
   }
 }

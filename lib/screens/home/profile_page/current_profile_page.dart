@@ -19,7 +19,17 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final currentUserSnapshot = context.watch<DocumentSnapshot>();
-    final currentUser = models.UserModel.fromJson(currentUserSnapshot.data());
+    if (currentUserSnapshot == null) {
+      return Material(
+        child: Center(
+            child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child:
+              Text(' Something happened, try again later. \nSorry about that.'),
+        )),
+      );
+    }
+    final currentUser = models.UserModel?.fromJson(currentUserSnapshot?.data());
     return Scaffold(
         appBar: AppBar(
           shape: ContinuousRectangleBorder(
@@ -88,7 +98,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         text: 'Logout',
                         arrow: false,
                         onTap: () {
-                          context.read<AuthenticationService>().signOut();
+                          try {
+                            Navigator.pushNamed(context, '/splash');
+                            context.read<AuthenticationService>().signOut();
+                          } catch (e) {
+                            print(e);
+                          }
                         }),
                   ],
                 ),

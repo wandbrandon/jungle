@@ -15,10 +15,8 @@ class UserModel {
   String gender;
   List<dynamic> images;
   List<dynamic> lookingFor;
-  String from;
   String work;
   String edu;
-  String live;
   //matching values
   List<dynamic> likes;
   List<dynamic> dislikes;
@@ -26,11 +24,9 @@ class UserModel {
   List<dynamic> activities;
 
   UserModel(
-      {this.from,
-      this.work,
+      {this.work,
       this.uid,
       this.edu,
-      this.live,
       this.gender,
       this.lookingFor,
       this.images,
@@ -50,9 +46,7 @@ class UserModel {
         work = data['work'] ?? '',
         gender = data['gender'] ?? '',
         lookingFor = data['lookingFor'] ?? [],
-        from = data['from'] ?? '',
         edu = data['edu'] ?? '',
-        live = data['live'] ?? '',
         images = data['images'] ?? [],
         likes = data['likes'] ?? [],
         dislikes = data['dislikes'] ?? [],
@@ -66,8 +60,6 @@ class UserModel {
         'bio': bio,
         'work': work,
         'gender': gender,
-        'live': live,
-        'from': from,
         'edu': edu,
         'lookingFor': lookingFor,
         'images': images,

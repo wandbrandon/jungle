@@ -25,13 +25,18 @@ class ContactItem extends StatelessWidget {
                       showMaterialModalBottomSheet(
                           backgroundColor: Colors.transparent,
                           barrierColor: Colors.black.withOpacity(.75),
-                          animationCurve: Curves.easeOutBack,
-                          duration: Duration(milliseconds: 500),
+                          animationCurve: Curves.ease,
+                          duration: Duration(milliseconds: 300),
                           context: context,
                           builder: (context) => Padding(
                                 padding: const EdgeInsets.only(
                                     left: 15.0, right: 15, bottom: 45),
-                                child: ProfileCard(user: user),
+                                child: ProfileCard(
+                                  user: user,
+                                  height:
+                                      MediaQuery.of(context).size.height * .70,
+                                  matches: [],
+                                ),
                               ))
                     })));
   }

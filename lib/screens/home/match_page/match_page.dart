@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jungle/models/models.dart' as models;
 import 'package:jungle/models/models.dart';
+import 'package:jungle/screens/home/discover_page/activity_state.dart';
+import 'package:jungle/screens/home/match_page/matched_dialog.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/widgets/profile_card.dart';
 import 'package:provider/provider.dart';
@@ -18,18 +20,81 @@ class _MatchPageState extends State<MatchPage> {
   List<Widget> cards = [];
   int currentCardIndex = 0;
   String error;
+  bool liked = true;
+  UserModel userState;
 
   @override
   void initState() {
-    error = null;
     super.initState();
+  }
+
+  Route _createRoute(UserModel currentUser) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => MatchedDialog(
+        user: userState,
+        currentUser: currentUser,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var begin = 0.0;
+        var end = 1.0;
+        var curve = Curves.ease;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(
+          curve: curve,
+        ));
+
+        return FadeTransition(
+          opacity: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Future<void> swipeUser(UserModel currentUser) async {
+    if (liked) {
+      currentUser.likes.add(userState.uid);
+      print('liked');
+      if (userState.likes.contains(currentUser.uid)) {
+        currentUser.matches.add(userState.uid);
+        userState.matches.add(currentUser.uid);
+        await context
+            .read<FirestoreService>()
+            .createChatRoom(currentUser, userState);
+        Navigator.push(context, _createRoute(currentUser));
+      }
+      await context
+          .read<FirestoreService>()
+          .updateUserByAuth(context.read<User>(), currentUser);
+      await context
+          .read<FirestoreService>()
+          .updateUserFieldByUID(userState.uid, 'matches', userState.matches);
+    } else {
+      currentUser.dislikes.add(userState.uid);
+      print('disliked');
+      await context
+          .read<FirestoreService>()
+          .updateUserByAuth(context.read<User>(), currentUser);
+    }
+    return;
+  }
+
+  List<Activity> getActivityMatches(
+      List<Activity> cart, List<dynamic> otherUserActivities) {
+    List<Activity> tempActivities = [];
+    cart.forEach((element) {
+      if (otherUserActivities.contains(element.aid)) {
+        tempActivities.add(element);
+      }
+    });
+    return tempActivities;
   }
 
   @override
   Widget build(BuildContext context) {
     final fireStoreService = context.watch<FirestoreService>();
     final currentUserSnapshot = context.watch<DocumentSnapshot>();
-    final currentUser = models.UserModel.fromJson(currentUserSnapshot.data());
+    final currentUser = UserModel.fromJson(currentUserSnapshot.data());
     return Stack(
       children: [
         Scaffold(
@@ -38,7 +103,13 @@ class _MatchPageState extends State<MatchPage> {
             centerTitle: true,
             actions: [
               IconButton(
-                  icon: Icon(Icons.filter_alt_outlined), onPressed: () {}),
+                  icon: Icon(Icons.filter_alt_outlined),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) =>
+                            Center(child: Text('User filters coming soon!')));
+                  }),
             ],
             elevation: 0,
             title: Text(
@@ -60,12 +131,13 @@ class _MatchPageState extends State<MatchPage> {
                 });
                 return null;
               },
+              lazy: false,
               builder: (context, child) {
                 final users = context.watch<List<Map<String, dynamic>>>();
                 if (error != null) return buildError(error);
                 if (users != null) {
                   if (users.isNotEmpty) {
-                    return buildUsers(context, users);
+                    return buildUsers(context, users, currentUser);
                   } else {
                     return Center(
                         child: Text(
@@ -100,7 +172,8 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  Widget buildUsers(context, List<Map<String, dynamic>> users) {
+  Widget buildUsers(
+      context, List<Map<String, dynamic>> users, UserModel currentUser) {
     return Container(
       child: KoSwipeCard(
         cardElevation: 0,
@@ -109,23 +182,66 @@ class _MatchPageState extends State<MatchPage> {
         cardDeltaHeight: 0,
         itemCount: users.length,
         indexedCardBuilder:
-            (context, index, rotateFraction, translateFraction) =>
-                _buildCard(UserModel.fromJson(users[index])),
+            (context, index, rotateFraction, translateFraction) {
+          UserModel user = UserModel.fromJson(users[index]);
+          userState = user;
+          if (rotateFraction >= 1.0) {
+            liked = true;
+          } else if (rotateFraction <= -1.0) {
+            liked = false;
+          }
+          return Stack(
+            children: [
+              _buildCard(user),
+              index == 0
+                  ? IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                          color: rotateFraction > 0
+                              ? Theme.of(context)
+                                  .accentColor
+                                  .withOpacity(rotateFraction)
+                              : Colors.red.withOpacity(rotateFraction.abs())),
+                    )
+                  : SizedBox(),
+              index == 0
+                  ? IgnorePointer(
+                      ignoring: true,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: rotateFraction > 0
+                              ? Icon(
+                                  Icons.check_rounded,
+                                  size: 120,
+                                  color:
+                                      Colors.white.withOpacity(rotateFraction),
+                                )
+                              : Icon(Icons.clear_rounded,
+                                  size: 120,
+                                  color: Colors.white
+                                      .withOpacity(rotateFraction.abs()))),
+                    )
+                  : SizedBox(),
+            ],
+          );
+        },
         topCardDismissListener: () {
           setState(() {
             users.removeAt(0);
           });
+          swipeUser(currentUser);
         },
       ),
     );
   }
 
   Widget _buildCard(UserModel user) {
-    return Container(
-      child: ProfileCard(
-          key: ValueKey('${user.uid}'),
-          height: MediaQuery.of(context).size.height * .72,
-          user: user),
+    return ProfileCard(
+      key: ValueKey('${user.uid}'),
+      height: MediaQuery.of(context).size.height * .72,
+      user: user,
+      matches: getActivityMatches(
+          context.read<ActivityState>().getCart, user.activities),
     );
   }
 
@@ -143,80 +259,3 @@ class _MatchPageState extends State<MatchPage> {
     setState(() => currentCardIndex++);
   }
 }
-
-// return GestureDetector(
-//       onHorizontalDragEnd: (dragEndDetails) {
-//         if (dragEndDetails.primaryVelocity < 0) {
-//           // Page forwards
-//           print('Left Swipe');
-//         } else if (dragEndDetails.primaryVelocity > 0) {
-//           // Page backwards
-//           print('Right Swipe');
-//         }
-//       },
-//       child: Container(
-//         padding: EdgeInsets.all(8),
-//         child: ProfileCard(
-//             height: MediaQuery.of(context).size.height * .75,
-//             user: UserModel.fromJson(users[0])),
-//       ),
-//     );
-//   }
-
-
-
-
-// Center(
-//       child: Scaffold(
-//         appBar: AppBar(
-//           elevation: 0,
-//           title: Text('Jungle'),
-//         ),
-//         body: SafeArea(
-//             child: FutureBuilder(
-//                 future: context
-//                     .watch<FirestoreService>()
-//                     .getUsers(context.watch<User>()),
-//                 builder: (context, snapshot) {
-//                   if (snapshot.connectionState == ConnectionState.done) {
-//                     snapshot.data
-//                         .forEach((element) => print(element.data().toString()));
-//                     return Column(
-//                       mainAxisSize: MainAxisSize.max,
-//                       children: <Widget>[
-//                         if (currentCardIndex < cards.length)
-//                           SwipeableWidget(
-//                             key: ObjectKey(currentCardIndex),
-//                             child: cards[currentCardIndex],
-//                             scrollSensitivity: 30,
-//                             onLeftSwipe: () => swipeLeft(),
-//                             onRightSwipe: () => swipeRight(),
-//                             nextCards: <Widget>[
-//                               show next card
-//                               if there are no next cards, show nothing
-//                               if (!(currentCardIndex + 1 >= cards.length))
-//                                 Align(
-//                                   alignment: Alignment.center,
-//                                   child: cards[currentCardIndex + 1],
-//                                 ),
-//                             ],
-//                           )
-//                         else
-//                           if the deck is complete, add a button to reset deck
-//                           Center(
-//                             child: FlatButton(
-//                               child: Text("Reset deck"),
-//                               onPressed: () =>
-//                                   setState(() => currentCardIndex = 0),
-//                             ),
-//                           ),
-
-//                         only show the card controlling buttons when there are cards
-//                         otherwise, just hide it
-//                       ],
-//                     );
-//                   }
-//                   return CircularProgressIndicator.adaptive();
-//                 })),
-//       ),
-//     );

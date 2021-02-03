@@ -5,8 +5,9 @@ import '../../../widgets/contact_item.dart';
 
 class MessageCard extends StatefulWidget {
   final UserModel user;
+  final String lastMessage;
 
-  const MessageCard({Key key, this.user}) : super(key: key);
+  const MessageCard({Key key, this.user, this.lastMessage}) : super(key: key);
 
   @override
   _MessageCardState createState() => _MessageCardState();
@@ -21,7 +22,7 @@ class _MessageCardState extends State<MessageCard> {
           color: Colors.transparent,
           child: Row(children: [
             Padding(
-              padding: const EdgeInsets.only(right: 15),
+              padding: const EdgeInsets.only(right: 24),
               child: ContactItem(user: widget.user, radius: 35),
             ),
             Expanded(
@@ -34,15 +35,25 @@ class _MessageCardState extends State<MessageCard> {
                         fontWeight: FontWeight.bold,
                       )),
                   SizedBox(height: 5),
-                  Text(
-                    'test', //'${widget.user.messages.first.text}',
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    softWrap: true,
-                  ),
+                  widget.lastMessage != null
+                      ? Text(
+                          '${widget.lastMessage}',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          softWrap: true,
+                        )
+                      : Text(
+                          'New Match',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).highlightColor),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          softWrap: true,
+                        ),
                 ],
               ),
             ),
