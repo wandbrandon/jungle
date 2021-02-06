@@ -50,13 +50,9 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               );
             }
-            List<UserModel> users = [];
-            querySnaps.docs.forEach((element) {
-              users.add(UserModel.fromJson(element['users']
-                  .firstWhere((e) => e['uid'] != currentUser.uid)));
-            });
             return MessageQueue(
-              users: users,
+              chatRooms: querySnaps.docs,
+              currentUserUID: currentUser.uid,
             );
           }),
     );

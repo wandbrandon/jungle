@@ -8,8 +8,9 @@ class ProfileCard extends StatefulWidget {
   final UserModel user;
   final double height;
   final List<Activity> matches;
+  final bool modal;
 
-  const ProfileCard({Key key, this.user, this.height, this.matches})
+  const ProfileCard({Key key, this.user, this.height, this.matches, this.modal})
       : super(key: key);
 
   @override
@@ -58,7 +59,8 @@ class _ProfileCardState extends State<ProfileCard> {
         children: [
           ListView(
             shrinkWrap: true,
-            controller: _controller,
+            controller:
+                !widget.modal ? _controller : ModalScrollController.of(context),
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [

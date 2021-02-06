@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/models/user_model.dart';
 import 'package:jungle/widgets/profile_card.dart';
@@ -13,31 +14,43 @@ class ContactItem extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-        radius: radius,
-        backgroundImage: NetworkImage(user.images[0]),
-        child: Material(
-            shape: CircleBorder(),
-            clipBehavior: Clip.hardEdge,
-            color: Colors.transparent,
-            child: InkWell(
-                onTap: () => {
-                      showMaterialModalBottomSheet(
-                          backgroundColor: Colors.transparent,
-                          barrierColor: Colors.black.withOpacity(.75),
-                          animationCurve: Curves.ease,
-                          duration: Duration(milliseconds: 300),
-                          context: context,
-                          builder: (context) => Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 15.0, right: 15, bottom: 45),
-                                child: ProfileCard(
-                                  user: user,
-                                  height:
-                                      MediaQuery.of(context).size.height * .70,
-                                  matches: [],
-                                ),
-                              ))
-                    })));
+    return CachedNetworkImage(
+      cacheKey: user.images[0],
+      imageUrl: user.images[0],
+      imageBuilder: (context, image) => CircleAvatar(
+          radius: radius,
+          backgroundImage: image,
+          child: Material(
+              shape: CircleBorder(),
+              clipBehavior: Clip.hardEdge,
+              color: Colors.transparent,
+              child: InkWell(
+                  onTap: () => {
+                        showMaterialModalBottomSheet(
+                            backgroundColor: Colors.transparent,
+                            barrierColor: Colors.black.withOpacity(.75),
+                            animationCurve: Curves.ease,
+                            duration: Duration(milliseconds: 300),
+                            context: context,
+                            builder: (context) => Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15.0, right: 15, bottom: 45),
+                                  child: Container(
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: ProfileCard(
+                                      modal: true,
+                                      user: user,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              .70,
+                                      matches: [],
+                                    ),
+                                  ),
+                                ))
+                      }))),
+    );
   }
 }

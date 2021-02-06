@@ -8,7 +8,7 @@ const kLightHighlightColor = Color(0xFFada939);
 const kLightErrorColor = Color(0xFFad3977);
 
 const kDarkPrimaryColor = Color(0xFF000000);
-const kDarkSecondaryColor = Color(0xFF252525);
+const kDarkSecondaryColor = Color(0xFF151515);
 const kDarkAccentColor = Color(0xFF8bc34a);
 const kDarkHighlightColor = Color(0xFFc3bf4a);
 const kDarkErrorColor = Color(0xFFc34a8b);
@@ -22,6 +22,7 @@ final kDarkTheme = ThemeData(
   accentColor: kDarkAccentColor,
   highlightColor: kDarkHighlightColor,
   errorColor: kDarkErrorColor,
+  appBarTheme: AppBarTheme(brightness: Brightness.dark),
   iconTheme: ThemeData.dark().iconTheme.copyWith(
         color: kLightPrimaryColor,
       ),
@@ -39,6 +40,7 @@ final kLightTheme = ThemeData(
   accentColor: kLightAccentColor,
   highlightColor: kLightHighlightColor,
   errorColor: kLightErrorColor,
+  appBarTheme: AppBarTheme(brightness: Brightness.light),
   iconTheme: ThemeData.light().iconTheme.copyWith(
         color: kDarkPrimaryColor,
       ),

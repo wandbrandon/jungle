@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jungle/models/activity_model.dart';
 import 'package:jungle/screens/home/home_screen.dart';
-import 'package:jungle/screens/splash/custom_loading.dart';
 import 'package:jungle/screens/splash/splash_page.dart';
 import 'package:jungle/screens/splash/user_name.dart';
 import 'package:jungle/services/authentication_service.dart';
@@ -21,6 +20,7 @@ import 'screens/home/home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
@@ -52,12 +52,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-          statusBarIconBrightness: Theme.of(context).brightness,
-          statusBarBrightness: Theme.of(context).brightness,
-          statusBarColor: Colors.transparent),
-    );
     final firestoreService =
         FirestoreService(FirebaseFirestore.instance, FirebaseStorage.instance);
     return MultiProvider(
@@ -89,21 +83,24 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider2<DocumentSnapshot,
                 Map<String, List<Activity>>, ActivityState>(
             lazy: false,
-            create: (_) => ActivityState(5),
+            create: (_) => ActivityState(7),
             update: (_, myDoc, myMap, myActivityState) {
               myActivityState.set(activitiesFromDoc(myDoc, myMap));
               return myActivityState;
             }),
       ],
-      child: MaterialApp(
-          title: 'Jungle',
-          debugShowCheckedModeBanner: false,
-          theme: kLightTheme,
-          darkTheme: kDarkTheme,
-          home: AuthenticationWrapper(),
-          routes: {
-            '/splash': (context) => SplashPage(),
-          }),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: MaterialApp(
+            title: 'Jungle',
+            debugShowCheckedModeBanner: false,
+            theme: kLightTheme,
+            darkTheme: kDarkTheme,
+            home: AuthenticationWrapper(),
+            routes: {
+              '/splash': (context) => SplashPage(),
+            }),
+      ),
     );
   }
 }

@@ -240,6 +240,7 @@ class _MatchPageState extends State<MatchPage> {
       key: ValueKey('${user.uid}'),
       height: MediaQuery.of(context).size.height * .72,
       user: user,
+      modal: false,
       matches: getActivityMatches(
           context.read<ActivityState>().getCart, user.activities),
     );

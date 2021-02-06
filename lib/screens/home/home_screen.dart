@@ -3,17 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jungle/data/data.dart';
+import 'package:flutter/services.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_profile_card.dart';
 import 'package:jungle/screens/home/match_page/match_page.dart';
 import 'package:jungle/screens/home/profile_page/current_profile_page.dart';
 import 'package:jungle/services/firestore_service.dart';
-import 'package:jungle/widgets/jungle_button.dart';
-import 'package:jungle/widgets/profile_card.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:tap_builder/tap_builder.dart';
+import 'package:ionicons/ionicons.dart';
 
 import 'chats_page/chat_page.dart';
 import 'discover_page/activity_state.dart';
@@ -48,20 +48,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  List<Widget> gridViewBuilder(Map<String, List<Activity>> map) {
+  List<Widget> listViewBuilder(Map<String, List<Activity>> map) {
     List<Widget> widgets = [];
     map.forEach((key, value) {
-      widgets.add(GridView.builder(
+      widgets.add(ListView.separated(
+        separatorBuilder: (context, index) => SizedBox(
+          height: 14,
+        ),
         itemBuilder: (context, index) {
-          return ActivityProfileCard(activity: value[index]);
+          return Container(
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(.3),
+                    offset: Offset(0, 4),
+                    spreadRadius: .5,
+                    blurRadius: 5)
+              ], borderRadius: BorderRadius.circular(15)),
+              height: 225,
+              child: ActivityProfileCard(activity: value[index]));
         },
         itemCount: value.length,
         padding: EdgeInsets.all(12),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 500.0,
-          mainAxisSpacing: 16.0,
-          childAspectRatio: 16 / 9.25,
-        ),
       ));
     });
     return widgets;
@@ -75,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return widgets;
   }
 
-  Widget buildCartItem(Activity item) {
+  Widget buildCartItem(Activity item, bool last) {
     return Align(
       child: CachedNetworkImage(
         imageUrl: item.images[0],
@@ -100,17 +107,20 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       alignment: Alignment.centerLeft,
-      widthFactor: 0.7,
+      widthFactor: last ? 1 : .7,
     );
   }
 
   Widget buildCartList(List<Activity> cart) {
     return ListView.builder(
-        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         scrollDirection: Axis.horizontal,
         itemCount: cart.length,
         itemBuilder: (context, index) {
-          return buildCartItem(cart[index]);
+          if (index == cart.length - 1) {
+            return buildCartItem(cart[index], true);
+          }
+          return buildCartItem(cart[index], false);
         });
   }
 
@@ -135,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
-                          border: Border.all(width: 6, color: Colors.black),
+                          border: Border.all(width: 5, color: Colors.black),
                           shape: BoxShape.circle,
                           image: DecorationImage(
                               image: imageProvider, fit: BoxFit.cover),
@@ -149,17 +159,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(width: 8),
-              Text(item.price,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 16, color: Colors.grey))
+              // SizedBox(width: 8),
+              // Text(item.price,
+              //     textAlign: TextAlign.right,
+              //     style: TextStyle(fontSize: 16, color: Colors.grey))
             ],
           ),
           GestureDetector(
             onTap: () {
+              HapticFeedback.selectionClick();
               cartModel.removeFromCart(item);
             },
-            child: Icon(Icons.highlight_off_rounded, color: Colors.red),
+            child: Icon(Ionicons.close_circle_outline, color: Colors.red),
           )
         ],
       ),
@@ -168,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildLowerCartList(List<Activity> cart) {
     return ListView.builder(
-        padding: EdgeInsets.only(top: 20),
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemCount: cart.length,
@@ -178,242 +189,265 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildPlacesList(List<Activity> cart) {
-    return AnimatedCrossFade(
-        alignment: Alignment.center,
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 400),
+      switchInCurve: Curves.ease,
+      switchOutCurve: Curves.ease,
+      child: !scrolled ? buildBottomBar(cart) : buildBottomPage(cart),
+    );
+  }
+
+  Widget buildBottomPage(List<Activity> cart) {
+    return AnimatedSwitcher(
+        switchInCurve: Curves.ease,
+        switchOutCurve: Curves.ease,
         duration: Duration(milliseconds: 300),
         reverseDuration: Duration(milliseconds: 300),
-        crossFadeState:
-            !scrolled ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-        firstCurve: Curves.ease,
-        secondCurve: Curves.ease,
-        sizeCurve: Curves.ease,
-        firstChild: AbsorbPointer(
-          absorbing: scrolled,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Places',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  SizedBox(width: 16),
-                  ShaderMask(
-                    shaderCallback: (Rect bounds) {
-                      return LinearGradient(
-                        begin: Alignment.center,
-                        end: Alignment.centerRight,
-                        colors: <Color>[
-                          Colors.transparent,
-                          Colors.transparent,
-                          Colors.black
+        child: cart.isNotEmpty
+            ? Center(
+                key: ValueKey('notempty'),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 60.0),
+                              child: Text('Activities',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 32)),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          ConstrainedBox(
+                              constraints: new BoxConstraints(
+                                minHeight: 35.0,
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * .345,
+                              ),
+                              child: buildLowerCartList(cart)),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                right: 8.0, left: 24.0, bottom: 8, top: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey),
+                                    child: Icon(
+                                      Ionicons.information_circle,
+                                      color: Colors.white,
+                                    )),
+                                SizedBox(width: 18),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Maximum Choices',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[400]),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        'Currently you are at ${cart.length} places. You can scroll through this list. Your limit is ${cartModel.limit}.',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600]),
+                                      ),
+                                      SizedBox(height: 10),
+                                      AnimatedContainer(
+                                          padding: EdgeInsets.only(
+                                              right: (((cartModel.limit -
+                                                              cart.length))
+                                                          .clamp(0,
+                                                              cartModel.limit) /
+                                                      cartModel.limit) *
+                                                  210),
+                                          duration: Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          height: 5,
+                                          width: 210,
+                                          child: AnimatedContainer(
+                                              duration:
+                                                  Duration(milliseconds: 300),
+                                              curve: Curves.ease,
+                                              decoration: BoxDecoration(
+                                                color: cart.length >=
+                                                        cartModel.limit
+                                                    ? Theme.of(context)
+                                                        .accentColor
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              )))
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
                         ],
-                      ).createShader(bounds);
-                    },
-                    blendMode: BlendMode.srcATop,
-                    child: Container(
-                        width: MediaQuery.of(context).size.width * .5,
-                        height: 40,
-                        child: buildCartList(cart)),
+                      ),
+                      AbsorbPointer(
+                        absorbing: !cartModel.modified,
+                        child: TapBuilder(
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            List<String> aids = cartModel.saveChanges();
+                            context
+                                .read<FirestoreService>()
+                                .updateUserFieldByAuth(
+                                    context.read<User>(), 'activities', aids);
+                          },
+                          builder: (context, state) {
+                            return AnimatedContainer(
+                              alignment: Alignment.center,
+                              curve: Curves.ease,
+                              duration: Duration(milliseconds: 200),
+                              width: MediaQuery.of(context).size.width * .85,
+                              height: MediaQuery.of(context).size.width * .12,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: cartModel.modified
+                                      ? state != TapState.pressed
+                                          ? Theme.of(context).accentColor
+                                          : Theme.of(context).highlightColor
+                                      : Colors.grey),
+                              child: Text('Start Swiping',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16)),
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            : Center(
+                key: ValueKey('empty'),
+                child: Padding(
+                    padding: EdgeInsets.only(top: 200),
+                    child: Column(
+                      children: [
+                        Icon(Icons.arrow_upward_rounded,
+                            color: Colors.white, size: 45),
+                        SizedBox(height: 30),
+                        Container(
+                          width: 200,
+                          child: Text(
+                            "This page shows your chosen places at a glance, but you haven't added any places yet! \n\nScroll up to do so.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    )),
+              ));
+  }
+
+  Widget buildBottomBar(List<Activity> cart) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: AbsorbPointer(
+        absorbing: scrolled,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Icon(
+                    Ionicons.bookmarks_outline,
+                    color: Colors.white,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: <Color>[
+                                Colors.black,
+                                Colors.transparent,
+                                Colors.transparent,
+                                Colors.black,
+                              ],
+                              stops: [
+                                0,
+                                .05,
+                                .95,
+                                1,
+                              ]).createShader(bounds);
+                        },
+                        blendMode: BlendMode.srcOver,
+                        child:
+                            Container(height: 50, child: buildCartList(cart)),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              GestureDetector(
-                onTap: cartModel.modified
-                    ? () {
-                        context.read<FirestoreService>().updateUserFieldByAuth(
-                            context.read<User>(),
-                            'activities',
-                            cartModel.saveChanges());
-                      }
-                    : null,
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.ease,
-                  height: 56,
-                  width: 56,
-                  decoration: BoxDecoration(
+            ),
+            TapBuilder(
+              onTap: cartModel.modified
+                  ? () {
+                      HapticFeedback.mediumImpact();
+                      _controller.animateTo(
+                          _controller.position.maxScrollExtent,
+                          curve: Curves.ease,
+                          duration: Duration(milliseconds: 400));
+                    }
+                  : null,
+              builder: (context, state) => AnimatedContainer(
+                duration: Duration(milliseconds: 600),
+                curve: Curves.ease,
+                height: 56,
+                width: 56,
+                decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                        width: 2,
-                        color: cartModel.modified
-                            ? cart.length == cartModel.limit
-                                ? Theme.of(context).accentColor
-                                : Theme.of(context).highlightColor
-                            : Colors.grey),
-                  ),
-                  child: Center(
-                    child: !(cart.length == cartModel.limit)
-                        ? Text('${cartModel.limit - cart.length}',
-                            style: TextStyle(
+                    color: cartModel.modified
+                        ? cart.length == cartModel.limit
+                            ? Theme.of(context).accentColor
+                            : Theme.of(context).highlightColor
+                        : Colors.grey),
+                child: Center(
+                  child: !(cart.length == cartModel.limit)
+                      ? Text('${cartModel.limit - cart.length}',
+                          style: TextStyle(
                               fontSize: 20,
-                              color: cartModel.modified
-                                  ? cart.length == cartModel.limit
-                                      ? Theme.of(context).accentColor
-                                      : Theme.of(context).highlightColor
-                                  : Colors.grey,
-                            ))
-                        : Icon(
-                            Icons.check_rounded,
-                            color: cartModel.modified
-                                ? cart.length == cartModel.limit
-                                    ? Theme.of(context).accentColor
-                                    : Theme.of(context).highlightColor
-                                : Colors.grey,
-                          ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        secondChild: AnimatedCrossFade(
-            crossFadeState: cart.isNotEmpty
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            firstCurve: Curves.ease,
-            secondCurve: Curves.ease,
-            duration: Duration(milliseconds: 600),
-            reverseDuration: Duration(milliseconds: 600),
-            firstChild: Center(
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: Text('Places',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 36)),
-                          ),
+                              color: Theme.of(context).primaryColor))
+                      : Icon(
+                          Icons.check_rounded,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        SizedBox(height: 10),
-                        ConstrainedBox(
-                            constraints: new BoxConstraints(
-                              minHeight: 35.0,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * .37,
-                            ),
-                            child: buildLowerCartList(cart)),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              right: 8.0, left: 24.0, bottom: 8, top: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey),
-                                  child: Icon(
-                                    Icons.info_rounded,
-                                    color: Colors.white,
-                                  )),
-                              SizedBox(width: 18),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 10),
-                                    Text(
-                                      'Maximum Choices',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[400]),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      'Currently you are at ${cart.length} places. You can scroll through this list. Your limit is ${cartModel.limit}.',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[600]),
-                                    ),
-                                    SizedBox(height: 20),
-                                    AnimatedContainer(
-                                        padding: EdgeInsets.only(
-                                            right: (((cartModel.limit -
-                                                            cart.length))
-                                                        .clamp(0,
-                                                            cartModel.limit) /
-                                                    cartModel.limit) *
-                                                210),
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.ease,
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        height: 5,
-                                        width: 210,
-                                        child: AnimatedContainer(
-                                            duration:
-                                                Duration(milliseconds: 300),
-                                            curve: Curves.ease,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  cart.length >= cartModel.limit
-                                                      ? Theme.of(context)
-                                                          .accentColor
-                                                      : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            )))
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    JungleButton(
-                      disabled: !cartModel.modified,
-                      onTap: () {
-                        context.read<FirestoreService>().updateUserFieldByAuth(
-                            context.read<User>(),
-                            'activities',
-                            cartModel.saveChanges());
-                      },
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * .35,
-                          vertical: 15),
-                      color: Theme.of(context).accentColor,
-                      child: Text('Save',
-                          style: TextStyle(color: Colors.black, fontSize: 16)),
-                    )
-                  ],
                 ),
               ),
             ),
-            secondChild: Center(
-              child: Padding(
-                  padding: EdgeInsets.only(top: 200),
-                  child: Column(
-                    children: [
-                      Icon(Icons.arrow_upward_rounded,
-                          color: Colors.white, size: 45),
-                      SizedBox(height: 30),
-                      Container(
-                        width: 200,
-                        child: Text(
-                          "This page shows your chosen places at a glance, but you haven't added any places yet! \n\nScroll up to do so.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  )),
-            )));
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -423,6 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (activityMap == null) {
       return Center(child: CircularProgressIndicator.adaptive());
     }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(
@@ -441,74 +476,76 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(30))),
               child: DefaultTabController(
                 length: activityMap.length,
-                child: NestedScrollView(
-                  headerSliverBuilder:
-                      (BuildContext context, bool innerBoxIsScrolled) {
-                    return <Widget>[
-                      SliverAppBar(
-                        flexibleSpace: FlexibleSpaceBar(
-                          title: Container(
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                Text(
-                                  'Discover',
-                                ),
-                              ],
-                            ),
+                child: SafeArea(
+                  bottom: false,
+                  right: false,
+                  left: false,
+                  child: NestedScrollView(
+                    headerSliverBuilder:
+                        (BuildContext context, bool innerBoxIsScrolled) {
+                      return <Widget>[
+                        SliverAppBar(
+                          flexibleSpace: FlexibleSpaceBar(
+                            title: Text('Explore',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                )),
+                            centerTitle: false,
+                            titlePadding: EdgeInsetsDirectional.only(
+                                start: 24, bottom: 13),
                           ),
-                          centerTitle: false,
-                          titlePadding:
-                              EdgeInsetsDirectional.only(start: 12, bottom: 16),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          expandedHeight: 125,
+                          elevation: 0,
+                          pinned: false,
+                          actions: [
+                            IconButton(
+                                iconSize: 30,
+                                icon: Icon(Ionicons.person_circle_outline),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          fullscreenDialog: true,
+                                          builder: (context) => ProfilePage()));
+                                }),
+                            IconButton(
+                                iconSize: 30,
+                                icon: Icon(Ionicons.heart_outline),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MatchPage()));
+                                }),
+                            IconButton(
+                                iconSize: 30,
+                                icon: Icon(Ionicons.chatbubbles_outline),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatPage()));
+                                }),
+                          ],
                         ),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        expandedHeight: 150,
-                        elevation: 0,
-                        pinned: true,
-                        actions: [
-                          IconButton(
-                              icon: Icon(Icons.account_circle_rounded),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        fullscreenDialog: true,
-                                        builder: (context) => ProfilePage()));
-                              }),
-                          IconButton(
-                              icon: Icon(Icons.favorite),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MatchPage()));
-                              }),
-                          IconButton(
-                              icon: Icon(Icons.chat_bubble_rounded),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ChatPage()));
-                              }),
-                        ],
-                      ),
-                      SliverPersistentHeader(
-                        delegate: _SliverAppBarDelegate(TabBar(
-                          indicatorSize: TabBarIndicatorSize.label,
-                          isScrollable: true,
-                          indicator: BubbleTabIndicator(
-                            indicatorHeight: 25.0,
-                            indicatorColor: Theme.of(context).accentColor,
-                            tabBarIndicatorSize: TabBarIndicatorSize.label,
-                          ),
-                          tabs: tabBuilder(activityMap),
-                        )),
-                        pinned: true,
-                      ),
-                    ];
-                  },
-                  body: TabBarView(children: gridViewBuilder(activityMap)),
+                        SliverPersistentHeader(
+                          delegate: _SliverAppBarDelegate(TabBar(
+                            indicatorSize: TabBarIndicatorSize.label,
+                            isScrollable: true,
+                            indicator: BubbleTabIndicator(
+                              indicatorHeight: 25.0,
+                              indicatorColor: Theme.of(context).accentColor,
+                              tabBarIndicatorSize: TabBarIndicatorSize.label,
+                            ),
+                            tabs: tabBuilder(activityMap),
+                          )),
+                          pinned: true,
+                        ),
+                      ];
+                    },
+                    body: TabBarView(children: listViewBuilder(activityMap)),
+                  ),
                 ),
               ),
             ),
@@ -538,7 +575,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       color: Theme.of(context).primaryColor,
       child: _tabBar,
     );
