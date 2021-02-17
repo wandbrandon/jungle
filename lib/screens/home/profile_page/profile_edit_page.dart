@@ -43,19 +43,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           builder: (context, child) => Scaffold(
             appBar: AppBar(
               title: Text('Edit Profile'),
-              backgroundColor: Theme.of(context).backgroundColor,
               actions: [
-                FlatButton(
-                    textColor: Theme.of(context).accentColor,
-                    textTheme: ButtonTextTheme.normal,
+                TextButton(
                     onPressed: () async {
-                      await context.read<FirestoreService>().updateUserByAuth(
-                          context.read<User>(),
-                          models.UserModel.fromJson(tempUser));
+                      await context.read<FirestoreService>().updateUserByUID(
+                          tempUser['uid'], models.UserModel.fromJson(tempUser));
                       Navigator.of(context).pop();
                     },
                     child: Center(
-                      child: Text('Save', style: TextStyle(fontSize: 16)),
+                      child: Text('Save',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).accentColor)),
                     ))
               ],
               elevation: 0,
@@ -310,9 +309,9 @@ class _ImageSettingState extends State<ImageSetting> {
       setState(() {
         isLoading = false;
       });
+      context.read<_ProfileEditPageState>().changeValue('images', urls);
     } else {
       print('No image selected.');
-      context.read<_ProfileEditPageState>().changeValue('images', urls);
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:jungle/models/user_model.dart';
+import 'package:jungle/screens/home/chats_page/chat_page.dart';
 import 'package:tap_builder/tap_builder.dart';
 
 class MatchedDialog extends StatefulWidget {
@@ -60,8 +61,8 @@ class _MatchedDialogState extends State<MatchedDialog> {
                         Positioned(
                           right: 20,
                           child: CachedNetworkImage(
-                            imageUrl: widget.currentUser.images[0],
-                            cacheKey: widget.currentUser.images[0],
+                            imageUrl: widget.user.images[0],
+                            cacheKey: widget.user.images[0],
                             imageBuilder: (context, imageProvider) => Container(
                               height: 125,
                               width: 125,
@@ -79,8 +80,8 @@ class _MatchedDialogState extends State<MatchedDialog> {
                         Positioned(
                           left: 20,
                           child: CachedNetworkImage(
-                            imageUrl: widget.user.images[0],
-                            cacheKey: widget.user.images[0],
+                            imageUrl: widget.currentUser.images[0],
+                            cacheKey: widget.currentUser.images[0],
                             imageBuilder: (context, imageProvider) => Container(
                               height: 125,
                               width: 125,
@@ -104,6 +105,23 @@ class _MatchedDialogState extends State<MatchedDialog> {
                         },
                         child: Text(
                           'Keep Swiping',
+                        ),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                        color: Theme.of(context).primaryColor),
+                    RaisedButton(
+                        focusElevation: 0,
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ChatPage()),
+                              (route) => route.isFirst);
+                        },
+                        child: Text(
+                          'Go to Chats',
                         ),
                         elevation: 0,
                         shape: RoundedRectangleBorder(

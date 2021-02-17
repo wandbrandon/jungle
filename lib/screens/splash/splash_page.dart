@@ -14,221 +14,280 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
+  bool signInClicked = false;
+
   @override
   Widget build(BuildContext context) {
-    int ms = 500;
-    return ShaderMask(
-      blendMode: Theme.of(context).brightness == Brightness.dark
-          ? BlendMode.multiply
-          : BlendMode.screen,
-      shaderCallback: (bounds) => LinearGradient(
-          stops: [.08, .7],
-          begin: Alignment.bottomRight,
-          end: Alignment.topLeft,
-          colors: [
-            Color(0xFFc3bf4a),
-            Theme.of(context).accentColor,
-          ]).createShader(bounds),
-      child: Scaffold(
-        backgroundColor: Theme.of(context).textTheme.bodyText1.color,
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: CombinedWave(
-                reverse: false,
-                models: const [
-                  SinusoidalModel(
-                    amplitude: 10,
-                    waves: 3,
-                    translate: 2.5,
-                    frequency: 0.5,
-                  ),
-                  SinusoidalModel(
-                    amplitude: 5,
-                    waves: 3,
-                    translate: 7.5,
-                    frequency: 1.0,
-                  ),
-                  SinusoidalModel(
-                    amplitude: 20,
-                    waves: 1,
-                    translate: 0,
-                    frequency: 0.5,
-                  ),
-                ],
-                child: Container(
-                  height: MediaQuery.of(context).size.height * .43,
-                  color: Theme.of(context).primaryColor,
-                ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: Theme.of(context).brightness == Brightness.dark
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.light,
+      child: ShaderMask(
+        blendMode: Theme.of(context).brightness == Brightness.dark
+            ? BlendMode.multiply
+            : BlendMode.screen,
+        shaderCallback: (bounds) => LinearGradient(
+            stops: [.08, .8],
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
+            colors: [
+              Theme.of(context).highlightColor,
+              Theme.of(context).accentColor,
+            ]).createShader(bounds),
+        child: Scaffold(
+          backgroundColor: Theme.of(context).textTheme.bodyText1.color,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Image.asset(
+                'lib/assets/artboard.png',
+                color: Theme.of(context).primaryColor,
+                height: 300,
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: CombinedWave(
-                reverse: false,
-                models: const [
-                  SinusoidalModel(
-                    amplitude: 10,
-                    waves: 3,
-                    translate: 2.5,
-                    frequency: 0.5,
-                  ),
-                  SinusoidalModel(
-                    amplitude: 5,
-                    waves: 3,
-                    translate: 7.5,
-                    frequency: 1,
-                  ),
-                  SinusoidalModel(
-                    amplitude: 20,
-                    waves: 1,
-                    translate: .6,
-                    frequency: .5,
-                  ),
-                ],
-                child: Container(
-                  height: MediaQuery.of(context).size.height * .46,
-                  color: Theme.of(context).primaryColor.withOpacity(.3),
-                ),
+              SizedBox(
+                height: 65,
               ),
-            ),
-            Positioned(
-              bottom: MediaQuery.of(context).size.height * .025,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    right: 20, left: 20, top: 20, bottom: 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        width: MediaQuery.of(context).size.width * .79,
-                        child: RichText(
-                          text: TextSpan(
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        'When tapping Create Account or Sign in, you agree to our '),
-                                TextSpan(
-                                    text: 'Terms',
+              CombinedWave(
+                  models: const [
+                    SinusoidalModel(
+                      amplitude: 10,
+                      waves: 3,
+                      translate: 2.5,
+                      frequency: 0.5,
+                    ),
+                    SinusoidalModel(
+                      amplitude: 5,
+                      waves: 3,
+                      translate: 7.5,
+                      frequency: 1,
+                    ),
+                    SinusoidalModel(
+                      amplitude: 20,
+                      waves: 1,
+                      translate: .6,
+                      frequency: .5,
+                    ),
+                  ],
+                  child: Container(
+                    color: Theme.of(context).primaryColor,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(top: 40, bottom: 10),
+                    child: SafeArea(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * .81,
+                        child: Column(
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1
+                                          .color),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            'When tapping Create Account or Sign in, you agree to our '),
+                                    TextSpan(
+                                        text: 'Terms',
+                                        style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline)),
+                                    TextSpan(
+                                        text:
+                                            '. If you would like to learn more about how we handle data, check out our '),
+                                    TextSpan(
+                                        text: 'Privacy Policy',
+                                        style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline)),
+                                    TextSpan(text: '.'),
+                                  ]),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 20),
+                            AnimatedCrossFade(
+                              duration: Duration(milliseconds: 500),
+                              sizeCurve: Curves.ease,
+                              firstCurve: Curves.ease,
+                              secondCurve: Curves.ease,
+                              crossFadeState: !signInClicked
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              firstChild: buildFirst(context),
+                              secondChild: buildSecond(context),
+                            ),
+                            SizedBox(height: 20),
+                            RichText(
+                                text: TextSpan(
                                     style: TextStyle(
-                                        decoration: TextDecoration.underline)),
-                                TextSpan(
-                                    text:
-                                        '. If you would like to learn more about how we handle data, check out our '),
-                                TextSpan(
-                                    text: 'Privacy Policy',
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline)),
-                                TextSpan(text: '.'),
-                              ]),
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                        )),
-                    SizedBox(height: 20),
-                    TapBuilder(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInNum()));
-                        },
-                        builder: (context, state) => Transform.scale(
-                              alignment: Alignment.center,
-                              scale: state == TapState.pressed ? .95 : 1,
-                              child: AnimatedContainer(
-                                  width:
-                                      MediaQuery.of(context).size.width * .85,
-                                  height:
-                                      MediaQuery.of(context).size.height * .06,
-                                  duration: const Duration(milliseconds: 600),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        .color,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30)),
-                                  ),
-                                  child: Center(
-                                      child: Text('CREATE ACCOUNT',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .backgroundColor)))),
-                            )),
-                    SizedBox(height: 15),
-                    TapBuilder(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInNum()));
-                        },
-                        builder: (context, state) => Transform.scale(
-                              alignment: Alignment.center,
-                              scale: state == TapState.pressed ? .95 : 1,
-                              child: AnimatedContainer(
-                                  width:
-                                      MediaQuery.of(context).size.width * .85,
-                                  height:
-                                      MediaQuery.of(context).size.height * .06,
-                                  duration: const Duration(milliseconds: 600),
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    border: Border.all(
+                                        fontSize: 13,
                                         color: Theme.of(context)
                                             .textTheme
                                             .bodyText1
-                                            .color,
-                                        width: 2),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30)),
-                                  ),
-                                  child: Center(
-                                      child: Text('SIGN IN',
-                                          key: UniqueKey(),
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1
-                                                  .color)))),
-                            )),
-                    SizedBox(height: 20),
-                    RichText(
-                        text: TextSpan(
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .color),
-                            children: [
-                          TextSpan(text: 'Caught a bug? '),
-                          TextSpan(
-                              text: 'Click Here',
-                              style: TextStyle(
-                                  decoration: TextDecoration.underline)),
-                        ]))
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-                bottom: MediaQuery.of(context).size.height * .51,
-                child: Image.asset(
-                  'lib/assets/artboard.png',
-                  color: Theme.of(context).primaryColor,
-                  height: 300,
-                )),
-          ],
+                                            .color),
+                                    children: [
+                                  TextSpan(text: 'Caught a bug? '),
+                                  TextSpan(
+                                      text: 'Click Here',
+                                      style: TextStyle(
+                                          decoration:
+                                              TextDecoration.underline)),
+                                ]))
+                          ],
+                        ),
+                      ),
+                    ),
+                  )),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget buildFirst(BuildContext context) {
+    return Container(
+      key: ValueKey('create'),
+      child: Column(
+        children: [
+          TapBuilder(
+            onTap: () {
+              HapticFeedback.heavyImpact();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SignInNum()));
+            },
+            builder: (context, state) => AnimatedContainer(
+                height: 50,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+                alignment: Alignment.center,
+                transformAlignment: Alignment.center,
+                transform: state == TapState.pressed
+                    ? Matrix4.diagonal3Values(.95, .95, .95)
+                    : Matrix4.diagonal3Values(1, 1, 1),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                child: Text('CREATE ACCOUNT',
+                    style: TextStyle(color: Theme.of(context).primaryColor))),
+          ),
+          SizedBox(height: 15),
+          TapBuilder(
+            onTap: () {
+              HapticFeedback.heavyImpact();
+              setState(() {
+                signInClicked = !signInClicked;
+              });
+            },
+            builder: (context, state) => AnimatedContainer(
+                height: 50,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+                alignment: Alignment.center,
+                transformAlignment: Alignment.center,
+                transform: state == TapState.pressed
+                    ? Matrix4.diagonal3Values(.95, .95, .95)
+                    : Matrix4.diagonal3Values(1, 1, 1),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                      color: Theme.of(context).textTheme.bodyText1.color,
+                      width: 2),
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                child: Text('SIGN IN',
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSecond(BuildContext context) {
+    return Container(
+      key: ValueKey('signin'),
+      child: Column(
+        children: [
+          TapBuilder(
+            onTap: () {
+              HapticFeedback.heavyImpact();
+            },
+            builder: (context, state) => AnimatedContainer(
+                height: 50,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+                alignment: Alignment.center,
+                transformAlignment: Alignment.center,
+                transform: state == TapState.pressed
+                    ? Matrix4.diagonal3Values(.95, .95, .95)
+                    : Matrix4.diagonal3Values(1, 1, 1),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                child: Text('SIGN IN WITH APPLE ID',
+                    style: TextStyle(color: Theme.of(context).primaryColor))),
+          ),
+          SizedBox(height: 15),
+          TapBuilder(
+            onTap: () {
+              HapticFeedback.heavyImpact();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SignInNum()));
+            },
+            builder: (context, state) => AnimatedContainer(
+                height: 50,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+                alignment: Alignment.center,
+                transformAlignment: Alignment.center,
+                transform: state == TapState.pressed
+                    ? Matrix4.diagonal3Values(.95, .95, .95)
+                    : Matrix4.diagonal3Values(1, 1, 1),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                child: Text('SIGN IN WITH PHONE',
+                    style: TextStyle(color: Theme.of(context).primaryColor))),
+          ),
+          SizedBox(height: 15),
+          TapBuilder(
+              onTap: () {
+                HapticFeedback.heavyImpact();
+                setState(() {
+                  signInClicked = !signInClicked;
+                });
+              },
+              builder: (context, state) => Transform.scale(
+                    alignment: Alignment.center,
+                    scale: state == TapState.pressed ? .95 : 1,
+                    child: AnimatedContainer(
+                        width: MediaQuery.of(context).size.width * .85,
+                        height: MediaQuery.of(context).size.height * .06,
+                        duration: const Duration(milliseconds: 600),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1.color,
+                              width: 2),
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child: Center(
+                            child: Text('BACK',
+                                key: UniqueKey(),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color)))),
+                  )),
+        ],
       ),
     );
   }

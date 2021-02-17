@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,13 +28,10 @@ Future<void> main() async {
 List<Activity> activitiesFromDoc(
     DocumentSnapshot doc, Map<String, List<Activity>> activityMap) {
   List<Activity> activities = new List<Activity>.empty(growable: true);
-  if (doc == null) {
+  if (doc.data() == null || activityMap == null) {
     return activities;
   }
-  if (activityMap == null) {
-    return activities;
-  }
-  List userActivitiesByAID = doc.data()['activities'];
+  List userActivitiesByAID = doc.data()['activities'] ?? [];
   userActivitiesByAID.forEach((userAID) {
     activityMap.forEach((key, value) {
       value.forEach((element) {
@@ -52,8 +50,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    final firestoreService =
-        FirestoreService(FirebaseFirestore.instance, FirebaseStorage.instance);
+    final firestoreService = FirestoreService(FirebaseFirestore.instance,
+        FirebaseStorage.instance, FirebaseMessaging());
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationService>(
@@ -63,7 +61,7 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
         StreamProvider<DocumentSnapshot>(catchError: (context, object) {
-          print(object.toString());
+          print(object.toString() + 'Couldnt get user...');
           return null;
         }, create: (context) {
           final authchanged = context.read<AuthenticationService>();
@@ -78,29 +76,32 @@ class MyApp extends StatelessWidget {
           );
         }),
         FutureProvider<Map<String, List<Activity>>>(
-            lazy: false,
             create: (context) => firestoreService.getAllActivities()),
         ChangeNotifierProxyProvider2<DocumentSnapshot,
                 Map<String, List<Activity>>, ActivityState>(
-            lazy: false,
             create: (_) => ActivityState(7),
             update: (_, myDoc, myMap, myActivityState) {
+              if (myDoc == null || myMap == null || myActivityState == null) {
+                return ActivityState(7);
+              }
               myActivityState.set(activitiesFromDoc(myDoc, myMap));
               return myActivityState;
             }),
       ],
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: MaterialApp(
-            title: 'Jungle',
-            debugShowCheckedModeBanner: false,
-            theme: kLightTheme,
-            darkTheme: kDarkTheme,
-            home: AuthenticationWrapper(),
-            routes: {
-              '/splash': (context) => SplashPage(),
-            }),
-      ),
+      child: MaterialApp(
+          title: 'Jungle',
+          debugShowCheckedModeBanner: false,
+          theme: kLightTheme,
+          darkTheme: kDarkTheme,
+          home: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: Theme.of(context).brightness == Brightness.dark
+                  ? SystemUiOverlayStyle.dark
+                  : SystemUiOverlayStyle.light,
+              child: AuthenticationWrapper()),
+          routes: {
+            '/splash': (context) => SplashPage(),
+            '/home': (context) => HomeScreen(),
+          }),
     );
   }
 }
@@ -132,20 +133,32 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
       setState(() {
         opacity = !opacity;
       });
-      await Future.delayed(Duration(milliseconds: 2400));
+      await Future.delayed(Duration(milliseconds: 2500));
       print('done');
-      Navigator.pushAndRemoveUntil(
-          context, _createRoute(SplashPage()), (route) => false);
     }
+
     if (authUser == null) {
       Navigator.pushAndRemoveUntil(
           context, _createRoute(SplashPage()), (route) => false);
-    } else if (!dbUser.exists && authUser != null) {
-      Navigator.pushAndRemoveUntil(
-          context, _createRoute(UserName()), (route) => false);
-    } else if (dbUser != null && authUser != null)
-      Navigator.pushAndRemoveUntil(
-          context, _createRoute(HomeScreen()), (route) => false);
+    } else if (dbUser != null && authUser != null) {
+      if (!dbUser.exists && authUser != null) {
+        Navigator.pushAndRemoveUntil(
+            context, _createRoute(UserName()), (route) => false);
+      } else {
+        final firestore = context.read<FirestoreService>();
+        final fbmessage = firestore.fbmessaging;
+        await fbmessage.requestNotificationPermissions();
+        String token = await fbmessage.getToken();
+        print('token: $token');
+        await firestore.db
+            .collection('users')
+            .doc(dbUser.data()['uid'])
+            .update({'pushToken': token});
+
+        Navigator.pushAndRemoveUntil(
+            context, _createRoute(HomeScreen()), (route) => false);
+      }
+    }
   }
 
   Route _createRoute(Widget widget) {
@@ -169,24 +182,29 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   }
 
   Widget buildSplash() {
-    return Material(
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 2300),
-        curve: Curves.ease,
-        alignment: Alignment.center,
-        color: opacity
-            ? Theme.of(context).accentColor
-            : Theme.of(context).highlightColor,
-        child: AnimatedOpacity(
-            opacity: opacity ? 1 : 0,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: Theme.of(context).brightness == Brightness.dark
+            ? SystemUiOverlayStyle.dark
+            : SystemUiOverlayStyle.light,
+        child: Material(
+          child: AnimatedContainer(
             duration: Duration(milliseconds: 2300),
             curve: Curves.ease,
-            child: Image.asset(
-              'lib/assets/artboard.png',
-              height: 200,
-            )),
-      ),
-    );
+            alignment: Alignment.center,
+            color: opacity
+                ? Theme.of(context).accentColor
+                : Theme.of(context).highlightColor,
+            child: AnimatedOpacity(
+                opacity: opacity ? 1 : 0,
+                duration: Duration(milliseconds: 2300),
+                curve: Curves.ease,
+                child: Image.asset(
+                  'lib/assets/artboard.png',
+                  height: 200,
+                  color: Theme.of(context).primaryColor,
+                )),
+          ),
+        ));
   }
 
   @override

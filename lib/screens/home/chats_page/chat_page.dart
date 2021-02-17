@@ -12,7 +12,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  String error;
+  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,8 @@ class _ChatPageState extends State<ChatPage> {
         elevation: 0,
         title: Text('Messages'),
       ),
-      body: FutureProvider<QuerySnapshot>(
+      body: StreamProvider<QuerySnapshot>(
+          updateShouldNotify: (_, __) => true,
           create: (context) => firestore.getChatRoomsByUID(currentUser.uid),
           catchError: (context, object) {
             print(object.toString());
@@ -36,24 +37,24 @@ class _ChatPageState extends State<ChatPage> {
           },
           builder: (context, child) {
             final querySnaps = context.watch<QuerySnapshot>();
-            if (querySnaps == null && error == null) {
+            if (querySnaps == null) {
               return Center(child: CircularProgressIndicator.adaptive());
-            } else if (error != null) {
+            } else if (error != '') {
               return Center(
                   child:
                       Text('Something went wrong, try again later. \n$error'));
-            } else if (querySnaps.size == 0) {
+            } else if (querySnaps.docs.isEmpty) {
               return Center(
                 child: Text(
                   "You haven't matched with anyone yet. \nKeep swiping!",
                   textAlign: TextAlign.center,
                 ),
               );
+            } else {
+              return MessageQueue(
+                currentUser: currentUser,
+              );
             }
-            return MessageQueue(
-              chatRooms: querySnaps.docs,
-              currentUserUID: currentUser.uid,
-            );
           }),
     );
   }

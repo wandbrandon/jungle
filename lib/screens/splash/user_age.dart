@@ -88,8 +88,6 @@ class _UserAgeState extends State<UserAge> {
                           });
                           widget.tempUser.age =
                               int.parse(textController.text.trim());
-                          // context.read<FirestoreService>().createUser(
-                          //     context.read<User>().uid, widget.tempUser);
                           Navigator.push(
                               context,
                               MaterialPageRoute(

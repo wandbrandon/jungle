@@ -11,7 +11,6 @@ import 'package:jungle/screens/home/profile_page/current_profile_page.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:tap_builder/tap_builder.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -28,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool scrolled = false;
   Map<String, List<Activity>> activityMap;
   ActivityState cartModel;
+  UserModel currentUser;
 
   @override
   void initState() {
@@ -46,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
         scrolled = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   List<Widget> listViewBuilder(Map<String, List<Activity>> map) {
@@ -159,10 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 textAlign: TextAlign.left,
               ),
-              // SizedBox(width: 8),
-              // Text(item.price,
-              //     textAlign: TextAlign.right,
-              //     style: TextStyle(fontSize: 16, color: Colors.grey))
             ],
           ),
           GestureDetector(
@@ -197,7 +199,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildBottomPage(List<Activity> cart) {
+  Widget buildBottomPage(
+    List<Activity> cart,
+  ) {
     return AnimatedSwitcher(
         switchInCurve: Curves.ease,
         switchOutCurve: Curves.ease,
@@ -309,13 +313,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       AbsorbPointer(
                         absorbing: !cartModel.modified,
                         child: TapBuilder(
-                          onTap: () {
+                          onTap: () async {
                             HapticFeedback.mediumImpact();
                             List<String> aids = cartModel.saveChanges();
-                            context
+                            setState(() {
+                              currentUser.activities = aids;
+                            });
+                            await context
                                 .read<FirestoreService>()
-                                .updateUserFieldByAuth(
-                                    context.read<User>(), 'activities', aids);
+                                .updateUserByAuth(
+                                    context.read<User>(), currentUser);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MatchPage()));
                           },
                           builder: (context, state) {
                             return AnimatedContainer(
@@ -454,108 +465,129 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     activityMap = context.watch<Map<String, List<Activity>>>();
     cartModel = context.watch<ActivityState>();
+    currentUser = UserModel.fromJson(context.watch<DocumentSnapshot>().data());
     if (activityMap == null) {
       return Center(child: CircularProgressIndicator.adaptive());
     }
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: ListView(
-        shrinkWrap: true,
-        controller: _controller,
-        physics: PageScrollPhysics(parent: ClampingScrollPhysics()),
-        padding: EdgeInsets.zero,
-        children: [
-          AbsorbPointer(
-            absorbing: scrolled,
-            child: Container(
-              height: MediaQuery.of(context).size.height * .84,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.all(Radius.circular(30))),
-              child: DefaultTabController(
-                length: activityMap.length,
-                child: SafeArea(
-                  bottom: false,
-                  right: false,
-                  left: false,
-                  child: NestedScrollView(
-                    headerSliverBuilder:
-                        (BuildContext context, bool innerBoxIsScrolled) {
-                      return <Widget>[
-                        SliverAppBar(
-                          flexibleSpace: FlexibleSpaceBar(
-                            title: Text('Explore',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                )),
-                            centerTitle: false,
-                            titlePadding: EdgeInsetsDirectional.only(
-                                start: 24, bottom: 13),
-                          ),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          expandedHeight: 125,
-                          elevation: 0,
-                          pinned: false,
-                          actions: [
-                            IconButton(
-                                iconSize: 30,
-                                icon: Icon(Ionicons.person_circle_outline),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          fullscreenDialog: true,
-                                          builder: (context) => ProfilePage()));
-                                }),
-                            IconButton(
-                                iconSize: 30,
-                                icon: Icon(Ionicons.heart_outline),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MatchPage()));
-                                }),
-                            IconButton(
-                                iconSize: 30,
-                                icon: Icon(Ionicons.chatbubbles_outline),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ChatPage()));
-                                }),
-                          ],
-                        ),
-                        SliverPersistentHeader(
-                          delegate: _SliverAppBarDelegate(TabBar(
-                            indicatorSize: TabBarIndicatorSize.label,
-                            isScrollable: true,
-                            indicator: BubbleTabIndicator(
-                              indicatorHeight: 25.0,
-                              indicatorColor: Theme.of(context).accentColor,
-                              tabBarIndicatorSize: TabBarIndicatorSize.label,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: Theme.of(context).brightness != Brightness.dark
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: ListView(
+          shrinkWrap: true,
+          controller: _controller,
+          physics: PageScrollPhysics(parent: ClampingScrollPhysics()),
+          padding: EdgeInsets.zero,
+          children: [
+            AbsorbPointer(
+              absorbing: scrolled,
+              child: Container(
+                height: MediaQuery.of(context).size.height * .84,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
+                child: DefaultTabController(
+                  length: activityMap.length,
+                  child: SafeArea(
+                    bottom: false,
+                    right: false,
+                    left: false,
+                    child: NestedScrollView(
+                      headerSliverBuilder:
+                          (BuildContext context, bool innerBoxIsScrolled) {
+                        return <Widget>[
+                          SliverAppBar(
+                            flexibleSpace: FlexibleSpaceBar(
+                              title: Text('Explore',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                              centerTitle: false,
+                              titlePadding: EdgeInsetsDirectional.only(
+                                  start: 24, bottom: 13),
                             ),
-                            tabs: tabBuilder(activityMap),
-                          )),
-                          pinned: true,
-                        ),
-                      ];
-                    },
-                    body: TabBarView(children: listViewBuilder(activityMap)),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            expandedHeight: 125,
+                            elevation: 0,
+                            pinned: false,
+                            actions: [
+                              IconButton(
+                                  icon: CachedNetworkImage(
+                                    cacheKey: currentUser.images[0],
+                                    imageUrl: currentUser.images[0],
+                                    imageBuilder: (context, image) {
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                                image: image,
+                                                fit: BoxFit.cover)),
+                                      );
+                                    },
+                                    placeholder: (context, string) => Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive()),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            fullscreenDialog: true,
+                                            builder: (context) =>
+                                                ProfilePage()));
+                                  }),
+                              IconButton(
+                                  iconSize: 30,
+                                  icon: Icon(Ionicons.heart_outline),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => MatchPage()));
+                                  }),
+                              IconButton(
+                                  iconSize: 30,
+                                  icon: Icon(Ionicons.chatbubbles_outline),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ChatPage()));
+                                  }),
+                            ],
+                          ),
+                          SliverPersistentHeader(
+                            delegate: _SliverAppBarDelegate(TabBar(
+                              indicatorSize: TabBarIndicatorSize.label,
+                              isScrollable: true,
+                              indicator: BubbleTabIndicator(
+                                indicatorHeight: 25.0,
+                                indicatorColor: Theme.of(context).accentColor,
+                                tabBarIndicatorSize: TabBarIndicatorSize.label,
+                              ),
+                              tabs: tabBuilder(activityMap),
+                            )),
+                            pinned: true,
+                          ),
+                        ];
+                      },
+                      body: TabBarView(children: listViewBuilder(activityMap)),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Container(
-              height: MediaQuery.of(context).size.height * .84,
-              padding: EdgeInsets.all(24),
-              color: Colors.black,
-              child: buildPlacesList(cartModel.getCart)),
-        ],
+            Container(
+                height: MediaQuery.of(context).size.height * .84,
+                padding: EdgeInsets.all(24),
+                color: Colors.black,
+                child: buildPlacesList(cartModel.getCart)),
+          ],
+        ),
       ),
     );
   }

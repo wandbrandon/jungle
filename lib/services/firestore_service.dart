@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:jungle/models/models.dart';
 import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,14 +9,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirestoreService {
   final FirebaseFirestore db;
   final FirebaseStorage storage;
+  final FirebaseMessaging fbmessaging;
 
-  FirestoreService(this.db, this.storage);
+  FirestoreService(this.db, this.storage, this.fbmessaging);
 
-  Future<void> createUser(String uid, UserModel user) {
+  Future<void> createUser(String uid, UserModel user) async {
     CollectionReference users = db.collection('users');
+    final usermap = user.toJson();
+
     return users
         .doc(uid)
-        .set(user.toJson())
+        .set(usermap)
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
   }
@@ -94,8 +96,18 @@ class FirestoreService {
     return db.collection('users').doc(authUser.uid).snapshots();
   }
 
-  Future<void> updateUserByAuth(User authUser, UserModel user) {
+  Future<void> updateUserByAuth(User authUser, UserModel user) async {
     CollectionReference users = db.collection('users');
+    CollectionReference chats = db.collection('chats');
+    QuerySnapshot qs =
+        await chats.where('UIDs', arrayContains: authUser.uid).get();
+    if (qs != null) {
+      if (qs.size != 0) {
+        Future.forEach(qs.docs, (QueryDocumentSnapshot element) async {
+          element.reference.update({'users.${authUser.uid}': user.toJson()});
+        });
+      }
+    }
     return users
         .doc(authUser.uid)
         .update(user.toJson())
@@ -103,33 +115,22 @@ class FirestoreService {
         .catchError((error) => print("Failed to update user: $error"));
   }
 
-  Future<void> updateUserByUID(String uid, UserModel user) {
+  Future<void> updateUserByUID(String uid, UserModel user) async {
     CollectionReference users = db.collection('users');
+    CollectionReference chats = db.collection('chats');
+    QuerySnapshot qs = await chats.where('UIDs', arrayContains: uid).get();
+    if (qs != null) {
+      if (qs.size != 0) {
+        Future.forEach(qs.docs, (QueryDocumentSnapshot element) async {
+          element.reference.update({'users.$uid': user.toJson()});
+        });
+      }
+    }
     return users
         .doc(uid)
         .update(user.toJson())
         .then((value) => print("User Updated"))
         .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> updateUserFieldByAuth(
-      User authUser, String identifier, dynamic value) {
-    CollectionReference users = db.collection('users');
-    return users
-        .doc(authUser.uid)
-        .update({identifier: value})
-        .then((value) => print("User Field Updated"))
-        .catchError((error) => print("Failed to update user field: $error"));
-  }
-
-  Future<void> updateUserFieldByUID(
-      String uid, String identifier, dynamic value) {
-    CollectionReference users = db.collection('users');
-    return users
-        .doc(uid)
-        .update({identifier: value})
-        .then((value) => print("User Field Updated"))
-        .catchError((error) => print("Failed to update user field: $error"));
   }
 
   Future<bool> userExistsByAuth(User authUser) async {
@@ -178,15 +179,13 @@ class FirestoreService {
     });
   }
 
-  Future<QuerySnapshot> getChatRoomsByUID(String uid) {
-    print('querying chat rooms...');
+  Stream<QuerySnapshot> getChatRoomsByUID(String uid) {
+    print('querying chat rooms for $uid...');
     CollectionReference chats = db.collection('chats');
     return chats
         .where('UIDs', arrayContains: uid)
         .orderBy('last_updated')
-        .get();
-    // .then((value) => print('Successfully got all relevant chat rooms.'))
-    // .catchError((onError) => print('Failed to get chat rooms: $onError'));
+        .snapshots();
   }
 
   Future<void> createChatRoom(UserModel user1, UserModel user2) {
@@ -197,32 +196,96 @@ class FirestoreService {
     return chats
         .doc(chatid)
         .set({
+          'chatID': chatid,
           'UIDs': [user1.uid, user2.uid],
-          'users': [user1.toJson(), user2.toJson()],
-          'dateSet': false,
-          'last_updated': DateTime.now()
+          'users': {
+            '${user1.uid}': user1.toJson(),
+            '${user2.uid}': user2.toJson()
+          },
+          'dateUsersAccepted': {'${user1.uid}': false, '${user2.uid}': false},
+          'created': DateTime.now(),
+          'last_updated': DateTime.now(),
+          'lastMessage': "",
+          'lastMessageSentBy': "",
+          'lastMessageRead': false
         })
         .then((value) => print("ChatRoom created"))
         .catchError((error) => print("Failed to create chat room: $error"));
   }
 
-  Stream<QuerySnapshot> getMessagesStream(String uid1, String uid2) {
-    String chatid = uid1.compareTo(uid2) > 0 ? uid1 + uid2 : uid2 + uid2;
+  Future<void> updateChatRoom(String chatid, String field, dynamic data) {
     CollectionReference chats = db.collection('chats');
     return chats
         .doc(chatid)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .limit(50)
-        .snapshots();
+        .update({field: data})
+        .then((value) => print("ChatRoom updated"))
+        .catchError((error) => print("Failed to update chat room: $error"));
   }
 
-  Future<void> sendMessage(String fromUID, String uid2, Message message) {
-    String chatid = fromUID.compareTo(uid2) > 0 ? fromUID + uid2 : uid2 + uid2;
+  Future<void> updateChatRoomMessage(String chatid, Message message) {
+    CollectionReference chats = db.collection('chats');
+    return chats
+        .doc(chatid)
+        .update({
+          'lastMessage': message.message,
+          'lastMessageSentBy': message.fromUID,
+          'lastMessageRead': false
+        })
+        .then((value) => print("ChatRoom updated"))
+        .catchError((error) => print("Failed to update chat room: $error"));
+  }
+
+  Future<void> updateChatRoomDateSet(String chatid, bool date, UserModel from) {
+    CollectionReference chats = db.collection('chats');
+    if (chatid.indexOf(from.uid) == 0) {
+      return chats
+          .doc(chatid)
+          .update({
+            'dateUser1Accepted': true,
+          })
+          .then((value) => print("ChatRoom updated"))
+          .catchError((error) => print("Failed to update chat room: $error"));
+    } else if (chatid.indexOf(from.uid) > 0) {
+      return chats
+          .doc(chatid)
+          .update({
+            'dateUser2Accepted': true,
+          })
+          .then((value) => print("ChatRoom updated"))
+          .catchError((error) => print("Failed to update chat room: $error"));
+    } else {
+      throw 'Uh-oh that should not have happened.';
+    }
+  }
+
+  Stream<List<Message>> getMessagesStream(String chatid) {
+    print('getting messages for $chatid...');
+    CollectionReference chats = db.collection('chats');
+    try {
+      return chats
+          .doc(chatid)
+          .collection('messages')
+          .orderBy('timestamp', descending: true)
+          .limit(50)
+          .snapshots()
+          .map((event) =>
+              event.docs.map((e) => Message.fromJson(e.data())).toList());
+    } on Exception catch (e) {
+      print(e);
+      return Stream.error(e.toString());
+    }
+  }
+
+  Future<void> sendMessage(String chatid, Message message) {
     CollectionReference chats = db.collection('chats');
     chats
         .doc(chatid)
-        .update({'last_updated': DateTime.now()})
+        .update({
+          'lastMessage': message.message,
+          'lastMessageSentBy': message.fromUID,
+          'lastMessageRead': false,
+          'last_updated': DateTime.now(),
+        })
         .then((value) => print('Chat Room updated.'))
         .catchError((error) => print('Failed to update Chat Room'));
     return chats
@@ -233,71 +296,31 @@ class FirestoreService {
         .catchError((error) => print('Failed to send message'));
   }
 
-  Future<List<Map<String, dynamic>>> getUnaffectedUsers(UserModel user) async {
+  Future<void> unmatch(String chatid) {
+    CollectionReference chats = db.collection('chats');
+    return chats
+        .doc(chatid)
+        .delete()
+        .then((value) => print('Successfully deleted Chat Room'))
+        .catchError((e) => print('Could not delete Chat Room: $e'));
+  }
+
+  Stream<QuerySnapshot> getUnaffectedUsers(UserModel user) {
     print('querying...');
     List<dynamic> likedOrDisliked = user.likes + user.dislikes;
     likedOrDisliked.add(user.uid);
-    QuerySnapshot qs1;
     Query query;
-    try {
-      //query for activities.
-      if (user.activities == null || user.activities.isEmpty) {
-        print('No activities have been chosen yet!');
-        throw "You haven't chosen any activities yet!";
-      } else {
-        query = db
-            .collection('users')
-            .where('uid', whereNotIn: likedOrDisliked)
-            .orderBy('uid')
-            .limit(50);
-        qs1 = await query.get();
-      }
-
-      if (qs1.size == 0) {
-        print('done, found nothing');
-        return [];
-      }
-
-      List<Map<String, dynamic>> firstQueryList = qs1.docs
-          .map((e) => e.data())
-          .toList()
-          .where((item) =>
-              user.lookingFor.contains(item['gender']) &&
-              user.activities
-                  .where((element) => item['activities']?.contains(element))
-                  .toList()
-                  .isNotEmpty)
-          .toList();
-
-      if (qs1.docs.length < 50) {
-        print('done, but it is trickling down');
-        return firstQueryList;
-      }
-
-      while (firstQueryList.isEmpty && qs1.docs.isNotEmpty) {
-        query = db
-            .collection('users')
-            .where('uid', whereNotIn: likedOrDisliked)
-            .orderBy('uid')
-            .startAfterDocument(qs1.docs.last)
-            .limit(50);
-        qs1 = await query.get();
-        firstQueryList = qs1.docs
-            .map((e) => e.data())
-            .toList()
-            .where((item) =>
-                !user.lookingFor.contains(item['gender']) ||
-                user.activities
-                    .where((element) => item['activities'].contains(element))
-                    .toList()
-                    .isNotEmpty)
-            .toList();
-      }
-      print('done, went through the loop!');
-      return firstQueryList;
-    } on FirebaseException catch (e) {
-      print(e);
-      throw e;
+    //query for activities.
+    if (user.activities == null || user.activities.isEmpty) {
+      print('No activities have been chosen yet!');
+      return Stream.error('No activities have been chosen yet!');
+    } else {
+      query = db
+          .collection('users')
+          .where('uid', whereNotIn: likedOrDisliked)
+          .orderBy('uid')
+          .limit(50);
+      return query.snapshots();
     }
   }
 }

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:jungle/screens/home/match_page/matched_dialog.dart';
@@ -21,17 +23,37 @@ class _MatchPageState extends State<MatchPage> {
   int currentCardIndex = 0;
   String error;
   bool liked = true;
-  UserModel userState;
+  UserModel otherUser;
 
-  @override
-  void initState() {
-    super.initState();
+  List<Map<String, dynamic>> fix(QuerySnapshot qs1, UserModel user) {
+    if (qs1.size == 0) {
+      print('done, found nothing');
+      return [];
+    }
+
+    List<Map<String, dynamic>> firstQueryList = qs1.docs
+        .map((e) => e.data())
+        .toList()
+        .where((item) =>
+            user.lookingFor.contains(item['gender']) &&
+            user.activities
+                .where((element) => item['activities']?.contains(element))
+                .toList()
+                .isNotEmpty)
+        .toList();
+
+    if (qs1.docs.length < 50) {
+      print('done, but it is trickling down');
+      return firstQueryList;
+    }
+    print('done, went through the loop!');
+    return firstQueryList;
   }
 
-  Route _createRoute(UserModel currentUser) {
+  Route _createRoute(UserModel currentUser, UserModel otherUser) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => MatchedDialog(
-        user: userState,
+        user: otherUser,
         currentUser: currentUser,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -51,24 +73,19 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  Future<void> swipeUser(UserModel currentUser) async {
+  Future<void> swipeUser(UserModel currentUser, UserModel userState) async {
     if (liked) {
       currentUser.likes.add(userState.uid);
       print('liked');
       if (userState.likes.contains(currentUser.uid)) {
-        currentUser.matches.add(userState.uid);
-        userState.matches.add(currentUser.uid);
         await context
             .read<FirestoreService>()
             .createChatRoom(currentUser, userState);
-        Navigator.push(context, _createRoute(currentUser));
+        Navigator.push(context, _createRoute(currentUser, userState));
       }
       await context
           .read<FirestoreService>()
-          .updateUserByAuth(context.read<User>(), currentUser);
-      await context
-          .read<FirestoreService>()
-          .updateUserFieldByUID(userState.uid, 'matches', userState.matches);
+          .updateUserByUID(currentUser.uid, currentUser);
     } else {
       currentUser.dislikes.add(userState.uid);
       print('disliked');
@@ -103,7 +120,7 @@ class _MatchPageState extends State<MatchPage> {
             centerTitle: true,
             actions: [
               IconButton(
-                  icon: Icon(Icons.filter_alt_outlined),
+                  icon: Icon(Ionicons.filter_outline),
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
@@ -123,31 +140,32 @@ class _MatchPageState extends State<MatchPage> {
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
-          child: FutureProvider<List<Map<String, dynamic>>>(
-              create: (_) => fireStoreService.getUnaffectedUsers(currentUser),
-              catchError: (_, catchedError) {
-                setState(() {
-                  error = catchedError.toString();
-                });
-                return null;
-              },
-              lazy: false,
-              builder: (context, child) {
-                final users = context.watch<List<Map<String, dynamic>>>();
-                if (error != null) return buildError(error);
-                if (users != null) {
-                  if (users.isNotEmpty) {
-                    return buildUsers(context, users, currentUser);
-                  } else {
-                    return Center(
-                        child: Text(
-                      'Nobody else around! \nTry changing your places!',
-                      style: Theme.of(context).textTheme.subtitle1,
-                      textAlign: TextAlign.center,
-                    ));
-                  }
+          child: StreamBuilder(
+              stream: fireStoreService.getUnaffectedUsers(currentUser),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  print('here!');
+                  return buildError(snapshot.error.toString());
                 } else {
-                  return buildLoading();
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.none:
+                      return buildLoading();
+                    case ConnectionState.active:
+                    case ConnectionState.done:
+                      final users = fix(snapshot.data, currentUser);
+                      if (users.isNotEmpty) {
+                        return buildUsers(context, users, currentUser);
+                      }
+                      return Center(
+                          child: Text(
+                        'Nobody else around! \nTry changing your places!',
+                        style: Theme.of(context).textTheme.subtitle1,
+                        textAlign: TextAlign.center,
+                      ));
+                    default:
+                      return buildLoading();
+                  }
                 }
               }),
         ),
@@ -184,7 +202,7 @@ class _MatchPageState extends State<MatchPage> {
         indexedCardBuilder:
             (context, index, rotateFraction, translateFraction) {
           UserModel user = UserModel.fromJson(users[index]);
-          userState = user;
+          otherUser = user;
           if (rotateFraction >= 1.0) {
             liked = true;
           } else if (rotateFraction <= -1.0) {
@@ -229,7 +247,8 @@ class _MatchPageState extends State<MatchPage> {
           setState(() {
             users.removeAt(0);
           });
-          swipeUser(currentUser);
+          HapticFeedback.heavyImpact();
+          swipeUser(currentUser, otherUser);
         },
       ),
     );

@@ -20,7 +20,6 @@ class UserModel {
   //matching values
   List<dynamic> likes;
   List<dynamic> dislikes;
-  List<dynamic> matches;
   List<dynamic> activities;
 
   UserModel(
@@ -35,7 +34,6 @@ class UserModel {
       this.age,
       this.likes,
       this.dislikes,
-      this.matches,
       this.activities});
 
   UserModel.fromJson(Map<String, dynamic> data)
@@ -50,7 +48,6 @@ class UserModel {
         images = data['images'] ?? [],
         likes = data['likes'] ?? [],
         dislikes = data['dislikes'] ?? [],
-        matches = data['matches'] ?? [],
         activities = data['activities'] ?? [];
 
   Map<String, dynamic> toJson() => {
@@ -61,11 +58,10 @@ class UserModel {
         'work': work,
         'gender': gender,
         'edu': edu,
-        'lookingFor': lookingFor,
-        'images': images,
-        'likes': likes,
-        'dislikes': dislikes,
-        'matches': matches,
-        'activities': activities,
+        'lookingFor': lookingFor ?? [],
+        'images': images ?? [],
+        'likes': likes ?? [],
+        'dislikes': dislikes ?? [],
+        'activities': activities ?? [],
       };
 }

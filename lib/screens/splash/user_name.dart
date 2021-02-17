@@ -28,16 +28,17 @@ class _UserNameState extends State<UserName> {
           builder: (context) => AlertDialog(
             title: Text('Are you sure?'),
             content: Text(
-                'Exiting the app will delete your current authentication, and return you to the main screen.'),
+                'Exiting the app will stop user creation, and return you to the main screen.'),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: Text('No'),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () {
-                  context.read<AuthenticationService>().deleteCurrentUser();
-                  Navigator.of(context).popAndPushNamed("/splash");
+                  context.read<AuthenticationService>().signOut();
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(("/splash"), (route) => false);
                 },
                 child: Text('Yes'),
               ),

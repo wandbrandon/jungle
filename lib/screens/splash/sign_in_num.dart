@@ -57,6 +57,7 @@ class _SignInNumState extends State<SignInNum> {
                       controller: textController,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+                        LengthLimitingTextInputFormatter(10),
                       ],
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(

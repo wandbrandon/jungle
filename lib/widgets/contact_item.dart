@@ -17,9 +17,18 @@ class ContactItem extends StatelessWidget {
     return CachedNetworkImage(
       cacheKey: user.images[0],
       imageUrl: user.images[0],
-      imageBuilder: (context, image) => CircleAvatar(
-          radius: radius,
-          backgroundImage: image,
+      placeholder: (context, string) => Container(
+        height: radius * 2,
+        width: radius * 2,
+        decoration: BoxDecoration(shape: BoxShape.circle),
+      ),
+      imageBuilder: (context, image) => Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(image: image, fit: BoxFit.cover),
+          ),
+          height: radius * 2,
+          width: radius * 2,
           child: Material(
               shape: CircleBorder(),
               clipBehavior: Clip.hardEdge,

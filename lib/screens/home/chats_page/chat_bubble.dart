@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 class ChatBubble extends StatelessWidget {
   final bool isCurrentUser;
   final bool isFirst;
-  final bool isLast;
   final String text;
 
-  const ChatBubble({Key key, this.isCurrentUser, this.text, this.isFirst, this.isLast})
+  const ChatBubble({Key key, this.isCurrentUser, this.text, this.isFirst})
       : super(key: key);
 
   @override
@@ -20,38 +19,37 @@ class ChatBubble extends StatelessWidget {
           isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.all(2.5),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            margin: isFirst
+                ? EdgeInsets.only(top: 12.5, bottom: 2.5)
+                : EdgeInsets.symmetric(vertical: 2.5),
             constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * .75),
             decoration: BoxDecoration(
                 color: isCurrentUser
-                    ? Theme.of(context).backgroundColor
+                    ? Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[850]
+                        : Colors.grey[300]
                     : Theme.of(context).accentColor,
                 borderRadius: isCurrentUser
                     ? isFirst
                         ? borderRadius.subtract(BorderRadius.only(
-                              bottomRight: radius - radiusdelta))
-                        : isLast 
-                          ? borderRadius.subtract(BorderRadius.only(
-                              topRight: radius - radiusdelta))
-                          : borderRadius.subtract(BorderRadius.only(
+                            bottomRight: radius - radiusdelta))
+                        : borderRadius.subtract(BorderRadius.only(
                             bottomRight: radius - radiusdelta,
                             topRight: radius - radiusdelta))
                     : isFirst
-                        ? borderRadius.subtract(BorderRadius.only(
-                              bottomLeft: radius - radiusdelta))
-                        : isLast 
-                          ? borderRadius.subtract(BorderRadius.only(
-                              topLeft: radius - radiusdelta))
-                          : borderRadius.subtract(BorderRadius.only(
+                        ? borderRadius.subtract(
+                            BorderRadius.only(bottomLeft: radius - radiusdelta))
+                        : borderRadius.subtract(BorderRadius.only(
                             bottomLeft: radius - radiusdelta,
-                            topLeft: radius - radiusdelta))
-
-            ),
-            child: Text(text))
+                            topLeft: radius - radiusdelta))),
+            child: isCurrentUser
+                ? Text(text, style: TextStyle(fontSize: 15))
+                : Text(text,
+                    style: TextStyle(
+                        fontSize: 15, color: Theme.of(context).primaryColor)))
       ],
     );
   }
 }
-

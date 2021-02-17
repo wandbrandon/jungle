@@ -88,6 +88,10 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
                       },
                       inputDecoration: InputDecoration(
                           counterText: '',
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
                           errorText: authStatus != null
                               ? AuthExceptionHandler.generateExceptionMessage(
                                   authStatus)
