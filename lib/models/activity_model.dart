@@ -6,9 +6,10 @@ class Activity {
   final String description;
   final String address;
   final String price;
-  final Map<String, String> hoo;
+  final String type;
 
   Activity({
+    this.type,
     this.aid,
     this.name,
     this.images,
@@ -16,7 +17,6 @@ class Activity {
     this.tag,
     this.address,
     this.price,
-    this.hoo,
   });
 
   Activity.fromJson(Map<String, dynamic> data)
@@ -27,16 +27,16 @@ class Activity {
         tag = data['tag'] ?? '',
         address = data['address'] ?? '',
         price = data['price'] ?? '',
-        hoo = data['hoo'] ?? {};
+        type = data['type'] ?? '';
 
   Map<String, dynamic> toJson() => {
-        'aid': aid,
-        'name': name,
-        'images': images,
-        'description': description,
-        'tag': tag,
-        'address': address,
-        'price': price,
-        'hoo': hoo,
+        'aid': aid ?? '',
+        'name': name ?? '',
+        'images': images ?? [],
+        'description': description ?? '',
+        'tag': tag ?? '',
+        'address': address ?? '',
+        'price': price ?? '',
+        'type': type ?? ''
       };
 }

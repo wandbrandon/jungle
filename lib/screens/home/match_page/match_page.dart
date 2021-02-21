@@ -78,18 +78,16 @@ class _MatchPageState extends State<MatchPage> {
       currentUser.likes.add(userState.uid);
       print('liked');
       if (userState.likes.contains(currentUser.uid)) {
-        await context
-            .read<FirestoreService>()
-            .createChatRoom(currentUser, userState);
+        context.read<FirestoreService>().createChatRoom(currentUser, userState);
         Navigator.push(context, _createRoute(currentUser, userState));
       }
-      await context
+      context
           .read<FirestoreService>()
           .updateUserByUID(currentUser.uid, currentUser);
     } else {
       currentUser.dislikes.add(userState.uid);
       print('disliked');
-      await context
+      context
           .read<FirestoreService>()
           .updateUserByAuth(context.read<User>(), currentUser);
     }
@@ -134,7 +132,7 @@ class _MatchPageState extends State<MatchPage> {
               style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.w400,
-                  fontSize: 25),
+                  fontSize: 26),
             ),
           ),
         ),
@@ -159,7 +157,7 @@ class _MatchPageState extends State<MatchPage> {
                       }
                       return Center(
                           child: Text(
-                        'Nobody else around! \nTry changing your places!',
+                        'Nobody else around! \nTry changing up your activities!',
                         style: Theme.of(context).textTheme.subtitle1,
                         textAlign: TextAlign.center,
                       ));
@@ -199,6 +197,8 @@ class _MatchPageState extends State<MatchPage> {
         cardHeight: MediaQuery.of(context).size.height * .72,
         cardDeltaHeight: 0,
         itemCount: users.length,
+        cardRadiusBorder: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
         indexedCardBuilder:
             (context, index, rotateFraction, translateFraction) {
           UserModel user = UserModel.fromJson(users[index]);
@@ -259,7 +259,6 @@ class _MatchPageState extends State<MatchPage> {
       key: ValueKey('${user.uid}'),
       height: MediaQuery.of(context).size.height * .72,
       user: user,
-      modal: false,
       matches: getActivityMatches(
           context.read<ActivityState>().getCart, user.activities),
     );
@@ -267,15 +266,5 @@ class _MatchPageState extends State<MatchPage> {
 
   Widget buildLoading() {
     return Center(child: CircularProgressIndicator.adaptive());
-  }
-
-  void swipeLeft() {
-    print("left");
-    setState(() => currentCardIndex++);
-  }
-
-  void swipeRight() {
-    print("right");
-    setState(() => currentCardIndex++);
   }
 }

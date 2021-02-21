@@ -29,7 +29,7 @@ class MessageQueue extends StatelessWidget {
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "Matches",
@@ -38,7 +38,6 @@ class MessageQueue extends StatelessWidget {
                       fontSize: 14,
                       color: Theme.of(context).accentColor),
                 ),
-                Icon(Ionicons.ellipsis_horizontal)
               ],
             )),
       ),
@@ -48,11 +47,9 @@ class MessageQueue extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
             itemCount: chatRooms.length,
             itemBuilder: (BuildContext context, int index) {
-              return Provider<QueryDocumentSnapshot>.value(
-                value: chatRooms[index],
-                builder: (context, child) => MessageCard(
-                  user: getOppositeUser(chatRooms[index].data()['users']),
-                ),
+              return MessageCard(
+                chatRoom: chatRooms[index],
+                user: getOppositeUser(chatRooms[index].data()['users']),
               );
             },
           ),

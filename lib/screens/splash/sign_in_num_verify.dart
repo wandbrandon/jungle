@@ -87,6 +87,7 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
                         }
                       },
                       inputDecoration: InputDecoration(
+                          border: InputBorder.none,
                           counterText: '',
                           focusedBorder: InputBorder.none,
                           enabledBorder: InputBorder.none,
@@ -97,10 +98,12 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
                                   authStatus)
                               : null),
                       controller: textController,
-                      pinAnimationType: PinAnimationType.scale,
+                      pinAnimationType: PinAnimationType.fade,
                       eachFieldHeight: MediaQuery.of(context).size.height * .06,
-                      textStyle:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                      textStyle: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor),
                       autofocus: true,
                       animationCurve: Curves.easeIn,
                       fieldsCount: 6,
@@ -131,6 +134,9 @@ class _SignInNumVerifyState extends State<SignInNumVerify> {
                               isLoading = true;
                             });
                             login();
+                            setState(() {
+                              isLoading = false;
+                            });
                           }
                         : null,
                     onTapCancel: validate

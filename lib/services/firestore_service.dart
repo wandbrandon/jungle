@@ -24,44 +24,30 @@ class FirestoreService {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
-  Future<void> createActivity(Activity activity, String type) async {
-    CollectionReference activities =
-        db.collection('activities').doc(type).collection('activities');
+  Future<void> createActivity(Activity activity) async {
+    CollectionReference activities = db.collection('activities');
     activities
         .doc(activity.aid)
         .set(activity.toJson())
         .then((value) => print("Activity Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+        .catchError((error) => print("Failed to add Activity: $error"));
   }
 
-  Future<void> createActivities(List<Activity> activities, String type) async {
-    await Future.forEach(activities, (element) async {
-      await createActivity(element, type);
-    })
-        .then((value) => print('Activities Added'))
-        .catchError((error) => print('Failed to add Activites. $error'));
+  Future<void> createActivities(List<Activity> activities) {
+    final batch = db.batch();
+    activities.forEach((element) => batch.set(
+        db.collection("activities").doc(element.aid), element.toJson()));
+    return batch
+        .commit()
+        .then((value) => print("Successfully added all activities"))
+        .catchError((e) => print('Yikes, could not add activities: $e'));
   }
 
-  Future<Map<String, List<Activity>>> getAllActivities() async {
+  Future<List<Activity>> getAllActivities() {
     try {
-      Map<String, List<Activity>> activitiesMap = {};
       CollectionReference activities = db.collection('activities');
-      QuerySnapshot activitiesSnapshot = await activities.get();
-      await Future.forEach(activitiesSnapshot.docs,
-          (QueryDocumentSnapshot element) async {
-        QuerySnapshot subActivities = await element.reference
-            .collection('activities')
-            .orderBy('name')
-            .get();
-        List<Activity> activityModels = [];
-        subActivities.docs.forEach((element) {
-          activityModels.add(Activity.fromJson(element.data()));
-        });
-        final s = element.id;
-        activitiesMap[s[0].toUpperCase() + s.substring(1)] = activityModels;
-      });
-      print('Successfully got all the lists!');
-      return activitiesMap;
+      return activities.orderBy('name').get().then(
+          (qs) => qs.docs.map((e) => Activity.fromJson(e.data())).toList());
     } catch (e) {
       print('There was an error: $e');
     }
@@ -266,10 +252,13 @@ class FirestoreService {
           .doc(chatid)
           .collection('messages')
           .orderBy('timestamp', descending: true)
-          .limit(50)
+          .limit(75)
           .snapshots()
-          .map((event) =>
-              event.docs.map((e) => Message.fromJson(e.data())).toList());
+          .map((event) => event.docs
+              .map((e) => Message.fromJson(e.data()))
+              .toList()
+              .reversed
+              .toList());
     } on Exception catch (e) {
       print(e);
       return Stream.error(e.toString());
@@ -313,7 +302,7 @@ class FirestoreService {
     //query for activities.
     if (user.activities == null || user.activities.isEmpty) {
       print('No activities have been chosen yet!');
-      return Stream.error('No activities have been chosen yet!');
+      return Stream.error("You haven't chosen any activities yet!");
     } else {
       query = db
           .collection('users')

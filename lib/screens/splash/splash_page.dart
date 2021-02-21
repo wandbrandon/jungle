@@ -5,8 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sinusoidals/flutter_sinusoidals.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:jungle/data/data.dart';
 import 'package:jungle/screens/splash/sign_in_num.dart';
+import 'package:jungle/services/authentication_service.dart';
+import 'package:jungle/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 import 'package:tap_builder/tap_builder.dart';
+
+import '../../main.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -35,6 +42,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               Theme.of(context).accentColor,
             ]).createShader(bounds),
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Theme.of(context).textTheme.bodyText1.color,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -213,8 +221,14 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       child: Column(
         children: [
           TapBuilder(
-            onTap: () {
+            onTap: () async {
               HapticFeedback.heavyImpact();
+              await context.read<AuthenticationService>().signInWithApple();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AuthenticationWrapper()),
+                  (route) => false);
             },
             builder: (context, state) => AnimatedContainer(
                 height: 50,

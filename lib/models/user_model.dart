@@ -51,13 +51,13 @@ class UserModel {
         activities = data['activities'] ?? [];
 
   Map<String, dynamic> toJson() => {
-        'uid': uid,
-        'name': name,
-        'age': age,
-        'bio': bio,
-        'work': work,
-        'gender': gender,
-        'edu': edu,
+        'uid': uid ?? '',
+        'name': name ?? '',
+        'age': age ?? '',
+        'bio': bio ?? '',
+        'work': work ?? '',
+        'gender': gender ?? '',
+        'edu': edu ?? '',
         'lookingFor': lookingFor ?? [],
         'images': images ?? [],
         'likes': likes ?? [],

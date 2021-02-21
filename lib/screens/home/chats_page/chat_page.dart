@@ -18,44 +18,37 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     UserModel currentUser =
         UserModel.fromJson(context.watch<DocumentSnapshot>().data());
-    final firestore = context.watch<FirestoreService>();
-
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text('Messages'),
-      ),
-      body: StreamProvider<QuerySnapshot>(
-          updateShouldNotify: (_, __) => true,
-          create: (context) => firestore.getChatRoomsByUID(currentUser.uid),
-          catchError: (context, object) {
-            print(object.toString());
-            setState(() {
-              error = object.toString();
-            });
-            return null;
-          },
-          builder: (context, child) {
-            final querySnaps = context.watch<QuerySnapshot>();
-            if (querySnaps == null) {
-              return Center(child: CircularProgressIndicator.adaptive());
-            } else if (error != '') {
-              return Center(
-                  child:
-                      Text('Something went wrong, try again later. \n$error'));
-            } else if (querySnaps.docs.isEmpty) {
-              return Center(
-                child: Text(
-                  "You haven't matched with anyone yet. \nKeep swiping!",
-                  textAlign: TextAlign.center,
-                ),
-              );
-            } else {
-              return MessageQueue(
-                currentUser: currentUser,
-              );
-            }
-          }),
-    );
+    QuerySnapshot chatRooms = context.watch<QuerySnapshot>();
+    final querySnaps = context.watch<QuerySnapshot>();
+    if (querySnaps == null) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+        ),
+        body: Center(
+            child: Text('Something went wrong, try again later. \n$error')),
+      );
+    } else if (querySnaps.docs.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+        ),
+        body: Center(
+          child: Text(
+            "You haven't matched with anyone yet. \nKeep swiping!",
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+        ),
+        body: MessageQueue(
+          currentUser: currentUser,
+        ),
+      );
+    }
   }
 }

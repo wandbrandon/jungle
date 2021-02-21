@@ -12,49 +12,59 @@ import 'chat_page.dart';
 class MessageTextField extends StatefulWidget {
   final String idUser;
   final UserModel user;
+  final QueryDocumentSnapshot chatRoom;
   const MessageTextField({
     Key key,
     @required this.idUser,
     this.user,
+    this.chatRoom,
   }) : super(key: key);
 
   @override
   _MessageTextFieldState createState() => _MessageTextFieldState();
 }
 
-class _MessageTextFieldState extends State<MessageTextField> {
+class _MessageTextFieldState extends State<MessageTextField>
+    with SingleTickerProviderStateMixin {
   final tController = TextEditingController();
   String message = '';
-  QueryDocumentSnapshot chatRoom;
-  UserModel user;
   UserModel currentUser;
 
   onLoveTap() {
     HapticFeedback.mediumImpact();
     showDialog(
-        context: context,
-        builder: (context) => DateDialog(
-              user: widget.user,
-              chatRoom: chatRoom,
-              currentUser: currentUser,
-            ));
+      context: context,
+      builder: (context) => DateDialog(
+        chatRoom: widget.chatRoom,
+        user: widget.user,
+        currentUser: currentUser,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    tController.dispose();
+    super.dispose();
   }
 
   void sendMessage() async {
     HapticFeedback.mediumImpact();
     await context.read<FirestoreService>().sendMessage(
-        chatRoom.data()['chatID'],
+        widget.chatRoom.data()['chatID'],
         Message(
             fromUID: widget.idUser,
             toUID: widget.user.uid,
             message: message,
             timestamp: DateTime.now()));
     tController.clear();
+    setState(() {
+      message = "";
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    chatRoom = context.watch<QueryDocumentSnapshot>();
     currentUser = UserModel.fromJson(context.watch<DocumentSnapshot>().data());
     return Container(
       color: Theme.of(context).primaryColor,
@@ -63,8 +73,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
-            child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
+            child: Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                 decoration: BoxDecoration(
@@ -72,27 +81,33 @@ class _MessageTextFieldState extends State<MessageTextField> {
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: TextField(
-                    controller: tController,
-                    onEditingComplete:
-                        message.trim().isEmpty ? null : sendMessage,
-                    onChanged: (value) => setState(() {
-                      message = value;
-                    }),
-                    cursorColor: Theme.of(context).accentColor,
-                    maxLines: 5,
-                    minLines: 1,
-                    textInputAction: TextInputAction.send,
-                    decoration: InputDecoration.collapsed(
-                        hintText: "Type a message...",
-                        hintStyle: TextStyle(
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              .color
-                              .withOpacity(.33),
-                        ),
-                        border: InputBorder.none),
+                  child: AnimatedSize(
+                    alignment: Alignment.topCenter,
+                    duration: Duration(milliseconds: 600),
+                    curve: Curves.ease,
+                    vsync: this,
+                    child: TextField(
+                      controller: tController,
+                      onEditingComplete:
+                          message.trim().isEmpty ? null : sendMessage,
+                      onChanged: (value) => setState(() {
+                        message = value;
+                      }),
+                      cursorColor: Theme.of(context).accentColor,
+                      maxLines: 5,
+                      minLines: 1,
+                      textInputAction: TextInputAction.send,
+                      decoration: InputDecoration.collapsed(
+                          hintText: "Type a message...",
+                          hintStyle: TextStyle(
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .color
+                                .withOpacity(.33),
+                          ),
+                          border: InputBorder.none),
+                    ),
                   ),
                 )),
           ),
@@ -108,7 +123,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
                       color: Theme.of(context).errorColor,
                       borderRadius: BorderRadius.circular(20)),
                   child: Icon(
-                    Ionicons.checkmark_circle_outline,
+                    Ionicons.people_circle_outline,
                     color: Theme.of(context).primaryColor,
                     size: 30,
                   )),
@@ -142,11 +157,11 @@ class _MessageTextFieldState extends State<MessageTextField> {
 }
 
 class DateDialog extends StatefulWidget {
-  final QueryDocumentSnapshot chatRoom;
   final UserModel currentUser;
   final UserModel user;
+  final QueryDocumentSnapshot chatRoom;
 
-  const DateDialog({Key key, this.chatRoom, this.currentUser, this.user})
+  const DateDialog({Key key, this.currentUser, this.user, this.chatRoom})
       : super(key: key);
 
   @override
@@ -154,26 +169,24 @@ class DateDialog extends StatefulWidget {
 }
 
 class _DateDialogState extends State<DateDialog> {
-  bool agreed = false;
+  QueryDocumentSnapshot chatRoom;
+
   @override
   Widget build(BuildContext context) {
+    final chatRooms = context.watch<QuerySnapshot>().docs;
+    chatRoom = chatRooms.firstWhere(
+        (element) => element.data()['chatID'] == widget.chatRoom['chatID']);
     return AlertDialog(
-      key: new PageStorageKey(widget.user.uid),
       backgroundColor: Theme.of(context).errorColor,
       actions: [
-        !(widget.chatRoom['dateUsersAccepted']['${widget.currentUser.uid}'] ||
-                agreed)
+        !(chatRoom['dateUsersAccepted']['${widget.currentUser.uid}'])
             ? TextButton(
                 onPressed: () {
                   HapticFeedback.lightImpact();
-                  setState(() {
-                    agreed = true;
-                  });
                   context.read<FirestoreService>().updateChatRoom(
-                      widget.chatRoom.data()['chatID'],
+                      chatRoom.data()['chatID'],
                       'dateUsersAccepted.${widget.currentUser.uid}',
                       true);
-                  Navigator.popUntil(context, (route) => route.isFirst);
                 },
                 child: Text('Agree',
                     style: TextStyle(color: Theme.of(context).primaryColor)),
@@ -187,56 +200,55 @@ class _DateDialogState extends State<DateDialog> {
               style: TextStyle(color: Theme.of(context).primaryColor)),
         )
       ],
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Icon(
-                widget.chatRoom.data()['dateUsersAccepted']
-                            ['${widget.currentUser.uid}'] ||
-                        agreed
-                    ? Ionicons.hand_right
-                    : Ionicons.hand_right_outline,
-                size: 90,
-                color: Theme.of(context).primaryColor.withOpacity(
-                    widget.chatRoom.data()['dateUsersAccepted']
-                                ['${widget.currentUser.uid}'] ||
-                            agreed
-                        ? 1
-                        : .3),
-              ),
-              Icon(
-                widget.chatRoom['dateUsersAccepted']['${widget.user.uid}']
-                    ? Ionicons.hand_right
-                    : Ionicons.hand_right_outline,
-                size: 90,
-                color: Theme.of(context).primaryColor.withOpacity(
-                    widget.chatRoom['dateUsersAccepted']['${widget.user.uid}']
-                        ? 1
-                        : .3),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          widget.chatRoom['dateUsersAccepted']['${widget.user.uid}'] &&
-                  (widget.chatRoom.data()['dateUsersAccepted']
-                          ['${widget.currentUser.uid}'] ||
-                      agreed)
-              ? Text(
-                  'Congrats! Time limit is now lifted.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                )
-              : Text(
-                  "Once you have set a time and place, tap agree. \n\nWhen ${widget.user.name} agrees, your date will be set and your timer will stop. \n\nDon't worry! You'll still be able to chat.",
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                  )),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Icon(
+                  chatRoom.data()['dateUsersAccepted']
+                          ['${widget.currentUser.uid}']
+                      ? Ionicons.hand_right
+                      : Ionicons.hand_right_outline,
+                  size: 90,
+                  color: Theme.of(context).primaryColor.withOpacity(
+                      chatRoom.data()['dateUsersAccepted']
+                              ['${widget.currentUser.uid}']
+                          ? 1
+                          : .3),
+                ),
+                Icon(
+                  chatRoom['dateUsersAccepted']['${widget.user.uid}']
+                      ? Ionicons.hand_right
+                      : Ionicons.hand_right_outline,
+                  size: 90,
+                  color: Theme.of(context).primaryColor.withOpacity(
+                      chatRoom['dateUsersAccepted']['${widget.user.uid}']
+                          ? 1
+                          : .3),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            chatRoom['dateUsersAccepted']['${widget.user.uid}'] &&
+                    (chatRoom.data()['dateUsersAccepted']
+                        ['${widget.currentUser.uid}'])
+                ? Text(
+                    'Congrats! Time limit is now lifted.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  )
+                : Text(
+                    "Once you have set a time and place, tap agree. \n\nWhen ${widget.user.name} agrees, your date will be set and your timer will stop. \n\nDon't worry! You'll still be able to chat.",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    )),
+          ],
+        ),
       ),
     );
   }

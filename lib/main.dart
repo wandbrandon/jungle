@@ -26,23 +26,19 @@ Future<void> main() async {
 }
 
 List<Activity> activitiesFromDoc(
-    DocumentSnapshot doc, Map<String, List<Activity>> activityMap) {
-  List<Activity> activities = new List<Activity>.empty(growable: true);
-  if (doc.data() == null || activityMap == null) {
-    return activities;
+    DocumentSnapshot doc, List<Activity> activities) {
+  if (doc?.data() == null || activities == null) {
+    return null;
   }
+  List<Activity> activitiesOut = [];
   List userActivitiesByAID = doc.data()['activities'] ?? [];
-  userActivitiesByAID.forEach((userAID) {
-    activityMap.forEach((key, value) {
-      value.forEach((element) {
-        if (element.aid == userAID) {
-          print('found activity match, adding it to cart');
-          activities.add(element);
-        }
-      });
-    });
+  activities.forEach((element) {
+    if (userActivitiesByAID.contains(element.aid)) {
+      print('Getting last chosen, ${element.name}');
+      activitiesOut.add(element);
+    }
   });
-  return activities;
+  return activitiesOut;
 }
 
 class MyApp extends StatelessWidget {
@@ -51,7 +47,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     final firestoreService = FirestoreService(FirebaseFirestore.instance,
-        FirebaseStorage.instance, FirebaseMessaging());
+        FirebaseStorage.instance, FirebaseMessaging.instance);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationService>(
@@ -75,10 +71,14 @@ class MyApp extends StatelessWidget {
             ),
           );
         }),
-        FutureProvider<Map<String, List<Activity>>>(
+        StreamProvider<QuerySnapshot>(
+            create: (context) =>
+                firestoreService.getChatRoomsByUID(context.read<User>().uid)),
+        FutureProvider<List<Activity>>(
             create: (context) => firestoreService.getAllActivities()),
-        ChangeNotifierProxyProvider2<DocumentSnapshot,
-                Map<String, List<Activity>>, ActivityState>(
+        ChangeNotifierProxyProvider2<DocumentSnapshot, List<Activity>,
+                ActivityState>(
+            lazy: false,
             create: (_) => ActivityState(7),
             update: (_, myDoc, myMap, myActivityState) {
               if (myDoc == null || myMap == null || myActivityState == null) {
@@ -147,14 +147,13 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
       } else {
         final firestore = context.read<FirestoreService>();
         final fbmessage = firestore.fbmessaging;
-        await fbmessage.requestNotificationPermissions();
+        await fbmessage.requestPermission();
         String token = await fbmessage.getToken();
         print('token: $token');
         await firestore.db
             .collection('users')
             .doc(dbUser.data()['uid'])
             .update({'pushToken': token});
-
         Navigator.pushAndRemoveUntil(
             context, _createRoute(HomeScreen()), (route) => false);
       }

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jungle/models/models.dart';
+import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 import '../../../widgets/contact_item.dart';
@@ -8,39 +10,50 @@ import 'chat_room_page.dart';
 
 class MessageCard extends StatefulWidget {
   final UserModel user;
-  const MessageCard({Key key, this.user}) : super(key: key);
+  final QueryDocumentSnapshot chatRoom;
+  const MessageCard({Key key, this.user, this.chatRoom}) : super(key: key);
 
   @override
   _MessageCardState createState() => _MessageCardState();
 }
 
 class _MessageCardState extends State<MessageCard> {
-  QueryDocumentSnapshot chatRoom;
   UserModel currentUser;
 
   bool dateSet() {
-    return (chatRoom['dateUsersAccepted']['${widget.user.uid}'] &&
-        (chatRoom['dateUsersAccepted']['${currentUser.uid}']));
+    return (widget.chatRoom['dateUsersAccepted']['${widget.user.uid}'] &&
+        (widget.chatRoom['dateUsersAccepted']['${currentUser.uid}']));
   }
 
   bool timeRanOut() {
     final value = (1 -
-        DateTime.now().difference(chatRoom['created'].toDate()).inHours / 48);
+        DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours /
+            48);
     return value <= 0;
   }
 
   bool isUnread() {
-    final lastMessageUID = chatRoom['lastMessageSentBy'];
-    final lastMessageRead = chatRoom['lastMessageRead'];
-    if (lastMessageUID == widget.user) {
+    final lastMessageUID = widget.chatRoom['lastMessageSentBy'];
+    final lastMessageRead = widget.chatRoom['lastMessageRead'];
+    if (lastMessageUID != currentUser.uid) {
       return !lastMessageRead;
     }
     return false;
   }
 
+  List<Activity> getActivityMatches(
+      List<Activity> cart, List<dynamic> otherUserActivities) {
+    List<Activity> tempActivities = [];
+    cart.forEach((element) {
+      if (otherUserActivities.contains(element.aid)) {
+        tempActivities.add(element);
+      }
+    });
+    return tempActivities;
+  }
+
   @override
   Widget build(BuildContext context) {
-    chatRoom = context.watch<QueryDocumentSnapshot>();
     currentUser = UserModel.fromJson(context.watch<DocumentSnapshot>().data());
     return ColorFiltered(
       colorFilter: timeRanOut()
@@ -51,22 +64,24 @@ class _MessageCardState extends State<MessageCard> {
         absorbing: timeRanOut(),
         child: GestureDetector(
             onTap: () {
+              HapticFeedback.mediumImpact();
+              if (widget.chatRoom['lastMessageRead'] != true) {
+                if (widget.chatRoom['lastMessageSentBy'] != currentUser.uid) {
+                  context.read<FirestoreService>().updateChatRoom(
+                      widget.chatRoom.data()['chatID'],
+                      'lastMessageRead',
+                      true);
+                }
+              }
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          Provider<QueryDocumentSnapshot>.value(
-                            value: chatRoom,
-                            child: ChatRoomPage(
-                                currentUser: UserModel.fromJson(
-                                    context.watch<DocumentSnapshot>().data()),
-                                user: widget.user),
-                          )));
-
-              if (chatRoom['lastMessageRead'] != true) {
-                context.read<FirestoreService>().updateChatRoom(
-                    chatRoom.data()['chatID'], 'lastMessageRead', true);
-              }
+                    builder: (context) => ChatRoomPage(
+                        chatRoom: widget.chatRoom,
+                        currentUser: UserModel.fromJson(
+                            context.watch<DocumentSnapshot>().data()),
+                        user: widget.user),
+                  ));
             },
             child: Container(
               color: Colors.transparent,
@@ -76,7 +91,12 @@ class _MessageCardState extends State<MessageCard> {
                   child: Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      ContactItem(user: widget.user, radius: 35),
+                      ContactItem(
+                          user: widget.user,
+                          radius: 35,
+                          matches: getActivityMatches(
+                              context.watch<ActivityState>().getCart,
+                              widget.user.activities)),
                       isUnread()
                           ? Stack(
                               alignment: Alignment.center,
@@ -113,9 +133,9 @@ class _MessageCardState extends State<MessageCard> {
                             fontWeight: FontWeight.bold,
                           )),
                       SizedBox(height: 5),
-                      chatRoom['lastMessage'] != ''
+                      widget.chatRoom['lastMessage'] != ''
                           ? Text(
-                              '${chatRoom['lastMessage']}',
+                              '${widget.chatRoom['lastMessage']}',
                               style: TextStyle(
                                 fontSize: 14,
                               ),
@@ -135,6 +155,7 @@ class _MessageCardState extends State<MessageCard> {
                     ],
                   ),
                 ),
+                SizedBox(width: 15),
                 !(timeRanOut() || dateSet())
                     ? Container(
                         child: Stack(
@@ -146,12 +167,12 @@ class _MessageCardState extends State<MessageCard> {
                                   Theme.of(context).errorColor),
                               value: 1 -
                                   DateTime.now()
-                                          .difference(
-                                              chatRoom['created'].toDate())
+                                          .difference(widget.chatRoom['created']
+                                              .toDate())
                                           .inHours /
                                       48),
                           Text(
-                            "${48 - DateTime.now().difference(chatRoom['created'].toDate()).inHours}",
+                            "${48 - DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours}",
                             style: TextStyle(
                                 color: Theme.of(context).errorColor,
                                 fontWeight: FontWeight.bold),

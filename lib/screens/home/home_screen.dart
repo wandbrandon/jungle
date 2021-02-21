@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
+import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_profile_card.dart';
 import 'package:jungle/screens/home/match_page/match_page.dart';
@@ -25,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ScrollController _controller = ScrollController();
   bool scrolled = false;
-  Map<String, List<Activity>> activityMap;
+  List<Activity> activities;
   ActivityState cartModel;
   UserModel currentUser;
 
@@ -54,45 +56,44 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<Widget> listViewBuilder(Map<String, List<Activity>> map) {
-    List<Widget> widgets = [];
-    map.forEach((key, value) {
-      widgets.add(ListView.separated(
-        separatorBuilder: (context, index) => SizedBox(
-          height: 14,
-        ),
-        itemBuilder: (context, index) {
-          return Container(
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                    color: Colors.black.withOpacity(.3),
-                    offset: Offset(0, 4),
-                    spreadRadius: .5,
-                    blurRadius: 5)
-              ], borderRadius: BorderRadius.circular(15)),
+  List<String> getTabs(List<Activity> acts) {
+    List<String> activityTypes =
+        acts.map((e) => e.type).toList().toSet().toList();
+    activityTypes.sort();
+    return activityTypes;
+  }
+
+  List<Widget> listViewBuilder(List<Activity> acts, List<String> tabs) {
+    List<Widget> actLists = [];
+    tabs.forEach((value) {
+      List<Activity> tabList = acts.where((e) => (e.type == value)).toList();
+      actLists.add(ListView.separated(
+          padding: const EdgeInsets.all(12),
+          itemBuilder: (context, index) => Container(
               height: 225,
-              child: ActivityProfileCard(activity: value[index]));
-        },
-        itemCount: value.length,
-        padding: EdgeInsets.all(12),
-      ));
+              child: ActivityProfileCard(
+                activity: tabList[index],
+              )),
+          separatorBuilder: (context, index) => SizedBox(height: 14),
+          itemCount: tabList.length));
     });
-    return widgets;
+    return actLists;
   }
 
-  List<Widget> tabBuilder(Map<String, List<Activity>> map) {
-    List<Widget> widgets = [];
-    map.forEach((key, value) {
-      widgets.add(Tab(text: key));
+  List<Widget> tabBuilder(List<Activity> acts) {
+    List<Widget> tabs = [];
+    final tabStrings = getTabs(acts);
+    tabStrings.forEach((e) {
+      tabs.add(Tab(text: '${e[0].toUpperCase() + e.substring(1)}'));
     });
-    return widgets;
+    return tabs;
   }
 
-  Widget buildCartItem(Activity item, bool last) {
+  Widget buildCartItem(Activity item, bool isLast) {
     return Align(
+      key: ValueKey(item.aid),
       child: CachedNetworkImage(
         imageUrl: item.images[0],
-        cacheKey: item.images[0],
         imageBuilder: (context, imageProvider) {
           return Container(
             height: 40,
@@ -113,21 +114,26 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       alignment: Alignment.centerLeft,
-      widthFactor: last ? 1 : .7,
+      widthFactor: .7,
     );
   }
 
   Widget buildCartList(List<Activity> cart) {
-    return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        scrollDirection: Axis.horizontal,
-        itemCount: cart.length,
-        itemBuilder: (context, index) {
-          if (index == cart.length - 1) {
-            return buildCartItem(cart[index], true);
-          }
-          return buildCartItem(cart[index], false);
-        });
+    return ImplicitlyAnimatedList(
+      physics: AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.only(left: 5),
+      scrollDirection: Axis.horizontal,
+      insertDuration: Duration(milliseconds: 200),
+      removeDuration: Duration(milliseconds: 200),
+      items: cart,
+      areItemsTheSame: (Activity oldItem, Activity newItem) =>
+          oldItem.aid == oldItem.aid,
+      itemBuilder: (context, animation, item, index) {
+        return FadeTransition(
+            opacity: animation,
+            child: buildCartItem(item, index == cart.length - 1));
+      },
+    );
   }
 
   Widget buildLowerCartItem(Activity item, int index) {
@@ -140,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CachedNetworkImage(
                 imageUrl: item.images[0],
-                cacheKey: item.images[0],
                 imageBuilder: (context, imageProvider) {
                   return Container(
                       decoration: BoxDecoration(
@@ -180,13 +185,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildLowerCartList(List<Activity> cart) {
-    return ListView.builder(
+    return ImplicitlyAnimatedList<Activity>(
+        removeDuration: Duration(milliseconds: 500),
+        areItemsTheSame: (item1, item2) => item1.aid == item2.aid,
         padding: EdgeInsets.zero,
         shrinkWrap: true,
+        reverse: true,
         scrollDirection: Axis.vertical,
-        itemCount: cart.length,
-        itemBuilder: (context, index) {
-          return buildLowerCartItem(cart[index], index);
+        physics: AlwaysScrollableScrollPhysics(),
+        items: cart,
+        itemBuilder: (context, animation, item, index) {
+          return SizeFadeTransition(
+              curve: Curves.ease,
+              animation: animation,
+              child: buildLowerCartItem(item, index));
         });
   }
 
@@ -412,8 +424,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ]).createShader(bounds);
                         },
                         blendMode: BlendMode.srcOver,
-                        child:
-                            Container(height: 50, child: buildCartList(cart)),
+                        child: Container(
+                          height: 50,
+                          child: buildCartList(cart),
+                          decoration: BoxDecoration(),
+                          clipBehavior: Clip.hardEdge,
+                        ),
                       ),
                     ),
                   ),
@@ -463,10 +479,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    activityMap = context.watch<Map<String, List<Activity>>>();
+    activities = context.watch<List<Activity>>();
     cartModel = context.watch<ActivityState>();
-    currentUser = UserModel.fromJson(context.watch<DocumentSnapshot>().data());
-    if (activityMap == null) {
+
+    currentUser =
+        UserModel.fromJson(context.watch<DocumentSnapshot>()?.data() ?? {});
+    if (activities == null) {
       return Center(child: CircularProgressIndicator.adaptive());
     }
 
@@ -491,12 +509,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.all(Radius.circular(30))),
                 child: DefaultTabController(
-                  length: activityMap.length,
+                  length: getTabs(activities).length,
                   child: SafeArea(
                     bottom: false,
                     right: false,
                     left: false,
                     child: NestedScrollView(
+                      //floatHeaderSlivers: true,
                       headerSliverBuilder:
                           (BuildContext context, bool innerBoxIsScrolled) {
                         return <Widget>[
@@ -517,7 +536,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             actions: [
                               IconButton(
                                   icon: CachedNetworkImage(
-                                    cacheKey: currentUser.images[0],
                                     imageUrl: currentUser.images[0],
                                     imageBuilder: (context, image) {
                                       return Container(
@@ -569,13 +587,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 indicatorColor: Theme.of(context).accentColor,
                                 tabBarIndicatorSize: TabBarIndicatorSize.label,
                               ),
-                              tabs: tabBuilder(activityMap),
+                              tabs: tabBuilder(activities),
                             )),
                             pinned: true,
                           ),
                         ];
                       },
-                      body: TabBarView(children: listViewBuilder(activityMap)),
+                      body: TabBarView(
+                          children:
+                              listViewBuilder(activities, getTabs(activities))),
                     ),
                   ),
                 ),

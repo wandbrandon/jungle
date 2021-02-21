@@ -94,6 +94,9 @@ class _SignInNumState extends State<SignInNum> {
                             context.read<AuthenticationService>().verifyNumber(
                                 number: textController.text.trim(),
                                 context: context);
+                            setState(() {
+                              isLoading = false;
+                            });
                           }
                         : null,
                     onTapCancel: validate

@@ -19,10 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  smooth_page_indicator:
-  cached_network_image:
+  cached_network_image: ^2.5.0
+  extended_image: ^1.5.0
   ko_swipe_card: ^1.0.0
-  modal_bottom_sheet:
+  modal_bottom_sheet: ^2.0.0-nullsafety.1
   confetti:
   reorderables:
   image_picker:
@@ -31,17 +31,23 @@ dependencies:
   bubble_tab_indicator: "^0.1.4"
   tap_builder: ^0.2.0-beta
   ionicons: ^0.1.1
-  shimmer: ^1.1.2
+  keyboard_attachable: ^1.0.3
   
   provider: ^4.3.2+1
   pinput:
   flutter_sinusoidals: 
+  intl: ^0.16.0
 
-  firebase_core: "^0.5.3"
-  firebase_auth: "^0.18.4"
-  cloud_firestore: ^0.14.1+3
-  firebase_storage: "^5.2.0"
-  firebase_messaging: ^7.0.3
+  sign_in_with_apple: ^2.5.2
+  crypto: ^2.1.5
+  implicitly_animated_reorderable_list: ^0.4.0-dev+3
+
+  firebase_core: 
+  firebase_auth: 
+  cloud_firestore: 
+  firebase_storage: 
+  firebase_messaging:
+  firebase_analytics:
 
 
 dev_dependencies:

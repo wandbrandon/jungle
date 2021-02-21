@@ -37,7 +37,6 @@ class _ActivityPageState extends State<ActivityPage> {
                 child: ImageFiltered(
                   imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: CachedNetworkImage(
-                    cacheKey: widget.activity.aid,
                     imageUrl: widget.activity.images[0],
                     fit: BoxFit.cover,
                   ),

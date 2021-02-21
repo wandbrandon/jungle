@@ -29,90 +29,94 @@ class _MatchedDialogState extends State<MatchedDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-            appBar: AppBar(
-              elevation: 0,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: Theme.of(context).brightness == Brightness.dark
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.light,
+      child: Stack(
+        children: [
+          Scaffold(
+              appBar: AppBar(
+                elevation: 0,
+                backgroundColor: Theme.of(context).accentColor,
+                iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+              ),
               backgroundColor: Theme.of(context).accentColor,
-              iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-            ),
-            backgroundColor: Theme.of(context).accentColor,
-            body: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * .20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('You Matched!',
-                        style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).primaryColor)),
-                    Stack(
-                      alignment: Alignment.center,
-                      fit: StackFit.loose,
-                      children: [
-                        Container(
-                          height: 200,
-                          width: 250,
-                        ),
-                        Positioned(
-                          right: 20,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.user.images[0],
-                            cacheKey: widget.user.images[0],
-                            imageBuilder: (context, imageProvider) => Container(
-                              height: 125,
-                              width: 125,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 4,
-                                    color: Theme.of(context).primaryColor),
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
+              body: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: MediaQuery.of(context).size.height * .15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('You Matched!',
+                          style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor)),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Stack(
+                        alignment: Alignment.center,
+                        fit: StackFit.loose,
+                        children: [
+                          Container(
+                            height: 200,
+                            width: 250,
+                          ),
+                          Positioned(
+                            right: 20,
+                            bottom: 5,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.user.images[0],
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                height: 125,
+                                width: 125,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      width: 4,
+                                      color: Theme.of(context).primaryColor),
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          left: 20,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.currentUser.images[0],
-                            cacheKey: widget.currentUser.images[0],
-                            imageBuilder: (context, imageProvider) => Container(
-                              height: 125,
-                              width: 125,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 4,
-                                    color: Theme.of(context).primaryColor),
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
+                          Positioned(
+                            left: 20,
+                            top: 5,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.currentUser.images[0],
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                height: 125,
+                                width: 125,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      width: 4,
+                                      color: Theme.of(context).primaryColor),
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    RaisedButton(
-                        focusElevation: 0,
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         child: Text(
                           'Keep Swiping',
                         ),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        color: Theme.of(context).primaryColor),
-                    RaisedButton(
-                        focusElevation: 0,
+                      ),
+                      ElevatedButton(
                         onPressed: () {
                           Navigator.pushAndRemoveUntil(
                               context,
@@ -123,32 +127,29 @@ class _MatchedDialogState extends State<MatchedDialog> {
                         child: Text(
                           'Go to Chats',
                         ),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        color: Theme.of(context).primaryColor)
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )),
-        Container(
-            alignment: Alignment.center,
-            child: ConfettiWidget(
-              confettiController: confettiController,
-              blastDirectionality: BlastDirectionality.explosive,
-              particleDrag: .01, // apply drag to the confetti
-              emissionFrequency: 0, // how often it should emit
-              numberOfParticles: 1000, // number of particles to emit
-              gravity: 0.005,
-              shouldLoop: false,
-              colors: [
-                Theme.of(context).primaryColor.withOpacity(.8),
-                Theme.of(context).errorColor
-                //Colors.blue.withOpacity(.6)
-              ],
-            )),
-      ],
+              )),
+          Container(
+              alignment: Alignment.center,
+              child: ConfettiWidget(
+                confettiController: confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                particleDrag: .01, // apply drag to the confetti
+                emissionFrequency: 0, // how often it should emit
+                numberOfParticles: 1000, // number of particles to emit
+                gravity: 0.005,
+                shouldLoop: false,
+                colors: [
+                  Theme.of(context).primaryColor.withOpacity(.8),
+                  Theme.of(context).errorColor
+                  //Colors.blue.withOpacity(.6)
+                ],
+              )),
+        ],
+      ),
     );
   }
 }

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 class ChatBubble extends StatelessWidget {
   final bool isCurrentUser;
-  final bool isFirst;
+  final bool isLast;
   final String text;
 
-  const ChatBubble({Key key, this.isCurrentUser, this.text, this.isFirst})
+  const ChatBubble({Key key, this.isCurrentUser, this.text, this.isLast})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final radius = Radius.circular(20);
-    final radiusdelta = Radius.circular(5);
+    final radius = Radius.circular(18);
+    final radiusdelta = Radius.circular(3);
     final borderRadius = BorderRadius.all(radius);
 
     return Row(
@@ -20,11 +20,8 @@ class ChatBubble extends StatelessWidget {
       children: [
         Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            margin: isFirst
-                ? EdgeInsets.only(top: 12.5, bottom: 2.5)
-                : EdgeInsets.symmetric(vertical: 2.5),
             constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * .75),
+                maxWidth: MediaQuery.of(context).size.width * .74),
             decoration: BoxDecoration(
                 color: isCurrentUser
                     ? Theme.of(context).brightness == Brightness.dark
@@ -32,20 +29,25 @@ class ChatBubble extends StatelessWidget {
                         : Colors.grey[300]
                     : Theme.of(context).accentColor,
                 borderRadius: isCurrentUser
-                    ? isFirst
+                    ? isLast
                         ? borderRadius.subtract(BorderRadius.only(
                             bottomRight: radius - radiusdelta))
                         : borderRadius.subtract(BorderRadius.only(
                             bottomRight: radius - radiusdelta,
                             topRight: radius - radiusdelta))
-                    : isFirst
+                    : isLast
                         ? borderRadius.subtract(
                             BorderRadius.only(bottomLeft: radius - radiusdelta))
                         : borderRadius.subtract(BorderRadius.only(
                             bottomLeft: radius - radiusdelta,
                             topLeft: radius - radiusdelta))),
             child: isCurrentUser
-                ? Text(text, style: TextStyle(fontSize: 15))
+                ? Text(
+                    text,
+                    style: TextStyle(fontSize: 15),
+                    softWrap: true,
+                    textWidthBasis: TextWidthBasis.longestLine,
+                  )
                 : Text(text,
                     style: TextStyle(
                         fontSize: 15, color: Theme.of(context).primaryColor)))
