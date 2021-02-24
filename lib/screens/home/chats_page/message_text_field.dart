@@ -7,8 +7,6 @@ import 'package:jungle/models/models.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:provider/provider.dart';
 
-import 'chat_page.dart';
-
 class MessageTextField extends StatefulWidget {
   final String idUser;
   final UserModel user;
@@ -50,7 +48,7 @@ class _MessageTextFieldState extends State<MessageTextField>
 
   void sendMessage() async {
     HapticFeedback.mediumImpact();
-    await context.read<FirestoreService>().sendMessage(
+    context.read<FirestoreService>().sendMessage(
         widget.chatRoom.data()['chatID'],
         Message(
             fromUID: widget.idUser,

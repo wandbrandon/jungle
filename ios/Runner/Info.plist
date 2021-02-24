@@ -25,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1047961456245-p8fj0m0o5t5h3pnho32rrl9c6hlj8u0n</string>
+				<string>com.googleusercontent.apps.1047961456245-qc9qjg8okdap3f18mkfl3pg1rhl2ujin</string>
 			</array>
 		</dict>
 		<dict>
@@ -55,8 +55,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1047961456245-p8fj0m0o5t5h3pnho32rrl9c6hlj8u0n.apps.googleusercontent.com</string>
+	<string>1047961456245-qc9qjg8okdap3f18mkfl3pg1rhl2ujin.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1047961456245-p8fj0m0o5t5h3pnho32rrl9c6hlj8u0n</string>
+	<string>com.googleusercontent.apps.1047961456245-qc9qjg8okdap3f18mkfl3pg1rhl2ujin</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>1047961456245-65164crs9b6ph7qvon6oj04181du5h5o.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.jungle</string>
+	<string>com.wand.jungle</string>
 	<key>PROJECT_ID</key>
 	<string>jungle-2a886</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1047961456245:ios:78c104a7c2fb34a25d723c</string>
+	<string>1:1047961456245:ios:dde437a014bb15cf5d723c</string>
 </dict>
 </plist>

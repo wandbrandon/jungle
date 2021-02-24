@@ -51,10 +51,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final chatRooms = context.watch<QuerySnapshot>().docs;
+  void initState() {
+    super.initState();
+    final chatRooms = context.read<QuerySnapshot>().docs;
     chatRoom = chatRooms.firstWhere(
         (element) => element.data()['chatID'] == widget.chatRoom['chatID']);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
