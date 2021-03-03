@@ -11,6 +11,7 @@ import 'package:jungle/models/models.dart';
 import 'package:jungle/models/user_model.dart';
 import 'package:jungle/screens/home/chats_page/chat_page.dart';
 import 'package:jungle/screens/home/chats_page/message_text_field.dart';
+import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/widgets/contact_item.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +23,10 @@ import 'package:keyboard_attachable/keyboard_attachable.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final UserModel user;
-  final QueryDocumentSnapshot chatRoom;
+  final int chatRoomIndex;
   final UserModel currentUser;
 
-  const ChatRoomPage({Key key, this.user, this.currentUser, this.chatRoom})
+  const ChatRoomPage({Key key, this.user, this.currentUser, this.chatRoomIndex})
       : super(key: key);
 
   @override
@@ -54,8 +55,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   void initState() {
     super.initState();
     final chatRooms = context.read<QuerySnapshot>().docs;
-    chatRoom = chatRooms.firstWhere(
-        (element) => element.data()['chatID'] == widget.chatRoom['chatID']);
+    chatRoom = chatRooms[widget.chatRoomIndex];
+  }
+
+  List<Activity> getActivityMatches(
+      List<Activity> cart, List<dynamic> otherUserActivities) {
+    List<Activity> tempActivities = [];
+    cart.forEach((element) {
+      if (otherUserActivities.contains(element.aid)) {
+        tempActivities.add(element);
+      }
+    });
+    return tempActivities;
   }
 
   @override
@@ -69,6 +80,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             ContactItem(
               radius: 19,
               user: widget.user,
+              matches: getActivityMatches(
+                  context.watch<ActivityState>().getCart,
+                  widget.user.activities),
             ),
             SizedBox(width: 10),
             Text(widget.user.name),
@@ -170,21 +184,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       child: CustomScrollView(
                         reverse: true,
                         primary: true,
-                        //physics: AlwaysScrollableScrollPhysics(),
-                        //physics: NeverScrollableScrollPhysics(),
                         slivers: [
                           SliverFillRemaining(
                             hasScrollBody: true,
-                            //fillOverscroll: true,
                             child: Container(
-                              //height: 1,
                               alignment: Alignment.topCenter,
                               color: Theme.of(context).primaryColor,
                               child: SingleChildScrollView(
                                 reverse: true,
-                                //primary: true,
-                                //clipBehavior: Clip.none,
-                                //physics: NeverScrollableScrollPhysics(),
                                 child: ImplicitlyAnimatedList<Message>(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),

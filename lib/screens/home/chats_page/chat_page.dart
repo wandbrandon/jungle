@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jungle/screens/home/chats_page/message_queue.dart';
-import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/models/models.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +16,6 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     UserModel currentUser =
         UserModel.fromJson(context.watch<DocumentSnapshot>().data());
-    QuerySnapshot chatRooms = context.watch<QuerySnapshot>();
     final querySnaps = context.watch<QuerySnapshot>();
     if (querySnaps == null) {
       return Scaffold(

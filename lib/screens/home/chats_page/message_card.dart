@@ -11,7 +11,9 @@ import 'chat_room_page.dart';
 class MessageCard extends StatefulWidget {
   final UserModel user;
   final QueryDocumentSnapshot chatRoom;
-  const MessageCard({Key key, this.user, this.chatRoom}) : super(key: key);
+  final int chatRoomIndex;
+  const MessageCard({Key key, this.user, this.chatRoom, this.chatRoomIndex})
+      : super(key: key);
 
   @override
   _MessageCardState createState() => _MessageCardState();
@@ -77,7 +79,7 @@ class _MessageCardState extends State<MessageCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ChatRoomPage(
-                        chatRoom: widget.chatRoom,
+                        chatRoomIndex: widget.chatRoomIndex,
                         currentUser: UserModel.fromJson(
                             context.watch<DocumentSnapshot>().data()),
                         user: widget.user),

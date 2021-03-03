@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_page.dart';
 import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:provider/provider.dart';
-import 'package:tap_builder/tap_builder.dart';
+import 'package:like_button/like_button.dart';
 
 class ActivityProfileCard extends StatefulWidget {
   final Activity activity;
@@ -24,131 +25,231 @@ class ActivityProfileCard extends StatefulWidget {
 
 class _ActivityProfileCardState extends State<ActivityProfileCard> {
   bool selected = false;
+  ActivityState cart;
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    HapticFeedback.selectionClick();
+    setState(() {
+      selected = !selected;
+      if (selected) {
+        if (!cart.addToCart(widget.activity)) {
+          selected = false;
+          print("Cant go over the limit!");
+        } else {}
+      } else if (!selected) {
+        cart.removeFromCart(widget.activity);
+      }
+      print(cart.getCart);
+    });
+    return !isLiked;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final cart = context.watch<ActivityState>();
+    cart = context.watch<ActivityState>();
     selected = cart.getCart.contains(widget.activity);
-    return AnimatedContainer(
-      key: ValueKey(widget.activity.aid),
-      duration: Duration(milliseconds: 25),
-      curve: Curves.ease,
+    return Container(
+      height: 225,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       child: Stack(
+        key: ValueKey(widget.activity.aid),
+        alignment: Alignment.bottomCenter,
         children: [
-          CachedNetworkImage(
-            imageUrl: widget.activity.images[0],
-            fit: BoxFit.cover,
-            imageBuilder: (context, imageProvider) => Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                        image: imageProvider, fit: BoxFit.cover),
-                  ),
+          Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(
+                        widget.activity.images[0],
+                      ),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withAlpha(200),
-                        Colors.transparent,
-                        Colors.black.withAlpha(120)
-                      ],
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
+                      end: Alignment.center,
+                      colors: [
+                        Colors.black.withOpacity(.8),
+                        Colors.transparent
+                      ]),
+                ),
+              )
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${widget.activity.name}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white),
+                    ),
+                    Text('${widget.activity.tag}, ${widget.activity.price}',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(.95),
+                          fontSize: 16,
+                        )),
+                  ],
+                ),
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.ease,
+                  opacity: !(cart.atLimit && !selected) ? 1 : 0,
+                  child: AbsorbPointer(
+                    absorbing: (cart.atLimit && !selected),
+                    child: LikeButton(
+                      isLiked: selected,
+                      size: 30,
+                      likeCountPadding: EdgeInsets.zero,
+                      padding: EdgeInsets.zero,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      onTap: onLikeButtonTapped,
+                      likeBuilder: (bool isLiked) {
+                        return Center(
+                          child: Icon(
+                            isLiked ? Ionicons.heart : Ionicons.heart_outline,
+                            color: isLiked ? Colors.redAccent : Colors.white,
+                            size: 30,
+                          ),
+                        );
+                      },
+                      circleColor:
+                          CircleColor(start: Colors.white, end: Colors.red),
+                      bubblesColor: BubblesColor(
+                          dotPrimaryColor: Colors.red,
+                          dotSecondaryColor: Colors.red[900]),
                     ),
                   ),
-                )
+                ),
               ],
             ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-          Positioned(
-            top: 15,
-            left: 15,
-            child: Text(
-              '${widget.activity.price}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(.8),
-                fontSize: 20,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 15,
-            left: 15,
-            child: Text(
-              '${widget.activity.tag}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(.90),
-                fontSize: 14,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 40,
-            left: 15,
-            child: Text(
-              '${widget.activity.name}',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-          Positioned(
-              top: 15,
-              right: 15,
-              child: Container(
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                      color: Colors.black, spreadRadius: 1, blurRadius: 30)
-                ]),
-                child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.ease,
-                    opacity: !(cart.atLimit && !selected) ? 1 : 0,
-                    child: AbsorbPointer(
-                        absorbing: (cart.atLimit && !selected),
-                        child: GestureDetector(
-                          child: AnimatedSwitcher(
-                            switchInCurve: Curves.easeIn,
-                            switchOutCurve: Curves.easeOut,
-                            duration: Duration(milliseconds: 100),
-                            child: !selected
-                                ? Icon(
-                                    Ionicons.bookmark_outline,
-                                    key: ValueKey(Ionicons.bookmark_outline),
-                                    color: Colors.white,
-                                    size: 26,
-                                  )
-                                : Icon(
-                                    Ionicons.bookmark,
-                                    key: ValueKey(Ionicons.bookmark),
-                                    color: Colors.white,
-                                    size: 26,
-                                  ),
-                          ),
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            setState(() {
-                              selected = !selected;
-                              if (selected) {
-                                if (!cart.addToCart(widget.activity)) {
-                                  selected = false;
-                                  print("Cant go over the limit!");
-                                } else {}
-                              } else if (!selected) {
-                                cart.removeFromCart(widget.activity);
-                              }
-                              print(cart.getCart);
-                            });
-                          },
-                        ))),
-              )),
+          )
+          // Positioned(
+          //   top: 10,
+          //   left: 10,
+          //   child: ClipRRect(
+          //     borderRadius: BorderRadius.circular(15),
+          //     child: BackdropFilter(
+          //       filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          //       child: Container(
+          //         alignment: Alignment.center,
+          //         constraints: BoxConstraints(minWidth: 40),
+          //         padding: const EdgeInsets.all(12),
+          //         decoration: BoxDecoration(
+          //           color: Theme.of(context).primaryColor.withOpacity(.4),
+          //         ),
+          //         child: Text(
+          //           '${widget.activity.price}',
+          //           style: TextStyle(
+          //             color: Colors.white,
+          //             fontSize: 20,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Positioned(
+          //   bottom: 10,
+          //   left: 10,
+          //   child: ClipRRect(
+          //     borderRadius: BorderRadius.circular(15),
+          //     child: BackdropFilter(
+          //       filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          //       child: Container(
+          //         alignment: Alignment.center,
+          //         constraints: BoxConstraints(minWidth: 40),
+          //         padding: const EdgeInsets.all(12),
+          //         decoration: BoxDecoration(
+          //           color: Theme.of(context).primaryColor.withOpacity(.4),
+          //         ),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             Text(
+          //               '${widget.activity.name}',
+          //               style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontWeight: FontWeight.bold,
+          //                 fontSize: 16,
+          //               ),
+          //             ),
+          //             Text('${widget.activity.tag}',
+          //                 style: TextStyle(
+          //                   color: Colors.white.withOpacity(.95),
+          //                   fontSize: 14,
+          //                 )),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Positioned(
+          //   bottom: 10,
+          //   right: 10,
+          //   child: AnimatedOpacity(
+          //     duration: const Duration(milliseconds: 400),
+          //     curve: Curves.ease,
+          //     opacity: !(cart.atLimit && !selected) ? 1 : 0,
+          //     child: AbsorbPointer(
+          //       absorbing: (cart.atLimit && !selected),
+          //       child: ClipRRect(
+          //           borderRadius: BorderRadius.circular(15),
+          //           child: BackdropFilter(
+          //               filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          //               child: AnimatedContainer(
+          //                   duration: Duration(milliseconds: 400),
+          //                   alignment: Alignment.center,
+          //                   constraints: BoxConstraints(minWidth: 40),
+          //                   padding: const EdgeInsets.all(16),
+          //                   decoration: BoxDecoration(
+          //                     color:
+          //                         Theme.of(context).primaryColor.withOpacity(.4),
+          //                   ),
+          //                   child: LikeButton(
+          //                     isLiked: selected,
+          //                     size: 30,
+          //                     likeCountPadding: EdgeInsets.zero,
+          //                     padding: EdgeInsets.zero,
+          //                     crossAxisAlignment: CrossAxisAlignment.center,
+          //                     onTap: onLikeButtonTapped,
+          //                     likeBuilder: (bool isLiked) {
+          //                       return Center(
+          //                         child: Icon(
+          //                           isLiked
+          //                               ? Ionicons.heart
+          //                               : Ionicons.heart_outline,
+          //                           color:
+          //                               isLiked ? Colors.redAccent : Colors.white,
+          //                           size: 30,
+          //                         ),
+          //                       );
+          //                     },
+          //                     circleColor: CircleColor(
+          //                         start: Colors.white, end: Colors.red),
+          //                     bubblesColor: BubblesColor(
+          //                         dotPrimaryColor: Colors.red,
+          //                         dotSecondaryColor: Colors.red[900]),
+          //                   )))),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

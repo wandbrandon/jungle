@@ -68,40 +68,38 @@ class _MatchedDialogState extends State<MatchedDialog> {
                           Positioned(
                             right: 20,
                             bottom: 5,
-                            child: CachedNetworkImage(
-                              imageUrl: widget.user.images[0],
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                height: 125,
-                                width: 125,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      width: 4,
-                                      color: Theme.of(context).primaryColor),
-                                  image: DecorationImage(
-                                      image: imageProvider, fit: BoxFit.cover),
-                                ),
+                            child: Container(
+                              height: 125,
+                              width: 125,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    width: 4,
+                                    color: Theme.of(context).primaryColor),
+                                image: DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                      widget.user.images[0],
+                                    ),
+                                    fit: BoxFit.cover),
                               ),
                             ),
                           ),
                           Positioned(
                             left: 20,
                             top: 5,
-                            child: CachedNetworkImage(
-                              imageUrl: widget.currentUser.images[0],
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                height: 125,
-                                width: 125,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      width: 4,
-                                      color: Theme.of(context).primaryColor),
-                                  image: DecorationImage(
-                                      image: imageProvider, fit: BoxFit.cover),
-                                ),
+                            child: Container(
+                              height: 125,
+                              width: 125,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    width: 4,
+                                    color: Theme.of(context).primaryColor),
+                                image: DecorationImage(
+                                    image: CachedNetworkImageProvider(
+                                      widget.currentUser.images[0],
+                                    ),
+                                    fit: BoxFit.cover),
                               ),
                             ),
                           ),

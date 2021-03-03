@@ -30,11 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Activity> activities;
   ActivityState cartModel;
   UserModel currentUser;
+  bool badge = false;
 
   @override
   void initState() {
-    _controller.addListener(_scrollListener);
     super.initState();
+    activities = context.read<List<Activity>>();
+    _controller.addListener(_scrollListener);
   }
 
   void _scrollListener() {
@@ -69,11 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Activity> tabList = acts.where((e) => (e.type == value)).toList();
       actLists.add(ListView.separated(
           padding: const EdgeInsets.all(12),
-          itemBuilder: (context, index) => Container(
-              height: 225,
-              child: ActivityProfileCard(
+          itemBuilder: (context, index) => ActivityProfileCard(
                 activity: tabList[index],
-              )),
+              ),
           separatorBuilder: (context, index) => SizedBox(height: 14),
           itemCount: tabList.length));
     });
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> tabs = [];
     final tabStrings = getTabs(acts);
     tabStrings.forEach((e) {
-      tabs.add(Tab(text: '${e[0].toUpperCase() + e.substring(1)}'));
+      tabs.add(Tab(text: '${e[0].toUpperCase() + e.substring(1)}s'));
     });
     return tabs;
   }
@@ -92,26 +92,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildCartItem(Activity item, bool isLast) {
     return Align(
       key: ValueKey(item.aid),
-      child: CachedNetworkImage(
-        imageUrl: item.images[0],
-        imageBuilder: (context, imageProvider) {
-          return Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(width: 1, color: Colors.white),
-              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 7, // changes position of shadow
-                ),
-              ],
+      child: Container(
+        height: 40,
+        width: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(width: 1, color: Colors.white),
+          image: DecorationImage(
+              image: CachedNetworkImageProvider(
+                item.images[0],
+                maxHeight: 40,
+                maxWidth: 40,
+              ),
+              fit: BoxFit.cover),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 7, // changes position of shadow
             ),
-          );
-        },
+          ],
+        ),
       ),
       alignment: Alignment.centerLeft,
       widthFactor: .7,
@@ -144,31 +145,37 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              CachedNetworkImage(
-                imageUrl: item.images[0],
-                imageBuilder: (context, imageProvider) {
-                  return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.white),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 5, color: Colors.black),
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover),
-                        ),
-                      ));
-                },
-              ),
+              Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.white),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 5, color: Colors.black),
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          image: CachedNetworkImageProvider(item.images[0]),
+                          fit: BoxFit.cover),
+                    ),
+                  )),
               SizedBox(width: 18),
-              Text(
-                item.name,
-                style: TextStyle(fontSize: 16, color: Colors.white),
-                textAlign: TextAlign.left,
+              Row(
+                children: [
+                  Text(
+                    '${item.name} ',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    textAlign: TextAlign.left,
+                  ),
+                  Text(
+                    '${item.price}',
+                    style: TextStyle(
+                        fontSize: 16, color: Colors.white.withOpacity(.6)),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
               ),
             ],
           ),
@@ -399,8 +406,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Icon(
-                    Ionicons.bookmarks_outline,
+                    Ionicons.heart_outline,
                     color: Colors.white,
+                    size: 30,
                   ),
                   Expanded(
                     child: Padding(
@@ -437,15 +445,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             TapBuilder(
-              onTap: cartModel.modified
-                  ? () {
-                      HapticFeedback.mediumImpact();
-                      _controller.animateTo(
-                          _controller.position.maxScrollExtent,
-                          curve: Curves.ease,
-                          duration: Duration(milliseconds: 400));
-                    }
-                  : null,
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                _controller.animateTo(_controller.position.maxScrollExtent,
+                    curve: Curves.ease, duration: Duration(milliseconds: 400));
+              },
               builder: (context, state) => AnimatedContainer(
                 duration: Duration(milliseconds: 600),
                 curve: Curves.ease,
@@ -465,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 20,
                               color: Theme.of(context).primaryColor))
                       : Icon(
-                          Icons.check_rounded,
+                          Ionicons.checkmark,
                           color: Theme.of(context).primaryColor,
                         ),
                 ),
@@ -479,14 +483,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    activities = context.watch<List<Activity>>();
     cartModel = context.watch<ActivityState>();
-
     currentUser =
         UserModel.fromJson(context.watch<DocumentSnapshot>()?.data() ?? {});
     if (activities == null) {
       return Center(child: CircularProgressIndicator.adaptive());
     }
+
+    final chatRooms = context.watch<QuerySnapshot>()?.docs;
+    badge = chatRooms.any((element) =>
+        !element.data()['lastMessageRead'] &&
+        element.data()['lastMessageSentBy'] != currentUser.uid);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: Theme.of(context).brightness != Brightness.dark
@@ -495,7 +502,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: ListView(
-          shrinkWrap: true,
           controller: _controller,
           physics: PageScrollPhysics(parent: ClampingScrollPhysics()),
           padding: EdgeInsets.zero,
@@ -515,7 +521,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     right: false,
                     left: false,
                     child: NestedScrollView(
-                      //floatHeaderSlivers: true,
                       headerSliverBuilder:
                           (BuildContext context, bool innerBoxIsScrolled) {
                         return <Widget>[
@@ -532,25 +537,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Theme.of(context).primaryColor,
                             expandedHeight: 125,
                             elevation: 0,
-                            pinned: false,
+                            floating: true,
                             actions: [
                               IconButton(
-                                  icon: CachedNetworkImage(
-                                    imageUrl: currentUser.images[0],
-                                    imageBuilder: (context, image) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                image: image,
-                                                fit: BoxFit.cover)),
-                                      );
-                                    },
-                                    placeholder: (context, string) => Center(
-                                        child: CircularProgressIndicator
-                                            .adaptive()),
+                                  icon: Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: CachedNetworkImageProvider(
+                                              currentUser.images[0],
+                                            ),
+                                            fit: BoxFit.cover)),
                                   ),
                                   onPressed: () {
+                                    HapticFeedback.mediumImpact();
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -562,26 +562,58 @@ class _HomeScreenState extends State<HomeScreen> {
                                   iconSize: 30,
                                   icon: Icon(Ionicons.heart_outline),
                                   onPressed: () {
+                                    HapticFeedback.mediumImpact();
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MatchPage()));
                                   }),
-                              IconButton(
-                                  iconSize: 30,
-                                  icon: Icon(Ionicons.chatbubbles_outline),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ChatPage()));
-                                  }),
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  IconButton(
+                                      iconSize: 30,
+                                      icon: Icon(Ionicons.chatbubbles_outline),
+                                      onPressed: () {
+                                        HapticFeedback.mediumImpact();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChatPage()));
+                                      }),
+                                  badge
+                                      ? Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: Container(
+                                            height: 15,
+                                            width: 15,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    width: 2,
+                                                    color: Theme.of(context)
+                                                        .primaryColor),
+                                                color: Theme.of(context)
+                                                    .accentColor),
+                                          ),
+                                        )
+                                      : SizedBox()
+                                ],
+                              ),
                             ],
                           ),
                           SliverPersistentHeader(
                             delegate: _SliverAppBarDelegate(TabBar(
                               indicatorSize: TabBarIndicatorSize.label,
                               isScrollable: true,
+                              labelColor: Theme.of(context).primaryColor,
+                              unselectedLabelColor: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .color
+                                  .withOpacity(.75),
                               indicator: BubbleTabIndicator(
                                 indicatorHeight: 25.0,
                                 indicatorColor: Theme.of(context).accentColor,
@@ -590,6 +622,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               tabs: tabBuilder(activities),
                             )),
                             pinned: true,
+                            floating: false,
                           ),
                         ];
                       },

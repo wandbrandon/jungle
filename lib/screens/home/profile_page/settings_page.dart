@@ -22,7 +22,7 @@ class SettingsPage extends StatelessWidget {
                           content: Text(
                               "We're sad to see you go, hopefully we can do better next time. \n\nRemember, you can always make a new account if you'd like"),
                           actions: <Widget>[
-                            FlatButton(
+                            TextButton(
                               onPressed: () async {
                                 User currentUser = context.read<User>();
                                 FirestoreService service =
@@ -40,7 +40,7 @@ class SettingsPage extends StatelessWidget {
                               },
                               child: Text('Delete'),
                             ),
-                            FlatButton(
+                            TextButton(
                               onPressed: () {},
                               child: Text('Cancel'),
                             ),

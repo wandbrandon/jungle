@@ -17,53 +17,45 @@ class ContactItem extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: user.images[0],
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+            image: CachedNetworkImageProvider(user.images[0]),
+            fit: BoxFit.cover),
+      ),
       height: radius * 2,
       width: radius * 2,
-      placeholder: (context, string) => Container(
-        decoration: BoxDecoration(
-            shape: BoxShape.circle, color: Theme.of(context).backgroundColor),
-      ),
-      imageBuilder: (context, image) => Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(image: image, fit: BoxFit.cover),
-          ),
-          height: radius * 2,
-          width: radius * 2,
-          child: Material(
-              shape: CircleBorder(),
-              clipBehavior: Clip.hardEdge,
-              color: Colors.transparent,
-              child: InkWell(
-                  onTap: () => {
-                        showMaterialModalBottomSheet(
-                            enableDrag: true,
-                            bounce: true,
-                            backgroundColor: Colors.transparent,
-                            barrierColor: Colors.black.withOpacity(.80),
-                            animationCurve: Curves.ease,
-                            duration: Duration(milliseconds: 300),
-                            context: context,
-                            builder: (context) => Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15.0, right: 15, bottom: 45),
-                                  child: Container(
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: ProfileCard(
-                                      user: user,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .75,
-                                      matches: matches ?? [],
-                                    ),
-                                  ),
-                                ))
-                      }))),
+      child: Material(
+          shape: CircleBorder(),
+          clipBehavior: Clip.hardEdge,
+          color: Colors.transparent,
+          child: InkWell(
+              onTap: () => {
+                    showMaterialModalBottomSheet(
+                        enableDrag: true,
+                        bounce: true,
+                        backgroundColor: Colors.transparent,
+                        barrierColor: Colors.black.withOpacity(.80),
+                        animationCurve: Curves.ease,
+                        duration: Duration(milliseconds: 300),
+                        context: context,
+                        builder: (context) => Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, right: 15, bottom: 45),
+                              child: Container(
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: ProfileCard(
+                                  user: user,
+                                  height:
+                                      MediaQuery.of(context).size.height * .75,
+                                  matches: matches ?? [],
+                                ),
+                              ),
+                            ))
+                  })),
     );
   }
 }

@@ -20,10 +20,10 @@ dependencies:
   flutter:
     sdk: flutter
   cached_network_image: ^2.5.0
-  ko_swipe_card: ^1.0.0
   modal_bottom_sheet: ^2.0.0-nullsafety.1
   confetti:
   reorderables:
+  like_button: ^1.0.4
   image_picker: ^0.6.7+22
   rxdart: ^0.25.0
   uuid: ^2.2.2
@@ -31,6 +31,11 @@ dependencies:
   tap_builder: ^0.2.0-beta
   ionicons: ^0.1.1
   keyboard_attachable: ^1.0.3
+  swipable_stack: ^0.1.2
+  ko_swipe_card: ^1.0.0
+  hop_swipe_cards: 2.0.0-nullsafety.1
+  smooth_page_indicator: ^0.2.1
+  
   
   provider: ^4.3.2+1
   pinput:

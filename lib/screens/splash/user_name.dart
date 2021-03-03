@@ -87,11 +87,14 @@ class _UserNameState extends State<UserName> {
                       controller: textController,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
+                        LengthLimitingTextInputFormatter(20)
                       ],
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.text,
+                      cursorColor: Theme.of(context).accentColor,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                       ),
+                      textCapitalization: TextCapitalization.words,
                       onChanged: (value) {
                         setState(() {
                           textController.text.isEmpty

@@ -294,11 +294,19 @@ class FirestoreService {
         .catchError((e) => print('Could not delete Chat Room: $e'));
   }
 
-  Stream<QuerySnapshot> getUnaffectedUsers(UserModel user) {
-    print('querying...');
+  List<UserModel> helper(List<UserModel> list, UserModel user) {
+    list.removeWhere((element) => !(user.lookingFor.contains(element.gender) &&
+        user.activities
+            .any((activity) => element.activities.contains(activity))));
+    return list;
+  }
+
+  Stream<List<UserModel>> getUnseenUsers(UserModel user) {
+    print('querying unseen users...');
     List<dynamic> likedOrDisliked = user.likes + user.dislikes;
     likedOrDisliked.add(user.uid);
     Query query;
+
     //query for activities.
     if (user.activities == null || user.activities.isEmpty) {
       print('No activities have been chosen yet!');
@@ -309,7 +317,8 @@ class FirestoreService {
           .where('uid', whereNotIn: likedOrDisliked)
           .orderBy('uid')
           .limit(50);
-      return query.snapshots();
+      return query.snapshots().map((event) => helper(
+          event.docs.map((e) => UserModel.fromJson(e.data())).toList(), user));
     }
   }
 }

@@ -27,6 +27,7 @@ Future<void> main() async {
 
 List<Activity> activitiesFromDoc(
     DocumentSnapshot doc, List<Activity> activities) {
+  print('Activities from D');
   if (doc?.data() == null || activities == null) {
     return null;
   }
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
           );
         }),
         StreamProvider<QuerySnapshot>(
+            catchError: (context, o) => null,
             create: (context) =>
                 firestoreService.getChatRoomsByUID(context.read<User>().uid)),
         FutureProvider<List<Activity>>(

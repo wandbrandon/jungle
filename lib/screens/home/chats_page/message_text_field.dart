@@ -95,6 +95,7 @@ class _MessageTextFieldState extends State<MessageTextField>
                       maxLines: 5,
                       minLines: 1,
                       textInputAction: TextInputAction.send,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration.collapsed(
                           hintText: "Type a message...",
                           hintStyle: TextStyle(

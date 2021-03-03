@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +10,11 @@ import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:jungle/screens/home/match_page/matched_dialog.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/widgets/profile_card.dart';
-import 'package:provider/provider.dart';
 import 'package:ko_swipe_card/ko_swipe_card.dart';
+import 'package:like_button/like_button.dart';
+import 'package:provider/provider.dart';
+import 'package:swipable_stack/swipable_stack.dart';
+import 'package:hop_swipe_cards/hop_swipe_cards.dart';
 
 class MatchPage extends StatefulWidget {
   MatchPage({Key key}) : super(key: key);
@@ -19,35 +24,20 @@ class MatchPage extends StatefulWidget {
 }
 
 class _MatchPageState extends State<MatchPage> {
-  List<Widget> cards = [];
-  int currentCardIndex = 0;
   String error;
   bool liked = true;
   UserModel otherUser;
+  UserModel currentUser;
+  List<UserModel> users;
+  List<Activity> currentCart;
+  //PageController _controller = PageController();
 
-  List<Map<String, dynamic>> fix(QuerySnapshot qs1, UserModel user) {
-    if (qs1.size == 0) {
-      print('done, found nothing');
-      return [];
-    }
-
-    List<Map<String, dynamic>> firstQueryList = qs1.docs
-        .map((e) => e.data())
-        .toList()
-        .where((item) =>
-            user.lookingFor.contains(item['gender']) &&
-            user.activities
-                .where((element) => item['activities']?.contains(element))
-                .toList()
-                .isNotEmpty)
-        .toList();
-
-    if (qs1.docs.length < 50) {
-      print('done, but it is trickling down');
-      return firstQueryList;
-    }
-    print('done, went through the loop!');
-    return firstQueryList;
+  @override
+  void initState() {
+    super.initState();
+    currentCart = context.read<ActivityState>().getCart;
+    final currentUserSnapshot = context.read<DocumentSnapshot>();
+    currentUser = UserModel.fromJson(currentUserSnapshot.data());
   }
 
   Route _createRoute(UserModel currentUser, UserModel otherUser) {
@@ -60,11 +50,9 @@ class _MatchPageState extends State<MatchPage> {
         var begin = 0.0;
         var end = 1.0;
         var curve = Curves.ease;
-
         var tween = Tween(begin: begin, end: end).chain(CurveTween(
           curve: curve,
         ));
-
         return FadeTransition(
           opacity: animation.drive(tween),
           child: child,
@@ -108,66 +96,52 @@ class _MatchPageState extends State<MatchPage> {
   @override
   Widget build(BuildContext context) {
     final fireStoreService = context.watch<FirestoreService>();
-    final currentUserSnapshot = context.watch<DocumentSnapshot>();
-    final currentUser = UserModel.fromJson(currentUserSnapshot.data());
-    return Stack(
-      children: [
-        Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            centerTitle: true,
-            actions: [
-              IconButton(
-                  icon: Icon(Ionicons.filter_outline),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) =>
-                            Center(child: Text('User filters coming soon!')));
-                  }),
-            ],
-            elevation: 0,
-            title: Text(
-              'Jungle',
-              style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 26),
-            ),
+    return Material(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: true,
+          actions: [
+            IconButton(
+                icon: Icon(Ionicons.filter_outline),
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) =>
+                          Center(child: Text('User filters coming soon!')));
+                }),
+          ],
+          elevation: 0,
+          title: Text(
+            'Jungle',
+            style: TextStyle(
+                color: Theme.of(context).accentColor,
+                fontWeight: FontWeight.w400,
+                fontSize: 26),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: StreamBuilder(
-              stream: fireStoreService.getUnaffectedUsers(currentUser),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  print('here!');
-                  return buildError(snapshot.error.toString());
-                } else {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.none:
-                      return buildLoading();
-                    case ConnectionState.active:
-                    case ConnectionState.done:
-                      final users = fix(snapshot.data, currentUser);
-                      if (users.isNotEmpty) {
-                        return buildUsers(context, users, currentUser);
-                      }
-                      return Center(
-                          child: Text(
-                        'Nobody else around! \nTry changing up your activities!',
-                        style: Theme.of(context).textTheme.subtitle1,
-                        textAlign: TextAlign.center,
-                      ));
-                    default:
-                      return buildLoading();
+        body: SafeArea(
+          child: Center(
+            child: StreamProvider<List<UserModel>>(
+                create: (context) =>
+                    fireStoreService.getUnseenUsers(currentUser),
+                catchError: (context, object) {
+                  error = object.toString();
+                  return null;
+                },
+                builder: (context, child) {
+                  users = context.watch<List<UserModel>>();
+                  if (error != null) {
+                    return buildError(error);
+                  } else if (users == null) {
+                    return buildLoading();
+                  } else {
+                    return buildUsers(context, currentUser);
                   }
-                }
-              }),
+                }),
+          ),
         ),
-      ],
+      ),
     );
   }
 
@@ -188,8 +162,14 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  Widget buildUsers(
-      context, List<Map<String, dynamic>> users, UserModel currentUser) {
+  Widget buildUsers(context, UserModel currentUser) {
+    if (users.isEmpty) {
+      return Center(
+          child: Text(
+        'No more users in your area! Try changing your activities.',
+        textAlign: TextAlign.center,
+      ));
+    }
     return Container(
       child: KoSwipeCard(
         cardElevation: 0,
@@ -201,8 +181,6 @@ class _MatchPageState extends State<MatchPage> {
             borderRadius: BorderRadius.all(Radius.circular(20.0))),
         indexedCardBuilder:
             (context, index, rotateFraction, translateFraction) {
-          UserModel user = UserModel.fromJson(users[index]);
-          otherUser = user;
           if (rotateFraction >= 1.0) {
             liked = true;
           } else if (rotateFraction <= -1.0) {
@@ -210,7 +188,7 @@ class _MatchPageState extends State<MatchPage> {
           }
           return Stack(
             children: [
-              _buildCard(user),
+              _buildCard(users[index]),
               index == 0
                   ? IgnorePointer(
                       ignoring: true,
@@ -244,11 +222,12 @@ class _MatchPageState extends State<MatchPage> {
           );
         },
         topCardDismissListener: () {
+          otherUser = users[0];
           setState(() {
             users.removeAt(0);
           });
-          HapticFeedback.heavyImpact();
           swipeUser(currentUser, otherUser);
+          //swipeUser(currentUser, otherUser);
         },
       ),
     );
@@ -259,8 +238,7 @@ class _MatchPageState extends State<MatchPage> {
       key: ValueKey('${user.uid}'),
       height: MediaQuery.of(context).size.height * .72,
       user: user,
-      matches: getActivityMatches(
-          context.read<ActivityState>().getCart, user.activities),
+      matches: getActivityMatches(currentCart, user.activities),
     );
   }
 

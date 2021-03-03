@@ -332,43 +332,37 @@ class _ImageSettingState extends State<ImageSetting> {
       child: Column(
         children: [
           Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: ReorderableWrap(
+            decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                borderRadius: BorderRadius.all(Radius.circular(15))),
+            child: ReorderableWrap(
                 onReorder: reorderData,
                 maxMainAxisCount: 3,
                 spacing: 10,
                 padding: EdgeInsets.all(10),
                 children: List<Widget>.generate(
-                    urls.length,
-                    (int index) => GestureDetector(
-                          onTap: () {
-                            replaceImage(index);
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl: urls[index],
-                            imageBuilder: (context, imageProvider) => Container(
-                                width: 3 * 37.0,
-                                height: 4 * 37.0,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: imageProvider),
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        .color
-                                        .withOpacity(.1),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(4)))),
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator.adaptive(),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ),
-                        )),
-              )),
+                  urls.length,
+                  (int index) => GestureDetector(
+                    onTap: () {
+                      replaceImage(index);
+                    },
+                    child: Container(
+                        width: 3 * 37.0,
+                        height: 4 * 37.0,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: CachedNetworkImageProvider(urls[index])),
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .color
+                                .withOpacity(.1),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4)))),
+                  ),
+                )),
+          ),
           SizedBox(height: 10),
           Text(
             'Hold to drag and reorder.',

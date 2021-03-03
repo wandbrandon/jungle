@@ -43,11 +43,15 @@ class MessageQueue extends StatelessWidget {
       ),
       Expanded(
         child: Scrollbar(
-          child: ListView.builder(
+          child: ListView.separated(
+            separatorBuilder: (context, index) => SizedBox(
+              height: 20,
+            ),
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
             itemCount: chatRooms.length,
             itemBuilder: (BuildContext context, int index) {
               return MessageCard(
+                chatRoomIndex: index,
                 chatRoom: chatRooms[index],
                 user: getOppositeUser(chatRooms[index].data()['users']),
               );
