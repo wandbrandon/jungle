@@ -4,6 +4,19 @@ import 'package:uuid/uuid.dart';
 final List<Activity> bars = [
   Activity(
     aid: Uuid().v4(),
+    popularity: 3,
+    price: '\$',
+    type: 'bar',
+    name: "El Jefe",
+    tag: 'College Night Club',
+    address: '1120 W University Ave',
+    images: [
+      "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2F146272654_110878604326371_5334132869846446776_n.jpg?alt=media&token=3bfbbd7a-c683-4f58-bdde-fef85573e4ac"
+    ],
+  ),
+  Activity(
+    aid: Uuid().v4(),
+    popularity: 15,
     price: '\$',
     type: 'bar',
     name: "Fat Daddy's",
@@ -15,7 +28,8 @@ final List<Activity> bars = [
   ),
   Activity(
     aid: Uuid().v4(),
-    price: '\$\$',
+    popularity: 14,
+    price: '\$',
     type: 'bar',
     name: "JJ's Tavern",
     tag: 'Traditional Bar',
@@ -26,7 +40,8 @@ final List<Activity> bars = [
   ),
   Activity(
     aid: Uuid().v4(),
-    price: '\$\$',
+    popularity: 13,
+    price: '\$',
     type: 'bar',
     name: "Tatu",
     tag: 'Bar & Grill',
@@ -37,6 +52,7 @@ final List<Activity> bars = [
   ),
   Activity(
       aid: Uuid().v4(),
+      popularity: 0,
       price: '\$\$',
       type: 'bar',
       name: "Simon's",
@@ -48,7 +64,8 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
-      price: '\$\$',
+      popularity: 8,
+      price: '\$',
       type: 'bar',
       name: "Grog",
       tag: 'College Bar',
@@ -59,6 +76,7 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 7,
       price: '\$',
       type: 'bar',
       name: "Salty Dog Saloon",
@@ -70,6 +88,7 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 9,
       price: '\$\$',
       type: 'bar',
       name: "The Social",
@@ -81,29 +100,20 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
-      price: '\$\$',
+      popularity: 13,
+      price: '\$',
       type: 'bar',
       name: "Rowdy Reptile",
       tag: 'American Bar',
       address: '1702 W University Ave Suite A1, Gainesville, FL 32603',
       images: [
-        "https://www.gainesville.com/storyimage/LK/20171018/NEWS/171017780/AR/0/AR-171017780.jpg"
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2Fl.jpg?alt=media&token=89f06f6b-f5ae-4f92-81ab-a2b0348f7e75"
       ],
       description: null),
   Activity(
       aid: Uuid().v4(),
-      price: '\$',
-      type: 'bar',
-      name: "Lit",
-      tag: 'Bar & Restaurant',
-      address: '1120 W University Ave, Gainesville, FL 32601',
-      images: [
-        "https://www.gainesville.com/storyimage/LK/20171018/NEWS/171017780/AR/0/AR-171017780.jpg"
-      ],
-      description: null),
-  Activity(
-      aid: Uuid().v4(),
-      price: '\$',
+      popularity: 5,
+      price: '\$\$',
       type: 'bar',
       name: "White Buffalo",
       tag: 'College Bar',
@@ -114,7 +124,8 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
-      price: '\$',
+      popularity: 6,
+      price: '\$\$',
       type: 'bar',
       name: "Downtown Fats",
       tag: 'College Bar',
@@ -125,6 +136,7 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 1,
       price: '\$',
       type: 'bar',
       name: "Gainesville Arcade Bar",
@@ -136,6 +148,7 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 2,
       price: '\$',
       type: 'bar',
       name: "Mother's",
@@ -147,6 +160,7 @@ final List<Activity> bars = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 4,
       price: '\$',
       type: 'bar',
       name: "The Lab",
@@ -161,6 +175,7 @@ final List<Activity> bars = [
 final List<Activity> rests = [
   Activity(
       aid: Uuid().v4(),
+      popularity: 10,
       type: 'restaurant',
       price: '\$\$\$',
       name: "Dragon Fly",
@@ -173,6 +188,7 @@ final List<Activity> rests = [
           "Contemporary izakaya featuring tapas-style Japanese pub fare plus an assortment of sake."),
   Activity(
       aid: Uuid().v4(),
+      popularity: 4,
       type: 'restaurant',
       price: '\$\$',
       name: "Crane Ramen",
@@ -185,6 +201,7 @@ final List<Activity> rests = [
           "Hip Japanese locale crafting ramen made with area-sourced ingredients, plus unique cocktails."),
   Activity(
       aid: Uuid().v4(),
+      popularity: 3,
       type: 'restaurant',
       price: '\$\$',
       name: "The Top",
@@ -196,28 +213,7 @@ final List<Activity> rests = [
       description: null),
   Activity(
       aid: Uuid().v4(),
-      type: 'restaurant',
-      price: '\$',
-      name: "La Tienda",
-      tag: 'Mexican Restaurant',
-      address: '2204 SW 13th St, Gainesville, FL 32608',
-      images: [
-        'https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2Flatienda.jpg?alt=media&token=7ca5017f-9e40-4641-8ac5-1f26a97b0752'
-      ],
-      description: null),
-  Activity(
-      aid: Uuid().v4(),
-      type: 'restaurant',
-      price: '\$',
-      name: "Adam's Ribs",
-      tag: 'Barbecue Restaurant',
-      address: '1515 SW 13th St, Gainesville, FL 32608',
-      images: [
-        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2Fadamsribs.jpg?alt=media&token=592cdc14-df8a-4264-a044-4d0b78d00385"
-      ],
-      description: null),
-  Activity(
-      aid: Uuid().v4(),
+      popularity: 0,
       type: 'restaurant',
       price: '\$\$\$\$',
       name: "Mark's Prime",
@@ -229,6 +225,7 @@ final List<Activity> rests = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 0,
       type: 'restaurant',
       price: '\$\$',
       name: "Amelia's",
@@ -240,6 +237,7 @@ final List<Activity> rests = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 0,
       type: 'restaurant',
       price: '\$\$',
       name: "Big Top",
@@ -251,6 +249,7 @@ final List<Activity> rests = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 0,
       type: 'restaurant',
       price: '\$\$',
       name: "Harry's",
@@ -262,6 +261,7 @@ final List<Activity> rests = [
       description: null),
   Activity(
       aid: Uuid().v4(),
+      popularity: 0,
       type: 'restaurant',
       price: '\$\$',
       name: "Boca Fiesta",
@@ -269,6 +269,78 @@ final List<Activity> rests = [
       address: '232 SE 1st St, Gainesville',
       images: [
         "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2FIMG_5788.jpg?alt=media&token=5c37b106-c8fa-4a62-a170-39c38f8cc22a"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 2,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "OAK",
+      tag: 'American restaurant',
+      address: '15 SE 1st Ave',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2F5e8a614460516.image.jpg?alt=media&token=7df00b41-9fb2-40f9-8225-50d7ffddf58a"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 0,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "Cheesecake Factory",
+      tag: 'Dessert restaurant',
+      address: '2851 SW 35th Dr',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2FDSC_6851.jpg?alt=media&token=e955823d-9de3-4aad-bc04-1cc02f15e58b"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 0,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "V Pizza",
+      tag: 'Pizza restaurant',
+      address: '115 SE 1 St',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2F061317-V-Pizza-42.jpg?alt=media&token=d6f13430-8e17-40fe-b195-111f9490199f"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 0,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "Ember's",
+      tag: 'Steakhouse',
+      address: '3545 SW 34th St A',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2Funnamed.jpg?alt=media&token=a3366acb-12fb-4473-9d8d-0023506a8998"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 0,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "Piesanos",
+      tag: 'Italian restaurant',
+      address: '1250 W University Ave',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2Fpiesanos-restaurant-is.jpg?alt=media&token=27213c73-2e0a-4c0c-8682-c9bd17a35eac"
+      ],
+      description: null),
+  Activity(
+      aid: Uuid().v4(),
+      popularity: 5,
+      type: 'restaurant',
+      price: '\$\$',
+      name: "Liquid Ginger",
+      tag: 'Asian fusion restaurant',
+      address: '101 SE 2nd Pl',
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2F67706528_2219288854850079_7134618394430537728_n.jpg?alt=media&token=75d6de3f-9272-409a-af92-f4a19b0242c5"
       ],
       description: null),
 ];

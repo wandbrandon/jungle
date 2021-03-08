@@ -46,7 +46,7 @@ class FirestoreService {
   Future<List<Activity>> getAllActivities() {
     try {
       CollectionReference activities = db.collection('activities');
-      return activities.orderBy('name').get().then(
+      return activities.orderBy('popularity', descending: true).get().then(
           (qs) => qs.docs.map((e) => Activity.fromJson(e.data())).toList());
     } catch (e) {
       print('There was an error: $e');
@@ -310,7 +310,7 @@ class FirestoreService {
     //query for activities.
     if (user.activities == null || user.activities.isEmpty) {
       print('No activities have been chosen yet!');
-      return Stream.error("You haven't chosen any activities yet!");
+      throw Exception('No activities have been chosen yet!');
     } else {
       query = db
           .collection('users')

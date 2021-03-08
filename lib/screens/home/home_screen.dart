@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
+import 'package:jungle/data/data.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/screens/home/discover_page/activity_profile_card.dart';
 import 'package:jungle/screens/home/match_page/match_page.dart';
@@ -567,6 +568,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MatchPage()));
+                                  }),
+                              IconButton(
+                                  iconSize: 30,
+                                  icon: Icon(Ionicons.cloud_upload_outline),
+                                  onPressed: () {
+                                    HapticFeedback.mediumImpact();
+                                    context
+                                        .read<FirestoreService>()
+                                        .createActivities(rests + bars);
                                   }),
                               Stack(
                                 alignment: Alignment.center,

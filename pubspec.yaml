@@ -35,7 +35,7 @@ dependencies:
   ko_swipe_card: ^1.0.0
   hop_swipe_cards: 2.0.0-nullsafety.1
   smooth_page_indicator: ^0.2.1
-  
+  focused_menu: ^1.0.2
   
   provider: ^4.3.2+1
   pinput:
