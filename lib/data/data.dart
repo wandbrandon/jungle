@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:jungle/models/models.dart';
 import 'package:uuid/uuid.dart';
 
@@ -343,4 +344,19 @@ final List<Activity> rests = [
         "https://firebasestorage.googleapis.com/v0/b/jungle-2a886.appspot.com/o/activities%2F67706528_2219288854850079_7134618394430537728_n.jpg?alt=media&token=75d6de3f-9272-409a-af92-f4a19b0242c5"
       ],
       description: null),
+];
+
+List<DropdownMenuItem<String>> schools = [
+  DropdownMenuItem(
+    child: Text('University of Florida'),
+    value: 'University of Florida',
+  ),
+  DropdownMenuItem(
+    child: Text('University of Florida'),
+    value: 'University of Florida',
+  ),
+  DropdownMenuItem(
+    child: Text('University of Florida'),
+    value: 'University of Florida',
+  ),
 ];

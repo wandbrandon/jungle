@@ -49,8 +49,8 @@ class _UserLookingForState extends State<UserLookingFor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(elevation: 0),
-      body: Container(
-          padding: EdgeInsets.all(35),
+      body: SafeArea(
+          minimum: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -183,6 +183,7 @@ class _UserLookingForState extends State<UserLookingFor> {
               SizedBox(
                 height: 40,
               ),
+              Spacer(),
               GestureDetector(
                   onTap: validate()
                       ? () {

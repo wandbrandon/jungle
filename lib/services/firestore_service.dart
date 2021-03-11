@@ -138,7 +138,6 @@ class FirestoreService {
         .getDownloadURL()
         .then((fileURL) {
       returnURL = fileURL;
-      print(returnURL);
     });
     return returnURL;
   }
@@ -170,7 +169,7 @@ class FirestoreService {
     CollectionReference chats = db.collection('chats');
     return chats
         .where('UIDs', arrayContains: uid)
-        .orderBy('last_updated')
+        .orderBy('last_updated', descending: true)
         .snapshots();
   }
 
@@ -294,14 +293,24 @@ class FirestoreService {
         .catchError((e) => print('Could not delete Chat Room: $e'));
   }
 
-  List<UserModel> helper(List<UserModel> list, UserModel user) {
-    list.removeWhere((element) => !(user.lookingFor.contains(element.gender) &&
-        user.activities
-            .any((activity) => element.activities.contains(activity))));
+  List<QueryDocumentSnapshot> helper(
+      List<QueryDocumentSnapshot> list, UserModel user) {
+    List<dynamic> likedOrDisliked = user.likes + user.dislikes;
+    list.removeWhere((elJSON) {
+      final element = UserModel.fromJson(elJSON.data());
+      bool check1 = likedOrDisliked.contains(element.uid);
+      bool check2 = !(user.activities
+          .any((activity) => element.activities.contains(activity)));
+      if (check1 || check2) {
+        print(
+            'removed: ${element.name}, ${element.uid}, because, (check1: $check1, check2: $check2)');
+      }
+      return check1 || check2;
+    });
     return list;
   }
 
-  Stream<List<UserModel>> getUnseenUsers(UserModel user) {
+  Stream<List<QueryDocumentSnapshot>> getUnseenUsers(UserModel user) {
     print('querying unseen users...');
     List<dynamic> likedOrDisliked = user.likes + user.dislikes;
     likedOrDisliked.add(user.uid);
@@ -310,15 +319,21 @@ class FirestoreService {
     //query for activities.
     if (user.activities == null || user.activities.isEmpty) {
       print('No activities have been chosen yet!');
-      throw Exception('No activities have been chosen yet!');
+      return Stream.error(
+          'No activities have been chosen yet. Go back and choose some places!');
     } else {
       query = db
           .collection('users')
-          .where('uid', whereNotIn: likedOrDisliked)
+          .where('gender', whereIn: user.lookingFor)
+          .where('uid', isNotEqualTo: user.uid)
           .orderBy('uid')
-          .limit(50);
-      return query.snapshots().map((event) => helper(
-          event.docs.map((e) => UserModel.fromJson(e.data())).toList(), user));
+          .limit(5);
+
+      if (!(user.startAtUID == '' || user.startAtUID == null)) {
+        query = query.startAfter([user.startAtUID]);
+      }
+
+      return query.snapshots().map((event) => helper(event.docs, user));
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jungle/screens/splash/user_age.dart';
+import 'package:jungle/screens/splash/user_birthday.dart';
 import 'package:jungle/services/authentication_service.dart';
 import 'package:provider/provider.dart';
 import 'package:jungle/models/models.dart' as models;
@@ -62,8 +62,8 @@ class _UserNameState extends State<UserName> {
                 size: 35,
               ),
             )),
-        body: Container(
-            padding: EdgeInsets.all(35),
+        body: SafeArea(
+            minimum: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -81,27 +81,35 @@ class _UserNameState extends State<UserName> {
                       style: TextStyle(fontSize: 12),
                     ),
                     SizedBox(height: 25),
-                    TextField(
-                      style: TextStyle(fontSize: 24),
-                      autofocus: true,
-                      controller: textController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
-                        LengthLimitingTextInputFormatter(20)
-                      ],
-                      keyboardType: TextInputType.text,
-                      cursorColor: Theme.of(context).accentColor,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        // override textfield's icon color when selected
+                        accentColor: Theme.of(context).accentColor,
+                        primaryColor: Theme.of(context).accentColor,
                       ),
-                      textCapitalization: TextCapitalization.words,
-                      onChanged: (value) {
-                        setState(() {
-                          textController.text.isEmpty
-                              ? validate = false
-                              : validate = true;
-                        });
-                      },
+                      child: TextField(
+                        style: TextStyle(fontSize: 24),
+                        autofocus: true,
+                        controller: textController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
+                          LengthLimitingTextInputFormatter(16)
+                        ],
+                        keyboardType: TextInputType.text,
+                        cursorColor: Theme.of(context).accentColor,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (value) {
+                          setState(() {
+                            textController.text.isEmpty
+                                ? validate = false
+                                : validate = true;
+                          });
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -118,7 +126,7 @@ class _UserNameState extends State<UserName> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        UserAge(tempUser: tempUser)));
+                                        UserBirthday(tempUser: tempUser)));
                           }
                         : null,
                     onTapCancel: validate

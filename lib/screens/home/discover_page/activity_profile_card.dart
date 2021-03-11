@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
@@ -51,13 +52,7 @@ class _ActivityProfileCardState extends State<ActivityProfileCard> {
     cart = context.watch<ActivityState>();
     selected = cart.getCart.contains(widget.activity);
     return GestureDetector(
-      onTap: () {
-        showBarModalBottomSheet(
-            context: context,
-            builder: (context) => ActivityPage(
-                  activity: widget.activity,
-                ));
-      },
+      onTap: () {},
       child: Container(
         height: 225,
         clipBehavior: Clip.antiAlias,
@@ -69,10 +64,22 @@ class _ActivityProfileCardState extends State<ActivityProfileCard> {
             Stack(
               fit: StackFit.expand,
               children: [
-                CachedNetworkImage(
-                  imageUrl: widget.activity.images[0],
-                  fit: BoxFit.cover,
-                  memCacheHeight: 600,
+                ExtendedImage.network(
+                  widget.activity.images[0],
+                  cacheWidth: 700,
+                  enableLoadState: true,
+                  loadStateChanged: (state) {
+                    return AnimatedOpacity(
+                        opacity:
+                            state.extendedImageLoadState == LoadState.completed
+                                ? 1
+                                : 0,
+                        duration: Duration(milliseconds: 200),
+                        child: ExtendedRawImage(
+                          image: state.extendedImageInfo?.image,
+                          fit: BoxFit.cover,
+                        ));
+                  },
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -127,7 +134,9 @@ class _ActivityProfileCardState extends State<ActivityProfileCard> {
                         likeBuilder: (bool isLiked) {
                           return Center(
                             child: Icon(
-                              isLiked ? Ionicons.heart : Ionicons.heart_outline,
+                              !isLiked
+                                  ? Ionicons.heart_outline
+                                  : Ionicons.heart,
                               color: isLiked ? Colors.redAccent : Colors.white,
                               size: 30,
                             ),

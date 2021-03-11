@@ -22,15 +22,14 @@ class MessageCard extends StatefulWidget {
 class _MessageCardState extends State<MessageCard> {
   UserModel currentUser;
 
-  bool dateSet() {
-    return (widget.chatRoom['dateUsersAccepted']['${widget.user.uid}'] &&
-        (widget.chatRoom['dateUsersAccepted']['${currentUser.uid}']));
-  }
-
   bool timeRanOut() {
-    final value = (1 -
-        DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours /
-            48);
+    final value = 48 -
+        DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours;
+
+    Map<String, dynamic> acc = widget.chatRoom['dateUsersAccepted'];
+    if (acc.values.every((element) => element)) {
+      return false;
+    }
     return value <= 0;
   }
 
@@ -56,6 +55,7 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> acc = widget.chatRoom['dateUsersAccepted'];
     currentUser = UserModel.fromJson(context.watch<DocumentSnapshot>().data());
     return ColorFiltered(
       colorFilter: timeRanOut()
@@ -66,7 +66,7 @@ class _MessageCardState extends State<MessageCard> {
         absorbing: timeRanOut(),
         child: GestureDetector(
             onTap: () {
-              HapticFeedback.mediumImpact();
+              HapticFeedback.selectionClick();
               if (widget.chatRoom['lastMessageRead'] != true) {
                 if (widget.chatRoom['lastMessageSentBy'] != currentUser.uid) {
                   context.read<FirestoreService>().updateChatRoom(
@@ -158,11 +158,17 @@ class _MessageCardState extends State<MessageCard> {
                   ),
                 ),
                 SizedBox(width: 15),
-                !(timeRanOut() || dateSet())
+                !(timeRanOut() || acc.values.every((element) => element))
                     ? Container(
                         child: Stack(
                         alignment: Alignment.center,
                         children: [
+                          Text(
+                            "${48 - DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours}",
+                            style: TextStyle(
+                                color: Theme.of(context).errorColor,
+                                fontWeight: FontWeight.bold),
+                          ),
                           CircularProgressIndicator(
                               strokeWidth: 3,
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -173,12 +179,6 @@ class _MessageCardState extends State<MessageCard> {
                                               .toDate())
                                           .inHours /
                                       48),
-                          Text(
-                            "${48 - DateTime.now().difference(widget.chatRoom['created'].toDate()).inHours}",
-                            style: TextStyle(
-                                color: Theme.of(context).errorColor,
-                                fontWeight: FontWeight.bold),
-                          )
                         ],
                       ))
                     : SizedBox()

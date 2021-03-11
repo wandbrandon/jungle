@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jungle/screens/splash/user_looking_for.dart';
 import 'package:jungle/models/models.dart' as models;
-import 'package:jungle/services/firestore_service.dart';
 
 class UserGender extends StatefulWidget {
   final models.UserModel tempUser;
@@ -20,8 +19,8 @@ class _UserGenderState extends State<UserGender> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(elevation: 0),
-      body: Container(
-          padding: EdgeInsets.all(35),
+      body: SafeArea(
+          minimum: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

@@ -47,46 +47,54 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    final firestoreService = FirestoreService(FirebaseFirestore.instance,
-        FirebaseStorage.instance, FirebaseMessaging.instance);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthenticationService>(
             create: (_) => AuthenticationService(FirebaseAuth.instance)),
-        Provider<FirestoreService>.value(value: firestoreService),
+        Provider<FirestoreService>(
+            create: (context) => FirestoreService(FirebaseFirestore.instance,
+                FirebaseStorage.instance, FirebaseMessaging.instance)),
         StreamProvider(
+            initialData: null,
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
-        StreamProvider<DocumentSnapshot>(catchError: (context, object) {
-          print(object.toString() + 'Couldnt get user...');
-          return null;
-        }, create: (context) {
-          final authchanged = context.read<AuthenticationService>();
-          if (authchanged == null) {
-            return null;
-          }
-          return authchanged.authStateChanges.transform(
-            FlatMapStreamTransformer<User, DocumentSnapshot>(
-              (firebaseUser) =>
-                  firestoreService.getUserSnapshotStreamByAuth(firebaseUser),
-            ),
-          );
-        }),
+        StreamProvider<DocumentSnapshot>(
+            initialData: null,
+            catchError: (context, object) {
+              print(object.toString() + 'Couldnt get user...');
+              return null;
+            },
+            create: (context) {
+              final authchanged = context.read<AuthenticationService>();
+              if (authchanged == null) {
+                return null;
+              }
+              return authchanged.authStateChanges.transform(
+                FlatMapStreamTransformer<User, DocumentSnapshot>(
+                  (firebaseUser) => context
+                      .read<FirestoreService>()
+                      .getUserSnapshotStreamByAuth(firebaseUser),
+                ),
+              );
+            }),
         StreamProvider<QuerySnapshot>(
+            initialData: null,
             catchError: (context, o) => null,
-            create: (context) =>
-                firestoreService.getChatRoomsByUID(context.read<User>().uid)),
+            create: (context) => context
+                .read<FirestoreService>()
+                .getChatRoomsByUID(context.read<User>().uid)),
         FutureProvider<List<Activity>>(
-            create: (context) => firestoreService.getAllActivities()),
-        ChangeNotifierProxyProvider2<DocumentSnapshot, List<Activity>,
-                ActivityState>(
-            lazy: false,
-            create: (_) => ActivityState(7),
-            update: (_, myDoc, myMap, myActivityState) {
-              if (myDoc == null || myMap == null || myActivityState == null) {
+            initialData: null,
+            create: (context) =>
+                context.read<FirestoreService>().getAllActivities()),
+        ChangeNotifierProxyProvider<List<Activity>, ActivityState>(
+            create: (context) => ActivityState(7),
+            update: (context, myMap, myActivityState) {
+              if (myMap == null || myActivityState == null) {
                 return ActivityState(7);
               }
-              myActivityState.set(activitiesFromDoc(myDoc, myMap));
+              myActivityState.set(
+                  activitiesFromDoc(context.read<DocumentSnapshot>(), myMap));
               return myActivityState;
             }),
       ],
@@ -120,6 +128,7 @@ class AuthenticationWrapper extends StatefulWidget {
 class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   User authUser;
   DocumentSnapshot dbUser;
+  List<Activity> activities;
   bool opacity = false;
 
   @override
@@ -212,6 +221,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   Widget build(BuildContext context) {
     authUser = context.watch<User>();
     dbUser = context.watch<DocumentSnapshot>();
+    activities = context.watch<List<Activity>>();
     return buildSplash();
   }
 }

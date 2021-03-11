@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class SettingsItem extends StatelessWidget {
   final IconData icon;
@@ -19,15 +20,15 @@ class SettingsItem extends StatelessWidget {
     return Center(
       child: InkWell(
         onTap: this.onTap,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(15),
         splashColor: Theme.of(context).accentColor,
-        highlightColor: Theme.of(context).accentColor.withAlpha(150),
+        highlightColor: Theme.of(context).accentColor.withOpacity(.5),
         child: Ink(
-            height: MediaQuery.of(context).size.height * .070,
+            height: MediaQuery.of(context).size.height * .065,
             width: MediaQuery.of(context).size.width * .875,
             decoration: BoxDecoration(
                 color: Theme.of(context).backgroundColor,
-                borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(15)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Row(
@@ -37,14 +38,14 @@ class SettingsItem extends StatelessWidget {
                     children: [
                       Icon(this.icon, size: 25),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * .05,
+                        width: 20,
                       ),
                       Text(this.text,
                           style: TextStyle(
                               fontWeight: FontWeight.w500, fontSize: 16))
                     ],
                   ),
-                  arrow ? Icon(Icons.navigate_next) : SizedBox()
+                  arrow ? Icon(Ionicons.chevron_forward_outline) : SizedBox()
                 ],
               ),
             )),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:jungle/screens/splash/sign_in_num_verify.dart';
 import 'package:jungle/services/auth_exception_handler.dart';
 import 'package:jungle/services/authentication_service.dart';
@@ -29,31 +30,36 @@ class _SignInNumState extends State<SignInNum> {
     if (authStatus != null) {
       isLoading = false;
     }
-    return Center(
-      child: Scaffold(
-        appBar: AppBar(elevation: 0),
-        body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "What's your number?",
-                      style:
-                          TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
+    return Scaffold(
+      appBar: AppBar(elevation: 0),
+      body: SafeArea(
+          minimum: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "What's your number?",
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Don't worry, this isn't being shared with anyone, and it won't be on your profile.",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  SizedBox(height: 12.5),
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      // override textfield's icon color when selected
+                      accentColor: Theme.of(context).accentColor,
+                      primaryColor: Theme.of(context).accentColor,
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Don't worry, this isn't being shared with anyone, and it won't be on your profile.",
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    SizedBox(height: 12.5),
-                    TextField(
-                      style: TextStyle(fontSize: 24),
+                    child: TextField(
+                      style: TextStyle(fontSize: 24, letterSpacing: 1),
                       autofocus: true,
+                      cursorColor: Theme.of(context).accentColor,
                       controller: textController,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
@@ -65,8 +71,13 @@ class _SignInNumState extends State<SignInNum> {
                             ? AuthExceptionHandler.generateExceptionMessage(
                                 authStatus)
                             : null,
-                        prefix: Text('+1 '),
-                        border: OutlineInputBorder(),
+                        prefixStyle: TextStyle(
+                            fontSize: 24,
+                            letterSpacing: 1,
+                            color: Theme.of(context).accentColor),
+                        prefixText: ' +1  ',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(6))),
                       ),
                       onChanged: (value) {
                         setState(() {
@@ -76,75 +87,74 @@ class _SignInNumState extends State<SignInNum> {
                         });
                       },
                     ),
-                    SizedBox(height: 25),
-                    Text(
-                      "When submitting your number, a verification code will be sent as a text. Message and data rates may apply.",
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-                GestureDetector(
-                    onTap: validate
-                        ? () {
-                            setState(() {
-                              isTapped = false;
-                              isLoading = true;
-                            });
-                            context.read<AuthenticationService>().clearStatus();
-                            context.read<AuthenticationService>().verifyNumber(
-                                number: textController.text.trim(),
-                                context: context);
-                            setState(() {
-                              isLoading = false;
-                            });
-                          }
-                        : null,
-                    onTapCancel: validate
-                        ? () {
-                            setState(() {
-                              isTapped = false;
-                            });
-                          }
-                        : null,
-                    onTapDown: validate
-                        ? (details) {
-                            setState(() {
-                              isTapped = true;
-                            });
-                          }
-                        : null,
-                    child: Transform.scale(
-                      alignment: Alignment.center,
-                      scale: isTapped ? .93 : 1,
-                      child: AnimatedContainer(
-                          duration: Duration(milliseconds: 200),
-                          curve: Curves.easeOut,
-                          height: MediaQuery.of(context).size.height * .065,
-                          decoration: BoxDecoration(
-                            color: !validate
-                                ? Theme.of(context).backgroundColor
-                                : Theme.of(context).accentColor,
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                          ),
-                          child: Center(
-                              child: !isLoading
-                                  ? Text('CONTINUE',
-                                      style: TextStyle(
-                                          color:
-                                              Theme.of(context).primaryColor))
-                                  : SizedBox(
-                                      height: 12,
-                                      width: 12,
-                                      child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).primaryColor,
-                                      )),
-                                    ))),
-                    ))
-              ],
-            )),
-      ),
+                  ),
+                  SizedBox(height: 25),
+                  Text(
+                    "When submitting your number, a verification code will be sent as a text. Message and data rates may apply.",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                  onTap: validate
+                      ? () {
+                          setState(() {
+                            isTapped = false;
+                            isLoading = true;
+                          });
+                          context.read<AuthenticationService>().clearStatus();
+                          context.read<AuthenticationService>().verifyNumber(
+                              number: textController.text.trim(),
+                              context: context);
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      : null,
+                  onTapCancel: validate
+                      ? () {
+                          setState(() {
+                            isTapped = false;
+                          });
+                        }
+                      : null,
+                  onTapDown: validate
+                      ? (details) {
+                          setState(() {
+                            isTapped = true;
+                          });
+                        }
+                      : null,
+                  child: Transform.scale(
+                    alignment: Alignment.center,
+                    scale: isTapped ? .93 : 1,
+                    child: AnimatedContainer(
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                        height: MediaQuery.of(context).size.height * .065,
+                        decoration: BoxDecoration(
+                          color: !validate
+                              ? Theme.of(context).backgroundColor
+                              : Theme.of(context).accentColor,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                        ),
+                        child: Center(
+                            child: !isLoading
+                                ? Text('CONTINUE',
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor))
+                                : SizedBox(
+                                    height: 12,
+                                    width: 12,
+                                    child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).primaryColor,
+                                    )),
+                                  ))),
+                  ))
+            ],
+          )),
     );
   }
 }

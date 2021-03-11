@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:jungle/models/user_model.dart';
 import 'package:jungle/screens/home/chats_page/chat_room_page.dart';
 import 'package:jungle/screens/home/chats_page/message_card.dart';
@@ -25,22 +24,20 @@ class MessageQueue extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatRooms = context.watch<QuerySnapshot>().docs;
     return Column(children: [
-      Flexible(
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Matches",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: Theme.of(context).accentColor),
-                ),
-              ],
-            )),
-      ),
+      Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7.5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "Matches",
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Theme.of(context).accentColor),
+              ),
+            ],
+          )),
       Expanded(
         child: Scrollbar(
           child: ListView.separated(

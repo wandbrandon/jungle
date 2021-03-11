@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -47,7 +48,7 @@ class _MessageTextFieldState extends State<MessageTextField>
   }
 
   void sendMessage() async {
-    HapticFeedback.mediumImpact();
+    HapticFeedback.selectionClick();
     context.read<FirestoreService>().sendMessage(
         widget.chatRoom.data()['chatID'],
         Message(
@@ -122,7 +123,7 @@ class _MessageTextFieldState extends State<MessageTextField>
                       color: Theme.of(context).errorColor,
                       borderRadius: BorderRadius.circular(20)),
                   child: Icon(
-                    Ionicons.people_circle_outline,
+                    Ionicons.person_circle_outline,
                     color: Theme.of(context).primaryColor,
                     size: 30,
                   )),
@@ -143,7 +144,7 @@ class _MessageTextFieldState extends State<MessageTextField>
                           : Theme.of(context).backgroundColor,
                       borderRadius: BorderRadius.circular(20)),
                   child: Icon(
-                    Ionicons.arrow_forward_circle_outline,
+                    Ionicons.arrow_up_circle_outline,
                     color: Theme.of(context).primaryColor,
                     size: 30,
                   )),
@@ -209,8 +210,8 @@ class _DateDialogState extends State<DateDialog> {
                 Icon(
                   chatRoom.data()['dateUsersAccepted']
                           ['${widget.currentUser.uid}']
-                      ? Ionicons.hand_right
-                      : Ionicons.hand_right_outline,
+                      ? Ionicons.hand_left
+                      : Ionicons.hand_left_outline,
                   size: 90,
                   color: Theme.of(context).primaryColor.withOpacity(
                       chatRoom.data()['dateUsersAccepted']
@@ -242,7 +243,7 @@ class _DateDialogState extends State<DateDialog> {
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   )
                 : Text(
-                    "Once you have set a time and place, tap agree. \n\nWhen ${widget.user.name} agrees, your date will be set and your timer will stop. \n\nDon't worry! You'll still be able to chat.",
+                    "Would like to continue your chat? \n\nWhen ${widget.user.name} agrees, your timer will stop. \n\nDon't worry! You'll still be able to chat.",
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                     )),

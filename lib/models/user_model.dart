@@ -9,7 +9,7 @@ class UserModel {
   //User profile information
   //unchangeable
   String name;
-  int age;
+  DateTime birthday;
   //changeable
   String bio;
   String gender;
@@ -21,6 +21,7 @@ class UserModel {
   List<dynamic> likes;
   List<dynamic> dislikes;
   List<dynamic> activities;
+  String startAtUID;
 
   UserModel(
       {this.work,
@@ -31,15 +32,18 @@ class UserModel {
       this.images,
       this.name,
       this.bio,
-      this.age,
+      this.birthday,
       this.likes,
       this.dislikes,
-      this.activities});
+      this.activities,
+      this.startAtUID});
 
   UserModel.fromJson(Map<String, dynamic> data)
       : uid = data['uid'],
         name = data['name'] ?? '',
-        age = data['age'] ?? 0,
+        birthday = data['birthday'] == null
+            ? DateTime.now()
+            : data['birthday'].toDate() ?? 0,
         bio = data['bio'] ?? '',
         work = data['work'] ?? '',
         gender = data['gender'] ?? '',
@@ -48,12 +52,13 @@ class UserModel {
         images = data['images'] ?? [],
         likes = data['likes'] ?? [],
         dislikes = data['dislikes'] ?? [],
-        activities = data['activities'] ?? [];
+        activities = data['activities'] ?? [],
+        startAtUID = data['startAtUID'] ?? '';
 
   Map<String, dynamic> toJson() => {
         'uid': uid ?? '',
         'name': name ?? '',
-        'age': age ?? '',
+        'birthday': birthday ?? '',
         'bio': bio ?? '',
         'work': work ?? '',
         'gender': gender ?? '',
@@ -63,5 +68,6 @@ class UserModel {
         'likes': likes ?? [],
         'dislikes': dislikes ?? [],
         'activities': activities ?? [],
+        'startAtUID': startAtUID ?? '',
       };
 }

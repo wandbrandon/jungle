@@ -4,14 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_sinusoidals/flutter_sinusoidals.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:jungle/data/data.dart';
 import 'package:jungle/screens/splash/sign_in_num.dart';
 import 'package:jungle/services/authentication_service.dart';
-import 'package:jungle/services/firestore_service.dart';
+import 'package:jungle/widgets/flutter_sinusoidals.dart';
 import 'package:provider/provider.dart';
 import 'package:tap_builder/tap_builder.dart';
+import 'package:ionicons/ionicons.dart';
 
 import '../../main.dart';
 
@@ -85,35 +83,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                         width: MediaQuery.of(context).size.width * .81,
                         child: Column(
                           children: [
-                            RichText(
-                              text: TextSpan(
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          .color),
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                            'When tapping Create Account or Sign in, you agree to our '),
-                                    TextSpan(
-                                        text: 'Terms',
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline)),
-                                    TextSpan(
-                                        text:
-                                            '. If you would like to learn more about how we handle data, check out our '),
-                                    TextSpan(
-                                        text: 'Privacy Policy',
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline)),
-                                    TextSpan(text: '.'),
-                                  ]),
-                              textAlign: TextAlign.center,
-                            ),
                             SizedBox(height: 20),
                             AnimatedCrossFade(
                               duration: Duration(milliseconds: 500),
@@ -127,22 +96,22 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                               secondChild: buildSecond(context),
                             ),
                             SizedBox(height: 20),
-                            RichText(
-                                text: TextSpan(
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1
-                                            .color),
-                                    children: [
-                                  TextSpan(text: 'Caught a bug? '),
-                                  TextSpan(
-                                      text: 'Click Here',
-                                      style: TextStyle(
-                                          decoration:
-                                              TextDecoration.underline)),
-                                ]))
+                            // RichText(
+                            //     text: TextSpan(
+                            //         style: TextStyle(
+                            //             fontSize: 13,
+                            //             color: Theme.of(context)
+                            //                 .textTheme
+                            //                 .bodyText1
+                            //                 .color),
+                            //         children: [
+                            //       TextSpan(text: 'Caught a bug? '),
+                            //       TextSpan(
+                            //           text: 'Let us know.',
+                            //           style: TextStyle(
+                            //               decoration:
+                            //                   TextDecoration.underline)),
+                            //     ]))
                           ],
                         ),
                       ),
@@ -162,7 +131,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         children: [
           TapBuilder(
             onTap: () {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.selectionClick();
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SignInNum()));
             },
@@ -185,7 +154,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
           SizedBox(height: 15),
           TapBuilder(
             onTap: () {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.selectionClick();
               setState(() {
                 signInClicked = !signInClicked;
               });
@@ -206,7 +175,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       width: 2),
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                 ),
-                child: Text('SIGN IN',
+                child: Text('SIGN IN / APPLE ID',
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color))),
           ),
@@ -222,7 +191,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         children: [
           TapBuilder(
             onTap: () async {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.selectionClick();
               await context.read<AuthenticationService>().signInWithApple();
               Navigator.pushAndRemoveUntil(
                   context,
@@ -231,25 +200,26 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   (route) => false);
             },
             builder: (context, state) => AnimatedContainer(
-                height: 50,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.ease,
-                alignment: Alignment.center,
-                transformAlignment: Alignment.center,
-                transform: state == TapState.pressed
-                    ? Matrix4.diagonal3Values(.95, .95, .95)
-                    : Matrix4.diagonal3Values(1, 1, 1),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).textTheme.bodyText1.color,
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                ),
-                child: Text('SIGN IN WITH APPLE ID',
-                    style: TextStyle(color: Theme.of(context).primaryColor))),
+              height: 50,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.ease,
+              alignment: Alignment.center,
+              transformAlignment: Alignment.center,
+              transform: state == TapState.pressed
+                  ? Matrix4.diagonal3Values(.95, .95, .95)
+                  : Matrix4.diagonal3Values(1, 1, 1),
+              decoration: BoxDecoration(
+                color: Theme.of(context).textTheme.bodyText1.color,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+              child: Text('SIGN IN WITH APPLE ID',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+            ),
           ),
           SizedBox(height: 15),
           TapBuilder(
             onTap: () {
-              HapticFeedback.heavyImpact();
+              HapticFeedback.selectionClick();
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SignInNum()));
             },

@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
+import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:jungle/models/models.dart';
 import 'package:jungle/models/user_model.dart';
@@ -15,8 +15,6 @@ import 'package:jungle/screens/home/discover_page/activity_state.dart';
 import 'package:jungle/services/firestore_service.dart';
 import 'package:jungle/widgets/contact_item.dart';
 import 'package:provider/provider.dart';
-import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
-import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'chat_bubble.dart';
 import 'package:intl/intl.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
@@ -91,7 +89,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         actions: [
           IconButton(
               icon: Icon(
-                Ionicons.person_remove_outline,
+                Ionicons.person,
               ),
               color: Colors.red,
               onPressed: () {

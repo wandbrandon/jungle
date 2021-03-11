@@ -22,6 +22,11 @@ final kDarkTheme = ThemeData(
   accentColor: kDarkAccentColor,
   highlightColor: kDarkHighlightColor,
   errorColor: kDarkErrorColor,
+  cardColor: kDarkSecondaryColor,
+  splashColor: kDarkHighlightColor,
+  colorScheme: ColorScheme.dark(primary: kDarkAccentColor),
+  buttonTheme: ButtonThemeData(
+      buttonColor: kDarkAccentColor, textTheme: ButtonTextTheme.accent),
   appBarTheme: AppBarTheme(brightness: Brightness.dark),
   iconTheme: ThemeData.dark().iconTheme.copyWith(
         color: kLightPrimaryColor,
@@ -40,6 +45,12 @@ final kLightTheme = ThemeData(
   accentColor: kLightAccentColor,
   highlightColor: kLightHighlightColor,
   errorColor: kLightErrorColor,
+  cardColor: kLightSecondaryColor,
+  splashColor: kLightHighlightColor,
+  colorScheme: ColorScheme.light(
+      primary: kLightAccentColor, background: kLightSecondaryColor),
+  buttonTheme: ButtonThemeData(
+      buttonColor: kLightAccentColor, textTheme: ButtonTextTheme.accent),
   appBarTheme: AppBarTheme(brightness: Brightness.light),
   iconTheme: ThemeData.light().iconTheme.copyWith(
         color: kDarkPrimaryColor,

@@ -36,8 +36,7 @@ exports.sendNotification = functions.firestore
                   const payload = {
                     notification: {
                       title: 'Jungle',
-                      body: `${userFrom.data().name} send you a message.`,
-                      badge: '1',
+                      body: `${userFrom.data().name} sent you a message.`,
                       sound: 'default'
                     }
                   }    
@@ -81,8 +80,8 @@ exports.sendNotification = functions.firestore
             notification: {
               title: 'Jungle',
               body: "You've got a match!",
-              badge: '1',
-              sound: 'default'
+              sound: 'default',
+              click_action: "FLUTTER_NOTIFICATION_CLICK",
             }
           }    
           admin

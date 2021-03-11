@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:confetti/confetti.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -77,8 +77,9 @@ class _MatchedDialogState extends State<MatchedDialog> {
                                     width: 4,
                                     color: Theme.of(context).primaryColor),
                                 image: DecorationImage(
-                                    image: CachedNetworkImageProvider(
+                                    image: ExtendedNetworkImageProvider(
                                       widget.user.images[0],
+                                      cache: false,
                                     ),
                                     fit: BoxFit.cover),
                               ),
@@ -96,9 +97,9 @@ class _MatchedDialogState extends State<MatchedDialog> {
                                     width: 4,
                                     color: Theme.of(context).primaryColor),
                                 image: DecorationImage(
-                                    image: CachedNetworkImageProvider(
-                                      widget.currentUser.images[0],
-                                    ),
+                                    image: ExtendedNetworkImageProvider(
+                                        widget.currentUser.images[0],
+                                        cache: false),
                                     fit: BoxFit.cover),
                               ),
                             ),
