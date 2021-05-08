@@ -1,4 +1,5 @@
-<a href="url"><img src="https://i.imgur.com/qIzM50V.png" align="left" width="200" ></a>. 
+<a href="url"><img src="https://i.imgur.com/qIzM50V.png" align="left" width="200" ></a>  
+
 
 # Jungle
 
