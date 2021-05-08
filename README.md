@@ -11,6 +11,3 @@ All graphics were designed by me.
 <a href="url"><img src="https://i.imgur.com/0eOLufy.png" align="left" width="200" ></a>
 <a href="url"><img src="https://i.imgur.com/ItGyp8f.png" align="left" width="200" ></a>
 <a href="url"><img src="https://i.imgur.com/UHTYuRU.png" align="left" width="200" ></a>
-
-
-## Video
