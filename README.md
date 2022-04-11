@@ -3,8 +3,7 @@
 
 # Jungle
 
-Event services that also provide dating applications.
-All graphics were designed by me.
+Working IOS app
 
 ## Screenshots (Dark Mode)
 <a href="url"><img src="https://i.imgur.com/mrtKVuf.png" align="left" width="200" ></a>
